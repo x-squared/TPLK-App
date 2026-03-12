@@ -1,0 +1,26 @@
+# Architecture Glossary
+
+Shared vocabulary for process/state/data architecture terms used across specs, code, and UI.
+
+## Process and state terms
+
+- **Workflow action**: explicit command that changes state (for example `start listing`, `cancel episode`).
+- **Phase**: coarse process step of an entity lifecycle (for episodes: evaluation, listing, transplantation, follow-up).
+- **Status**: business state indicator inside or across phases (for episodes: transplantable, allocated, cancelled).
+- **Terminal state**: a state that blocks regular forward progression unless explicit correction flow exists.
+- **Invariant**: condition that must always hold (for example relation consistency and scope rules).
+
+## Data quality and interoperability terms
+
+- **Canonical value**: normalized value used for computations and comparable reporting.
+- **Input value**: raw user-captured value preserved for traceability.
+- **LOINC**: identifier for what is measured (observation semantics).
+- **UCUM**: encoding standard for units and unit conversion safety.
+- **Normalization status**: technical marker describing whether value/unit normalization succeeded.
+
+## Architecture governance terms
+
+- **Drift**: divergence between intended architecture and implemented structure/behavior.
+- **Fitness check**: automated validation that architecture constraints still hold.
+- **ADR**: architecture decision record capturing context, decision, and consequences.
+- **Concept-fit review**: review step that checks whether better external standards/frameworks should be adopted.

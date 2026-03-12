@@ -1,0 +1,54 @@
+/*
+  Global-first table styling rule:
+  - Define shared table styles here.
+  - Add local table CSS only when a component has clear, unique requirements.
+*/
+
+:root {
+  --table-row-highlight: rgba(124, 138, 255, 0.1);
+}
+
+.data-table,
+.contact-table,
+.detail-contact-table,
+.task-board-table,
+.episode-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.data-table th,
+.data-table td,
+.contact-table th,
+.contact-table td,
+.detail-contact-table th,
+.detail-contact-table td,
+.task-board-table th,
+.task-board-table td,
+.episode-table th,
+.episode-table td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #333;
+  color: #222;
+}
+
+.data-table th,
+.contact-table th,
+.detail-contact-table th,
+.task-board-table th,
+.episode-table th {
+  font-weight: 500;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.data-table tbody tr:hover,
+.contact-table tbody tr:hover,
+.detail-contact-table tbody tr:hover,
+.task-board-table tbody tr:hover,
+.episode-table tbody tr:hover {
+  background: var(--table-row-highlight);
+}

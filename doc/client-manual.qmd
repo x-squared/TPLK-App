@@ -1,0 +1,100 @@
+# Client Manual
+
+This manual explains how to configure and start the TPL frontend client.
+
+For backend startup and environment setup, see `doc/server-manual.qmd`.
+For specification-based client-server tests, see `doc/specification-manual.qmd`.
+For i18n architecture and translation operations, see `doc/i18n-manual.qmd`.
+
+## 1) What "client" means in this project
+
+The client is a React + TypeScript application built with Vite.
+
+Main folder:
+
+- `frontend/`
+
+## 2) Prerequisites
+
+- Node.js 18+ (recommended)
+- `npm`
+- Backend server running on `http://localhost:8000` for API access
+
+## 3) First-time setup
+
+From project root:
+
+```{bash}
+cd frontend
+npm install
+```
+
+## 4) Start the client (development mode)
+
+From `frontend/`:
+
+```{bash}
+npm run dev
+```
+
+Default dev URL:
+
+- `http://localhost:5173`
+
+## 5) How API communication works in dev
+
+The Vite dev server proxies `/api` calls to:
+
+- `http://localhost:8000`
+
+Configured in:
+
+- `frontend/vite.config.ts`
+
+If backend is not running, client pages may load but API-driven views will fail.
+
+## 6) Typical daily startup flow
+
+1. Start backend first (see `doc/server-manual.qmd`)
+2. Start frontend with `npm run dev`
+3. Open `http://localhost:5173`
+
+## 7) Other useful client commands
+
+From `frontend/`:
+
+```{bash}
+npm run build
+```
+
+Creates a production build in `frontend/dist/`.
+
+```{bash}
+npm run preview
+```
+
+Serves the built app locally for a production-like check.
+
+## 8) Restarting the client
+
+If running in foreground:
+
+- Stop with `Ctrl+C`
+- Start again with `npm run dev`
+
+With Vite dev mode, most file changes hot-reload automatically.
+
+## 9) Troubleshooting
+
+- **Port 5173 already in use**: stop the process using that port, then restart.
+- **Blank or stale UI**: hard refresh browser and restart `npm run dev`.
+- **API errors in browser**: verify backend is running on port `8000`.
+- **Unexpected 403 after role/permission updates**: re-login so the client refreshes `user.permissions` from `/api/auth/me`.
+- **Dependency issues**: remove `node_modules` and reinstall with `npm install`.
+- **Build fails**: run `npm run build` to see TypeScript/build errors explicitly.
+
+## 10) Operational notes
+
+- Dev mode is optimized for iteration speed, not production performance.
+- The production artifact for deployment is generated with `npm run build`.
+- Keep backend and frontend versions in sync when API contracts change.

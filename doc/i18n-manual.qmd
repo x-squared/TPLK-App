@@ -1,0 +1,159 @@
+# I18n Manual
+
+This manual describes the internationalization (i18n) model in TPL-App and how to operate it safely.
+
+It complements:
+
+- `doc/client-manual.qmd` for frontend startup/runtime basics
+- `doc/server-manual.qmd` for backend startup/API runtime basics
+- `doc/seeding-manual.qmd` for seed profile behavior
+
+## 1) Supported locales and default behavior
+
+Current supported locales:
+
+- `en` (English, canonical default)
+- `de` (German)
+
+English is the canonical source language in code. Components should call `t(key, englishDefault)` with an English fallback string.
+The translation `key` must come from declared constants (for example `frontend/src/i18n/keys.ts`), not from inline string literals.
+
+## 2) Translation data model
+
+TPL-App uses two translation sources that are merged at runtime:
+
+1. Built-in frontend baseline from `frontend/src/i18n/translations.json`
+2. Runtime/admin-managed overrides from backend `TRANSLATION_BUNDLE`
+
+Key points:
+
+- Translation keys are dot-paths (for example `app.views.myWork.label`)
+- `translations.json` provides structured metadata:
+  - `text`: visible translation per locale
+  - `label`: human-readable item description (used in admin UI)
+- Runtime bundles are persisted per locale as JSON in `TRANSLATION_BUNDLE.PAYLOAD_JSON`
+
+## 3) Runtime resolution order
+
+Frontend translation function behavior:
+
+- all modes:
+  1. check runtime override bundle (`TRANSLATION_BUNDLE`)
+  2. fallback to built-in `translations.json` text for that locale
+  3. fallback to `englishDefault`
+
+This guarantees an English fallback for every key.
+
+## 4) Backend i18n endpoints
+
+Read endpoints:
+
+- `GET /api/translations/overrides?locale=<key>` (authenticated)
+- `GET /api/admin/translations/?locale=<key>` (admin)
+
+Write endpoint (admin):
+
+- `PUT /api/admin/translations/?locale=<key>`
+
+Payload shape:
+
+```json
+{
+  "entries": {
+    "app.views.myWork.label": "Meine Arbeit"
+  }
+}
+```
+
+## 5) Admin translations screen behavior
+
+The Admin translations tab:
+
+- loads known keys from baseline metadata + built-in locale text + current runtime entries
+- allows editing effective values for a chosen locale
+- stores a normalized, non-empty key/value map in DB
+- always shows English reference text
+- shows source badge:
+  - `FILE`: key exists in `translations.json` metadata
+  - `CODE`: key currently exists only from runtime/code fallback usage
+
+## 6) Seeding and persistence across clean/refresh
+
+Translation seed loading is intentionally two-layered:
+
+1. load defaults from `frontend/src/i18n/translations.json`
+2. overlay runtime snapshot from `backend/app/seed/datasets/core/translations_runtime_snapshot.py`
+
+During `db_data clean` and `db_admin refresh`, current DB translation bundles are exported into the runtime snapshot dataset before tables are wiped. This preserves admin-managed translations across clean + reseed cycles.
+
+Relevant implementation locations:
+
+- loader: `backend/app/seed/loaders/core/translations.py`
+- snapshot export: `backend/app/db_data.py`
+- snapshot dataset: `backend/app/seed/datasets/core/translations_runtime_snapshot.py`
+
+## 7) Daily operator workflows
+
+### A) Edit translations as admin
+
+1. Open Admin -> Translations
+2. Choose locale (`de` typically)
+3. Update entries
+4. Save
+
+No server restart is required for persistence. Clients should reload translations (or re-login) to fetch latest runtime entries.
+
+### B) Preserve translations before a DB reset
+
+If you use the standard clean/refresh tooling, snapshot export is automatic.
+
+```{bash}
+cd backend
+source .venv/bin/activate
+python -m app.db_admin --mode refresh --env DEV
+```
+
+### C) Introduce new translatable UI text
+
+1. Add key + metadata in `frontend/src/i18n/translations.json`
+2. Declare/reference the key in `frontend/src/i18n/keys.ts` (or a feature key-constants module)
+3. Use `t(KEY_CONSTANT, "<English default>")` in UI
+4. Add/update locale text (`de`) in `translations.json` or via Admin translations
+5. Validate in UI with both locales
+
+### D) Capture current DB translations back into `translations.json`
+
+Use this when you want to sync the frontend baseline file to the currently persisted runtime/admin translation state:
+
+```{bash}
+cd backend
+source .venv/bin/activate
+python -m app.db_data --mode export-translations-json --env DEV
+```
+
+Behavior:
+
+- reads current translation bundles from DB
+- preserves existing `label` metadata from `frontend/src/i18n/translations.json`
+- updates/writes `text` values per locale from DB bundles
+- writes result back to `frontend/src/i18n/translations.json`
+
+## 8) Implementation references
+
+- Frontend i18n provider and key extraction: `frontend/src/i18n/i18n.tsx`
+- Baseline translation source: `frontend/src/i18n/translations.json`
+- Admin translations logic: `frontend/src/views/admin/hooks/useAdminTranslations.ts`
+- Backend translation service: `backend/app/features/translations/service.py`
+- Translation routers:
+  - `backend/app/routers/translations.py`
+  - `backend/app/routers/admin_translations.py`
+
+## 9) Guardrails and conventions
+
+- Keep English as the canonical source/fallback language.
+- Do not hardcode localized UI labels where `t()` is appropriate.
+- Do not pass inline translation key string literals to `t()` in frontend TS/TSX code.
+- Use declared key constants (for example from `frontend/src/i18n/keys.ts`) for all `t()` key arguments.
+- Prefer stable dot-path keys; avoid frequent renames.
+- Keep admin override values plain text (no markup).
+- When changing i18n architecture, update docs in this manual and cross-check seeding implications in `doc/seeding-manual.qmd`.

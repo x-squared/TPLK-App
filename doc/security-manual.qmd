@@ -1,0 +1,308 @@
+# Security Manual
+
+This manual describes the current security architecture of TPL-App and the operational controls around authentication, authorization, and data integrity.
+
+It complements:
+
+- `doc/server-manual.qmd` for runtime/server setup
+
+## 1) Scope and security boundary
+
+TPL-App is a FastAPI backend with a browser frontend. The effective security boundary is the backend API:
+
+- frontend access gating is UX-only
+- backend authentication + authorization dependencies are authoritative
+
+Core backend entry points:
+
+- app bootstrap: `backend/app/main.py`
+- auth dependencies: `backend/app/auth.py`
+- router registration: `backend/app/routers/registry.py`
+
+## 2) Authentication architecture
+
+Current login flow:
+
+1. frontend calls `POST /api/auth/login` with `ext_id`
+2. backend resolves user by `USER.EXT_ID`
+3. backend issues JWT bearer token
+4. frontend stores token and sends `Authorization: Bearer <token>`
+
+Implementation references:
+
+- login endpoint: `backend/app/routers/auth.py`
+- login service: `backend/app/features/auth/service.py`
+- token create/verify: `backend/app/auth.py`
+- frontend token handling: `frontend/src/api/core.ts`, `frontend/src/app/useAppSession.ts`
+
+Important current characteristics:
+
+- token is signed with HS256
+- token currently contains `sub` (external user id)
+- token currently has no expiry claim
+- frontend persists token in `localStorage`
+
+## 3) Authorization architecture (RBAC)
+
+TPL-App uses permission-based RBAC:
+
+- users are assigned one or more roles
+- roles grant permissions
+- routers enforce permissions via dependency guards
+
+Enforcement functions:
+
+- `require_permission("<permission.key>")`
+- `require_admin` (currently mapped to `view.admin`)
+
+Model references:
+
+- permissions: `ACCESS_PERMISSION`
+- role-permission mapping: `ROLE_PERMISSION`
+- role codes: `CODE` rows with type `ROLE`
+
+### 3.1 Core concepts
+
+Two concepts must be kept separate:
+
+- **GUI view**: an application page/screen (for example Donors, Reports, Admin)
+- **view-right**: a permission that allows seeing/using a view and its read APIs
+
+Write operations use separate **edit-rights**.
+
+Read/write split currently implemented by domain:
+
+- patients domain: `view.patients` / `edit.patients`
+- colloquiums domain: `view.colloquiums` / `edit.colloquiums`
+- donor + coordination domain: `view.donors` / `edit.donors`
+- tasks domain: `view.tasks` / `edit.tasks`
+- information domain: `view.information` / `edit.information`
+- reports domain: `view.reports` (read/execute)
+
+So a user can be read-only for a domain when they only have the corresponding `view.*` permission and not the `edit.*` permission.
+
+### 3.2 Seeded roles and permissions
+
+Seed source for permission catalog and role mapping:
+
+- `backend/app/seed/datasets/core/access_rules.py`
+
+Seed source for role codes:
+
+- `backend/app/seed/datasets/core/codes.py`
+
+Important role currently used for donor editing:
+
+- `KOORD_DONOR` (separate from generic coordinator role)
+
+Current migration baseline (seed defaults):
+
+- `KOORD`: read/write for patients, colloquiums, tasks, information; read-only for donors/coordinations/reports
+- `KOORD_DONOR`: donor/coordinations read/write via `view.donors` + `edit.donors`
+- `ARZT`: read-only for patients, colloquiums, donors/coordinations, tasks, information, reports
+- `SYSTEM`, `ADMIN`: read/write across all non-admin domains (`ADMIN` additionally has `view.admin`)
+
+### 3.3 How permissions are resolved
+
+Auth flow:
+
+1. user logs in (`/api/auth/login`)
+2. backend resolves user roles
+3. backend resolves role-derived permissions
+4. response contains `user.permissions`
+
+Used endpoints:
+
+- `GET /api/auth/me`
+- `POST /api/auth/login`
+
+### 3.4 Managing access rights in Admin
+
+Admin access rules UI is available in:
+
+- **Admin → Access Rules**
+
+API used by Admin UI:
+
+- `GET /api/admin/access/matrix`
+- `PUT /api/admin/access/roles/{role_key}`
+
+Typical workflow:
+
+1. open Admin view
+2. select a role
+3. toggle permissions
+4. save
+
+Guardrails:
+
+- admin endpoints require `view.admin`
+- `ADMIN` role must keep `view.admin`
+
+### 3.5 Operational steps after RBAC changes
+
+When changing role/permission seed data, refresh schema+data so mappings are consistent.
+
+From `backend/`:
+
+```{bash}
+source .venv/bin/activate
+python -m app.db_admin --mode refresh --env DEV
+```
+
+Then restart backend and re-login in frontend so the token/user payload is refreshed.
+
+Behavior notes:
+
+- role-permission mappings edited in Admin are persisted in DB and are not overwritten by server startup
+- if you recreate the database from scratch, seed defaults are applied again as baseline
+
+## 4) API protection pattern
+
+Protected endpoints use FastAPI dependency injection to enforce auth and permission checks before handler logic runs.
+
+Typical examples:
+
+- read endpoints: `view.*` permissions
+- mutating endpoints: `edit.*` permissions
+- admin matrix endpoints: admin-only guard
+
+This means UI visibility alone never grants API rights.
+
+## 5) Data integrity protections
+
+### 5.1 Validation and reference checks
+
+Data is validated at multiple layers:
+
+- schema validation via Pydantic request models (`backend/app/schema/**`)
+- domain checks in feature services (for example referenced `CODE`/`CATALOGUE` existence)
+- database constraints and foreign keys at persistence layer
+
+### 5.2 Optimistic locking
+
+TPL-App uses optimistic locking for mapped entities to prevent silent last-write-wins overwrites.
+
+Mechanism:
+
+- SQLAlchemy mapper-level versioning is enabled on entity `ROW_VERSION`
+- on update, ORM includes the current version in the `UPDATE ... WHERE ...` condition
+- if no row matches (stale write), SQLAlchemy raises a stale-data conflict mapped to `409 Conflict`
+
+Current backend lock helper:
+
+- optimistic-lock defaults are configured in `backend/app/model/utils.py`
+- stale-write mapping is handled in `backend/app/main.py`
+
+Current locked coordination operations:
+
+- all mapped entities by default
+- explicitly excluded: coordination protocol event logs and coordination time logs
+
+Current explicit exception:
+
+- coordination protocol event-log writes and coordination time logs are intentionally excluded from optimistic locking
+
+## 6) CORS and browser access
+
+CORS is enforced through FastAPI middleware in `backend/app/main.py`, configured by:
+
+- `TPL_CORS_ORIGINS`
+
+Operational expectation:
+
+- keep `TPL_CORS_ORIGINS` minimal and environment-specific
+- avoid wildcard/open origins in production
+
+## 7) Multi-window session policy
+
+TPL-App allows users to work in multiple browser windows/tabs by default.
+
+Policy:
+
+- multi-window use is allowed and treated as a valid workflow
+- detached windows (for example detached coordination protocol) are explicitly supported
+- the system does not enforce single-window lockout
+
+Safety model:
+
+- backend optimistic locking prevents silent overwrites on concurrent edits
+- stale writes are rejected with `409 Conflict`
+- frontend should show conflict guidance and prompt users to continue from refreshed data
+
+## 8) Auditability and traceability
+
+Many domain entities persist operational audit columns:
+
+- `changed_by_id`
+- `created_at`
+- `updated_at`
+
+This supports:
+
+- traceability of last changes
+- optimistic locking token calculation
+- incident review of data mutations
+
+## 9) Operational hardening checklist
+
+Use this checklist for production or production-like deployments.
+
+- **JWT secret**: replace hardcoded dev secret with environment-managed secret
+- **TLS**: terminate HTTPS at ingress/reverse proxy; do not expose plaintext traffic publicly
+- **CORS**: restrict origins to trusted frontend hosts only
+- **DB access**: apply least privilege to database runtime account
+- **Token storage policy**: evaluate whether `localStorage` is acceptable for your threat model
+- **RBAC hygiene**: review role-permission mappings regularly
+- **Patch cadence**: keep Python/JS dependencies current and monitor security advisories
+- **Logging**: ensure operational logs are retained and protected against unauthorized access
+
+## 10) Security testing checklist
+
+Minimum recurring checks:
+
+1. unauthenticated request to protected endpoint returns `401`
+2. authenticated user without required permission receives `403`
+3. authorized user can perform intended operation
+4. stale concurrent update on a versioned entity returns `409`
+5. CORS blocks requests from non-allowed origins
+6. admin access endpoints are inaccessible without admin permission
+7. Login as user with `view.donors` only:
+   - donors/coordinations pages are visible
+   - read APIs work
+   - create/update/delete donor operations are blocked (`403`)
+8. Login as user with `view.patients` only:
+   - patient read APIs work
+   - patient create/update/delete operations are blocked (`403`)
+9. Login as user with `view.tasks` only:
+   - task reads work
+   - task create/update/delete operations are blocked (`403`)
+10. Login as user with `view.donors` + `edit.donors`:
+   - mutation operations succeed
+11. Edit the same versioned record in two windows:
+   - first save succeeds
+   - second stale save returns `409` and user can continue after refresh
+
+## 11) Troubleshooting
+
+- **Nav item missing unexpectedly**: verify user has corresponding `view.*` permission
+- **403 on write despite visible page**: user likely lacks `edit.*` permission
+- **Admin updates not reflected**: refresh the page or re-login to refresh user permissions in client state
+- **Role exists but no permissions**: verify seed/access matrix consistency and rerun DB refresh
+- **Unexpected 409 conflict**: another write updated the same row; reload and retry
+
+## 12) Known gaps and planned evolution
+
+Current implementation is functional but includes deliberate simplifications:
+
+- login by `ext_id` without password/SSO challenge
+- hardcoded JWT secret in source
+- JWT without expiry/refresh lifecycle
+- frontend token persisted in `localStorage`
+
+Recommended evolution path:
+
+1. move JWT secret to environment-managed configuration
+2. add token expiry and refresh strategy
+3. integrate stronger identity provider (for example SSO/OIDC)
+4. define and enforce session lifetime + revocation semantics

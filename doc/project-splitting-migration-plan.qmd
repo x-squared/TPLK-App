@@ -1,0 +1,451 @@
+# Multi-App Migration Plan (Draft)
+
+Purpose: define a realistic migration from the current source tree into an internal multi-app architecture inside the existing repository first, with clear separation between three app slices: `TPL-App`, `My-RPA`, and `My-Spec`.
+
+This is a reflection and decision document, not yet a binding policy.
+
+Decision note: proceed with a multi-repo setup. App slices/modules are maintained as independent repositories and are opened together in one Cursor multi-root workspace for cross-repo work.
+
+## Target outcomes
+
+- Migrate to one internally split architecture in the current repository containing three separated app slices: `TPL-App`, `My-RPA`, `My-Spec`.
+- Keep default development mode inside one repository/workspace for rapid cross-slice refactoring.
+- Optional later extraction mode: move slices into separate repositories once internal split is stable.
+- Move seamlessly between app slices in daily work.
+- Allow Cursor and agents to work across all slices concurrently.
+- Ensure reusable features and framework parts are moved into explicit shared modules.
+- Establish an explicit way to negotiate diverging project requirements.
+- Ensure composition-based runtime and delivery:
+  - `AppStack` runs as a web app and is web-testable.
+  - `AppStack + AppSpec` runs as a web app and is web-testable.
+  - `AppStack + AppSpec + Some-App` runs as a web app and is web-testable.
+  - Delivery unit is `AppStack + AppSpec + Some-App` combinations.
+
+## Working modes
+
+### Mode 1 (default): internal split in one repository
+
+- Keep all app slices in one repository.
+- Reference internal slices/modules directly via repository-local paths.
+- Use this mode for fast iteration and coordinated changes across boundaries.
+
+### Mode 2 (later): extracted repositories with fixed-version references
+
+- Extract selected slices into separate repositories only after internal split has reached stability gates.
+- Pin shared dependencies to released versions when extraction begins.
+- Use this mode during stabilization windows, release hardening, or when upstream is noisy.
+- Keep Mode 1 as the default until extraction is explicitly approved.
+
+## Composition and delivery model
+
+Definitions used in this plan:
+
+- `AppStack` = the reusable shared runtime foundation (`shared/ui`, `shared/frontend`, `shared/backend`, `shared/process`) packaged as a web-app-capable base.
+- `AppSpec` = the specification app capability that plugs into `AppStack`.
+- `Some-App` = any additional product app (for example `TPL-App`, `My-RPA`, or future app).
+
+Mandatory runtime combinations:
+
+1. `AppStack`
+2. `AppStack + AppSpec`
+3. `AppStack + AppSpec + Some-App` (for every supported `Some-App`)
+
+Mandatory testability:
+
+- each combination above must be runnable as a web app
+- each combination above must have automated web-app test coverage (smoke + e2e)
+- CI must execute combination lanes, not only app-isolated lanes
+
+Delivery policy:
+
+- Deliverables are combination packages:
+  - `AppStack + AppSpec + Some-App`
+- `AppStack` and `AppStack + AppSpec` are continuously runnable/testable integration baselines, not the final customer delivery target.
+- Initial condition: `My-RPA` starts empty and initially offers no additional capability beyond what it inherits from `AppStack` and `AppSpec`.
+
+## Proposed target structure
+
+```text
+/Workspace
+  /AppSpace
+    /TPL-App
+      /config
+      /ui
+      /frontend
+      /backend
+      /spec
+      /doc
+      /test
+        /e2e
+    /My-RPA
+      /config
+      /ui
+      /frontend
+      /backend
+      /spec
+      /doc
+      /test
+        /e2e
+    /AppSpec
+      /config
+      /ui
+      /frontend
+      /backend
+      /spec
+      /doc
+      /test
+        /e2e
+    /AppStack
+      /config
+      /ui
+      /frontend
+      /backend
+      /process
+    /AppTest
+      /config
+      /framework
+      /fixtures
+      /e2e
+      /contracts
+    /AppModules
+      /AppConfig
+      /AppAuth
+      /AppI18n
+      /AppObservability
+      /AppDataContracts
+      /AppWorkflow
+      /AppConnectors
+      /AppDocsOps
+      /AppSeedOps
+```
+
+Each app slice has independent ownership and lifecycle inside the same repository. `AppTest` is test-framework-only (no runtime dependency role). `SharedModules/*` holds reusable cross-app modules.
+
+The internal structure of each app is the following (only sketched), e.g.
+```text
+/frontend
+  /app
+    /api
+    /views
+    /hooks
+    /utils
+  /public
+  /test
+  /scripts
+/backend
+  /app
+    /features
+    /routers
+    /schema
+    /models
+  /tests
+    /features
+    /routers
+    /schema
+    /models
+  /config
+  /scripts
+/doc
+```
+
+Testing placement policy:
+
+- backend unit/integration tests stay with backend code (`backend/tests`)
+- frontend unit/component tests stay with frontend code (`frontend/tests` or colocated `__tests__`)
+- product-level end-to-end tests stay in `test/e2e`
+- keep e2e as a dedicated cross-layer lane, not mixed into backend/frontend unit suites
+
+## UI vs Frontend boundary definition
+
+To avoid overlap and long-term architectural drift, apply this split in every app (`TPL-App`, `My-RPA`, `My-Spec`) and in shared modules:
+
+- `ui` = presentation system
+  - design tokens (color, spacing, typography)
+  - generic visual components (buttons, inputs, modal shell, table primitives)
+  - no app-specific workflow/business rules
+  - no direct backend/domain coupling
+- `frontend` = application/feature layer
+  - pages/views/routes and feature orchestration
+  - stateful hooks and feature-specific behavior
+  - API integration and bounded-context-aware interactions
+  - composes and configures `ui` components
+
+Decision rule:
+
+- if reusable across contexts without entity/workflow assumptions -> `ui`
+- if it knows bounded-context entities (app or shared), flows, or API contracts -> `frontend`
+
+## Single-project-first strategy (approved direction)
+
+Do not create separate repositories first. Instead, split concerns inside the current repository (`/platform/...`) and stabilize there before any externalization.
+
+Why:
+
+- keeps migration risk lower by avoiding repo-boundary overhead too early
+- enables faster refactoring with one CI/workspace context
+- creates clear ownership boundaries for `TPL-App`, `My-RPA`, and `My-Spec` before extraction
+
+## Phased migration plan
+
+## Phase 0: Migration contract and boundaries
+
+- Define migration contract:
+  - scope per app (`TPL-App`, `My-RPA`, `My-Spec`)
+  - what moves to `shared/*`
+  - acceptance criteria for parity and cutover
+- Define allowed dependency directions (`app -> shared`, never `shared -> app`).
+
+Exit criteria:
+
+- migration contract approved
+- boundary rules documented
+- first migration backlog created
+
+## Phase 1: Scaffold internal app-slice skeletons
+
+- Create the internal tree under `/platform` with all app slices and required directories.
+- Add baseline run/build/test scripts per app.
+- Add CI skeleton with independent lanes per app + shared.
+- Add combination run profiles:
+  - `run:web:appstack`
+  - `run:web:appstack+appspec`
+  - `run:web:appstack+appspec+<some-app>`
+
+Exit criteria:
+
+- all app-slice skeletons exist inside the current repository with required directories
+- baseline CI lanes execute
+- combination run profiles execute in web mode
+
+## Phase 2: Migrate current `TPL-App` capabilities into internal structure
+
+- Move current `TPL-App` capabilities first (largest existing scope).
+- Separate moved modules into `ui`, `frontend`, `backend`, `spec`, `doc`, `test`.
+- Move truly reusable modules into `shared/*` with adapters where needed.
+- Keep behavior and API parity.
+
+Exit criteria:
+
+- `TPL-App` slice runs in the internal structure with parity
+- regression checks green
+- first shared modules consumed by `TPL-App`
+
+## Phase 3: Bootstrap `My-RPA` and `My-Spec` on shared foundation
+
+- Build initial runnable baselines for `My-RPA` and `My-Spec`.
+- Reuse `shared/*` where possible; avoid app-local duplicates.
+- For `My-Spec`, prioritize ingestion/traceability hooks to consume Dev-Forum style inputs.
+- Validate composition behavior for:
+  - `AppStack`
+  - `AppStack + AppSpec`
+  - `AppStack + AppSpec + My-RPA`
+  - `AppStack + AppSpec + TPL-App`
+
+Exit criteria:
+
+- both `My-RPA` and `My-Spec` have runnable baseline slices
+- shared modules are consumed by 2+ apps
+- all required composition baselines run as web apps
+
+## Phase 4: Hardening and cutover
+
+- Stabilize contracts between apps and shared modules.
+- Enforce boundary checks and independent CI lanes:
+  - backend lane (`backend/tests`)
+  - frontend lane (`frontend` unit/component tests)
+  - e2e lane (`test/e2e`)
+- Prepare cutover runbook and rollback strategy.
+- Add mandatory combination test lanes:
+  - `test:web:appstack`
+  - `test:web:appstack+appspec`
+  - `test:web:appstack+appspec+<some-app>`
+
+Exit criteria:
+
+- all app lanes are green and independent
+- all mandatory combination lanes are green
+- cutover checklist accepted
+- old workspace can be retired
+
+## Full allocation matrix (with sequence)
+
+The following matrix defines where major areas go. Sequence is mandatory and should be executed in order.
+
+| Seq | Current area (today) | Target owner | Why |
+| --- | --- | --- | --- |
+| 1 | shared style tokens, generic UI primitives | `AppStack` | reused across all apps as base presentation system |
+| 2 | generic frontend helpers (api client core, error helpers, i18n runtime core) | `AppStack` | cross-app runtime foundation |
+| 3 | generic backend cross-cutting utilities (config/runtime helpers, shared infra) | `AppStack` | cross-app backend foundation |
+| 4 | Dev-Forum core workflow (capture/review/development/lineage) | `AppSpec` | specification and development-governance capability |
+| 5 | Dev-Forum integrations/adapters for ticket ingestion and trace links | `AppSpec` | input pipeline into specification repository |
+| 6 | requirement hierarchy model (Topic/Use Case/Story/Item) and spec repository management | `AppSpec` | primary `AppSpec` product scope |
+| 7 | requirement authoring/review UI and traceability views | `AppSpec` | primary `AppSpec` product scope |
+| 8 | TPL domain backend features (patients/episodes/coordination/colloquium/tasks/information) | `TPL-App` | app-specific domain behavior |
+| 9 | TPL domain frontend views/hooks/components | `TPL-App` | app-specific user workflows |
+| 10 | TPL app specs/docs/tests | `TPL-App` | app-owned specification and validation |
+| 11 | My-RPA domain backend features | `My-RPA` | app-specific domain behavior |
+| 12 | My-RPA frontend views/hooks/components | `My-RPA` | app-specific user workflows |
+| 13 | My-RPA specs/docs/tests | `My-RPA` | app-owned specification and validation |
+| 14 | App composition runners/profiles (`AppStack`, `AppStack+AppSpec`, `AppStack+AppSpec+Some-App`) | `AppStack` | composition runtime backbone and delivery baseline |
+| 15 | combination web test lanes (`test:web:*`) | `AppStack` + each app | platform defines lane contract; each app provides app-specific scenarios |
+
+Execution rule:
+
+- no step is skipped
+- if a step reveals missing dependency contracts, add contract task and continue with same sequence position
+- cutover is allowed only after all sequence steps are completed and mandatory combination lanes are green
+
+## Governance to ensure reusable code goes to shared
+
+## Mandatory “shared check” in every non-trivial change
+
+Before closing a feature slice, answer:
+
+1. Is this capability app-independent?
+2. Is it likely needed by 2+ apps?
+3. Can we place it in `shared/*` without leaking app assumptions?
+
+If yes, create or update a shared extraction item immediately.
+
+## Review gate
+
+- Every PR includes one explicit line:
+  - `Shared extraction check: [done | not applicable | follow-up ticket]`
+- Reviewer blocks merge if reusable logic was added app-local without justification.
+
+## Dependency check gate (mandatory)
+
+- Dependency health checks must run automatically in CI for every app and shared module.
+- Checks must include at least:
+  - vulnerable dependency scan
+  - outdated dependency report
+  - lockfile consistency check
+- Pull requests are not mergeable when dependency checks fail.
+- Combination lanes (`AppStack`, `AppStack + AppSpec`, `AppStack + AppSpec + Some-App`) must include dependency-check jobs, not only build/test jobs.
+
+## Dependency graph contract (mandatory)
+
+The target dependency graph is a strict DAG and must be enforced in CI.
+
+Allowed dependency directions:
+
+- `Some-App -> AppStack`
+- `Some-App -> AppSpec` (only when the app explicitly consumes specification capabilities)
+- `AppSpec -> AppStack`
+
+Forbidden dependency directions:
+
+- `AppStack -> AppSpec`
+- `AppStack -> Some-App`
+- `AppSpec -> Some-App`
+- `Some-App -> Some-App` (unless a documented exception is approved)
+
+Mandatory graph constraints:
+
+- no cyclic dependencies (direct or transitive)
+- shared modules may not import app-local modules
+- cross-app usage must flow through explicit contracts/adapters
+
+Enforcement requirement:
+
+- CI must run an automated dependency-graph rule check
+- CI must fail on every forbidden edge or cycle
+- PRs are not mergeable when graph checks fail
+
+## AppTest extraction model (approved)
+
+`AppTest` is introduced as a shared **test framework module**, not as a runtime foundation.
+
+Purpose of `AppTest`:
+
+- shared test runners/wrappers
+- shared fixtures/factories and test-data builders
+- contract-test helpers
+- reusable e2e helpers/page objects
+
+Dependency rules for `AppTest`:
+
+- `AppStack`, `AppSpec`, and `Some-App` may depend on `AppTest` in **test scope only**
+- `AppTest` must not be a runtime dependency of `AppStack`, `AppSpec`, or `Some-App`
+- `AppTest` must not depend on app runtime modules (`AppStack`, `AppSpec`, `Some-App`) to avoid cycles
+- app-specific behavior must be injected via adapters/plugins in test scope
+
+CI implications:
+
+- include dedicated `AppTest` lane(s) for shared test tooling validation
+- include test-scope dependency checks to ensure `AppTest` does not leak into runtime dependency graphs
+
+## Additional extraction candidates
+
+Beyond `AppStack`, `AppSpec`, and `AppTest`, the following modules are useful extraction targets:
+
+- `AppConfig`: typed config loading/validation and environment profile handling
+- `AppAuth`: authentication/session/permission helpers and guards
+- `AppI18n`: translation runtime, fallback rules, and localization tooling
+- `AppObservability`: structured logs, correlation IDs, and shared error telemetry hooks
+- `AppDataContracts`: shared DTO/schema contracts and code-generation pipeline
+- `AppWorkflow`: reusable transition-map/state-machine helpers
+- `AppConnectors`: shared external-interface adapter patterns and utilities
+- `AppDocsOps`: shared specification/manual linting and quality tooling
+- `AppSeedOps`: shared seed/data verification utilities
+
+Recommended extraction order:
+
+1. `AppConfig`
+2. `AppAuth`
+3. `AppI18n`
+4. `AppObservability`
+5. `AppDataContracts`
+6. `AppTest`
+7. domain-specific modules (`AppWorkflow`, `AppConnectors`, `AppDocsOps`, `AppSeedOps`)
+
+## Negotiating diverging app requirements
+
+Use a lightweight “decision triangle” process:
+
+1. **Shared-first proposal**: define common contract and behavior.
+2. **Divergence request**: app explains why common contract is insufficient.
+3. **Resolution path**:
+   - configurable extension point (preferred)
+   - app-specific adapter
+   - approved fork only as last resort
+
+Record the outcome in an ADR-style note with:
+
+- context
+- decision
+- consequences
+- review date
+
+## Operating model for Cursor and agents across apps
+
+- Conductor coordinates slices spanning multiple apps/shared modules.
+- Specialist agents work lane-based (backend/frontend/qa/docs) across app roots.
+- Handoffs must list:
+  - touched apps/modules
+  - contract changes
+  - validation commands/results
+  - risks at app boundaries
+
+## Risks and mitigations
+
+- **Risk**: shared layer becomes a dumping ground  
+  **Mitigation**: strict shared-check + review gate + ownership map.
+- **Risk**: app needs diverge too far  
+  **Mitigation**: extension-point policy and explicit divergence process.
+- **Risk**: cross-app CI slows delivery  
+  **Mitigation**: two-tier checks (fast lane checks + stricter integration checks).
+- **Risk**: migration stalls mid-way  
+  **Mitigation**: phased milestones with exit criteria and small migration batches.
+
+## Suggested first pilot
+
+- Migrate one reusable flow first (for example error-context capture + ticket bridge) into `shared/*`.
+- Consume it in `TPL-App` and one additional app slice (`My-Spec` preferred).
+- Evaluate:
+  - developer speed
+  - integration friction
+  - test overhead
+  - agent effectiveness across app roots
+
+If pilot metrics are acceptable, continue phased migration.

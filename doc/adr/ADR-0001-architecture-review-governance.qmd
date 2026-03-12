@@ -1,0 +1,51 @@
+# ADR-0001: Architecture Review Governance Baseline
+
+- Status: `Accepted`
+- Date: `2026-03-03`
+- Related stories: `AR-003, AR-004, AR-007, AR-010`
+- Related specs:
+  - `spec/requirements/GEN-Architektur-Spezifikation.md`
+  - `spec/requirements/GEN-Architektur-Backlog.md`
+
+## Context
+
+- Architecture quality gates existed but were partly implicit across separate docs/rules.
+- Migration reliability and architecture-fitness checks needed stricter, repeatable operator-visible verification.
+- We needed one stable ADR format to avoid future decision-loss across refactors.
+
+## Decision
+
+- Adopt a lightweight ADR format under `doc/adr/`.
+- Use architecture-review artifacts as canonical references for accepted architecture stories.
+- Enforce post-migration verification as a first-class operational requirement in DB tooling.
+- Expand fitness-check governance so architecture constraints are validated continuously, not ad-hoc.
+
+## Consequences
+
+- Architecture decisions become easier to review and trace over time.
+- Operators get clearer pass/fail signals for migration-related safety checks.
+- Documentation burden increases slightly, but with significantly lower architecture drift risk.
+
+## Verification
+
+- Run conceptual architecture checks:
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App
+python -m qa.spec_tools.run_conceptual_specs
+```
+
+- Run DB migration modes with strict verification:
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App/backend
+source .venv/bin/activate
+python -m app.db_data --mode migrate-audit-fields --env DEV --migration-check-level strict
+python -m app.db_data --mode migrate-medical-value-units --env DEV --migration-check-level strict
+```
+
+## Rollout and Compatibility
+
+- No API contract changes are introduced by this ADR itself.
+- Existing migration commands remain available; new checks are additive and fail-fast on integrity issues.
+- If verification fails, operators should resolve schema/data drift before continuing dependent workflows.

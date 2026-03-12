@@ -1,0 +1,156 @@
+.info-editor-count {
+  color: #666;
+}
+
+.info-context-dropdown {
+  position: relative;
+}
+
+.info-context-edit-grid {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.info-context-dropdown-trigger {
+  width: 100%;
+  min-height: 2.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.info-context-dropdown-arrow {
+  flex: 0 0 auto;
+  color: #566087;
+  font-size: 0.72rem;
+}
+
+.info-context-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 40;
+  width: min(26rem, calc(100vw - 4rem));
+  max-height: 15rem;
+  overflow: auto;
+  border: 1px solid #bcc4e6;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(26, 33, 58, 0.2);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.info-context-dropdown-selected {
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #dce1f2;
+}
+
+.info-context-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0.15rem;
+  font-size: 0.84rem;
+}
+
+.info-text-render {
+  white-space: normal;
+  max-width: 56rem;
+}
+
+.info-hide-read-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.55rem;
+  color: #444;
+  font-size: 0.85rem;
+}
+
+.info-search-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+  color: #444;
+  font-size: 0.85rem;
+}
+
+.info-search-filter .detail-input {
+  min-width: 16rem;
+  max-width: 28rem;
+}
+
+.info-read-col {
+  width: 3.1rem;
+  text-align: center;
+}
+
+.info-date-col {
+  width: 8.8rem;
+}
+
+.info-valid-from-col {
+  width: 8.8rem;
+}
+
+.info-author-col {
+  width: 10.5rem;
+}
+
+.info-text-col {
+  min-width: 26rem;
+}
+
+.info-read-badge {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  display: inline-block;
+  padding: 0;
+}
+
+.info-read-badge-unread-valid {
+  background: #e33a3a;
+  border-color: #a11f1f;
+}
+
+.info-read-badge-unread-future {
+  background: #f2c94c;
+  border-color: #b28b0c;
+}
+
+.info-read-badge-read {
+  background: #d7dbe8;
+  border-color: #a9b0c6;
+}
+
+.info-read-badge-withdrawn-unread {
+  background: #000;
+  border-color: #000;
+}
+
+.info-read-badge-withdrawn-read {
+  background: #d7dbe8;
+  border-color: #000;
+  border-width: 2px;
+}
+
+button.info-read-badge {
+  cursor: pointer;
+}
+
+button.info-read-badge:disabled {
+  cursor: default;
+}
+
+.info-row-read {
+  opacity: 0.82;
+}

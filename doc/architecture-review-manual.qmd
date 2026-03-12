@@ -1,0 +1,88 @@
+# Architecture Review Manual
+
+Purpose: define a repeatable architecture-review process that produces concrete, decision-ready change stories.
+
+## Operating cadence
+
+- Run a review at least every two weeks.
+- Run an additional review before larger releases or structural migrations.
+- Review scope is delta-based: changed backend/frontend/data/spec flows since the previous review.
+
+## Review output contract
+
+Each cycle outputs:
+
+- prioritized findings (risk-oriented)
+- concrete architecture change stories
+- estimated effort (`S`, `M`, `L`)
+- migration and compatibility notes
+
+## Decision protocol
+
+- User decides each story with one status:
+  - `accept`
+  - `defer`
+  - `reject`
+- Only `accept` stories proceed to:
+  1. architecture artifact updates (rules/spec/manual),
+  2. implementation,
+  3. verification.
+
+## Required architecture artifacts on accepted stories
+
+- Rules in `.cursor/rules/` when governance/guardrails change.
+- Requirements in `spec/requirements/` when domain or architecture intent changes.
+- Operational docs in `doc/` when workflows/commands/operator behavior change.
+
+Canonical requirement artifacts for this process:
+
+- `spec/requirements/GEN-Architektur-Spezifikation.md` (baseline architecture intent)
+- `spec/requirements/GEN-Architektur-Backlog.md` (review cycle stories and decisions)
+- `spec/requirements/GEN-Spec-Spezifikation.md` (spec-system governance conventions)
+
+Canonical supporting architecture artifacts:
+
+- `doc/adr/ADR-TEMPLATE.qmd` and `doc/adr/ADR-*.qmd` (architecture decision records)
+- `doc/architecture-glossary.qmd` (shared process/state/data terms)
+- `spec/domain/gen-domain.puml` and `spec/domain/gen-paths-domain.puml` (high-level structure and path visualization)
+
+## Expanded trigger set (concept-level + structural)
+
+Use the review not only for structural drift but also for concept-fit checks:
+
+- process modeling fit:
+  - if multi-step business flows become complex or stateful, evaluate explicit process/case modeling.
+- medical data semantics fit:
+  - evaluate whether observation semantics and unit handling should follow standards.
+- state/event fit:
+  - evaluate whether implicit transitions should become explicit state/event models.
+- automation fit:
+  - evaluate whether repeated architecture rules should become CI fitness checks.
+
+## External reference scan (when needed)
+
+For concept-fit questions, include short benchmark checks against established standards/frameworks:
+
+- LOINC: what is measured (observation semantics)
+  - [https://loinc.org/about](https://loinc.org/about)
+- UCUM: how units are encoded and exchanged
+  - [https://unitsofmeasure.org/ucum](https://unitsofmeasure.org/ucum)
+- BPM+/workflow references for healthcare process modeling (BPMN/CMMN/DMN context)
+  - [https://www.bpm-plus.org/healthcare-and-bpmn.htm](https://www.bpm-plus.org/healthcare-and-bpmn.htm)
+- Architecture fitness functions for continuous governance
+  - [https://continuous-architecture.org/docs/practices/fitness-functions.html](https://continuous-architecture.org/docs/practices/fitness-functions.html)
+
+## Suggested story template
+
+- Story ID and title
+- Why (current drift/risk)
+- Target architecture state
+- Scope (files/modules/interfaces)
+- Acceptance criteria
+- Migration/backfill notes
+
+## Completion note for each accepted story
+
+- What drift was reduced
+- What was intentionally not refactored (and why)
+- Recommended follow-up decomposition

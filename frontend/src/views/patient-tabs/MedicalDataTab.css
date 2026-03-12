@@ -1,0 +1,181 @@
+/* Medical Data tab specific styles */
+
+.diag-code {
+  white-space: nowrap;
+}
+
+.diag-comment {
+  font-size: 0.85rem;
+}
+
+.diag-date {
+  font-size: 0.8rem;
+  white-space: nowrap;
+  width: 6rem;
+}
+
+.medical-values-section {
+  margin-top: 1.9rem;
+}
+
+.mv-mode-toggle {
+  display: flex;
+  gap: 0;
+  flex-basis: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.mv-mode-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #000;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mv-mode-btn:first-child {
+  border-radius: 4px 0 0 4px;
+}
+
+.mv-mode-btn:last-child {
+  border-radius: 0 4px 4px 0;
+  border-left: none;
+}
+
+.mv-mode-btn.active {
+  background: rgba(124, 138, 255, 0.15);
+  color: #000;
+  border-color: #7c8aff;
+}
+
+.mv-mode-btn:hover:not(.active) {
+  color: #000;
+  border-color: #888;
+}
+
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable-th:hover {
+  color: #7c8aff;
+}
+
+.mv-pos {
+  width: 2rem;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.mv-drag-handle {
+  cursor: grab;
+}
+
+.mv-dragging {
+  opacity: 0.4;
+}
+
+.mv-drag-over {
+  border-top: 2px solid #7c8aff;
+}
+
+.mv-datatype {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  width: 6rem;
+}
+
+.mv-name {
+  white-space: nowrap;
+}
+
+.mv-main-badge {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #5562f8;
+  box-shadow: 0 0 0 2px rgba(85, 98, 248, 0.2);
+  margin-right: 0.42rem;
+  vertical-align: middle;
+}
+
+.mv-value {
+  font-size: 0.9rem;
+}
+
+.mv-renew-date {
+  white-space: nowrap;
+  width: 7rem;
+}
+
+.mv-group-block + .mv-group-block {
+  margin-top: 1rem;
+}
+
+.mv-group-add-form {
+  margin: 0.2rem 0 0.5rem;
+}
+
+.mv-renew-capture-label {
+  font-size: 0.62rem;
+  color: #666;
+  letter-spacing: 0.02em;
+  position: absolute;
+  top: -0.72rem;
+  left: 0.1rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.mv-renew-capture-field {
+  position: relative;
+  flex: 1;
+  min-width: 6rem;
+}
+
+.mv-group-heading {
+  margin: 0.2rem 0 0.35rem;
+}
+
+.mv-group-heading h3 {
+  font-size: 0.86rem !important;
+  letter-spacing: 0.02em !important;
+}
+
+.mv-group-renew-read {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mv-group-add-inline {
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 0.76rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mv-group-add-inline:hover {
+  color: #7c8aff;
+}
+
+@media (max-width: 1200px) {
+  .mv-group-add-form .detail-input,
+  .mv-group-add-form .mv-renew-capture-field {
+    flex: 1 1 12rem;
+    min-width: 12rem;
+  }
+
+  .mv-group-add-form .ci-add-actions {
+    flex: 1 0 100%;
+    justify-content: flex-end;
+    padding-top: 0.1rem;
+  }
+}

@@ -1,0 +1,125 @@
+# Interface Manual
+
+This manual defines how external interfaces are implemented and maintained in TPL-App.
+
+For server startup and environment basics, see `doc/server-manual.qmd`.
+For setup steps, see `doc/setup-manual.qmd`.
+
+## 1) Purpose and scope
+
+In this project, an "interface" means an integration with an external system (API, service, or data source) used by backend workflows.
+
+This manual is backend-first and applies to:
+
+- outbound clients to external APIs
+- import/export synchronization flows
+- mapping between external payloads and internal models/schemas
+- optional backend endpoints that trigger or inspect interface operations
+
+## 2) Placement in the codebase
+
+Use one module per external system:
+
+- `backend/app/features/interfaces/<interface_key>/`
+
+Recommended files:
+
+- `contracts.py`: typed DTOs for external request/response payloads
+- `client.py`: transport concerns only (HTTP calls, auth headers, retries, timeouts)
+- `mapper.py`: conversion between external payloads and internal data structures
+- `service.py`: orchestration/business workflow (validation, idempotency, persistence)
+- `errors.py`: interface-specific exceptions
+- `config.py`: interface-specific configuration parsing
+
+Shared code used by multiple interfaces belongs in:
+
+- `backend/app/features/interfaces/shared/`
+
+## 3) Layer boundaries
+
+Keep boundaries strict:
+
+- Routers in `backend/app/routers/**` must call feature services, not external HTTP directly.
+- SQLAlchemy models should not be shaped like raw external payloads.
+- External field names should be mapped in `mapper.py` and not leaked by default into internal API contracts.
+- Side-effecting sync/import/export logic belongs in `service.py`.
+
+## 4) Router pattern (when needed)
+
+If an interface requires API endpoints, create a dedicated router such as:
+
+- `backend/app/routers/<interface_key>_interface.py`
+
+Register it in:
+
+- `backend/app/routers/registry.py`
+
+Prefer explicit operations over generic "do everything" endpoints:
+
+- `preview`
+- `validate`
+- `import`
+- `export`
+- `sync-status`
+
+## 5) Configuration and secrets
+
+Configuration must be environment-driven and centralized:
+
+- define/read core env settings via `backend/app/config.py`
+- keep interface-specific parsing in `features/interfaces/<interface_key>/config.py`
+
+Do not hardcode credentials, tokens, or external URLs in source files.
+
+## 6) Error handling and observability
+
+Each interface should provide clear exception types in `errors.py` and predictable failure behavior in `service.py`.
+
+At minimum, log:
+
+- external request target/operation
+- response status/result category
+- mapping/validation failures
+- persistence result summary
+
+Use structured logs where possible and avoid logging secrets.
+
+## 7) Idempotency and data safety
+
+Import/sync operations should be safe to retry.
+
+Recommended safeguards:
+
+- idempotency keys or deduplication checks
+- explicit upsert/merge strategy
+- clear conflict reporting from `service.py`
+- transaction boundaries around persistence changes
+
+## 8) Testing expectations
+
+For each interface, provide at least:
+
+- one contract-level test for `mapper.py` behavior
+- one integration-flow test for `service.py` orchestration
+
+When routers are added, include endpoint tests for success and key failures.
+
+## 9) Minimal checklist for adding a new interface
+
+1. Create `backend/app/features/interfaces/<interface_key>/` with the standard files.
+2. Define contracts and mapping strategy before implementing persistence flow.
+3. Implement `client.py` with timeout/retry/auth strategy.
+4. Implement `service.py` with validation, idempotency, and persistence behavior.
+5. Add router (if needed) and register in `backend/app/routers/registry.py`.
+6. Add/extend config variables and document them in `doc/server-manual.qmd` when operator-relevant.
+7. Add tests for mapper + service (and router if present).
+8. Update this manual when architecture, conventions, or workflows change.
+
+## 10) Evolution rule
+
+This manual is intentionally living documentation.
+
+When interface architecture or workflow conventions change, update:
+
+- `doc/interface-manual.qmd` (primary source)
+- `doc/server-manual.qmd` (only for runtime/operator changes)

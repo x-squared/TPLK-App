@@ -1,0 +1,203 @@
+# Seeding Manual (DEV / TEST / PROD)
+
+This manual explains how seeding works in TPL-App and how to control which data is loaded per environment.
+
+For DB tool command options (`db_data`, `db_admin`, `db_schema`), use `doc/database-manual.qmd`.
+For backend endpoint contracts and runtime server options, use `doc/server-manual.qmd`.
+
+## Why This Exists
+
+We distinguish between:
+
+- **Core seed data**: part of the database definition (reference and baseline data)
+- **Init seed data**: initial production reference/config values (loaded in all env profiles by default)
+- **Sample seed data**: demonstration data for non-production usage
+- **Test seed data**: deterministic data for automated tests (profile ready; currently no dedicated `test.*` jobs)
+
+This prevents demo data from accidentally being loaded in production.
+
+## Current Architecture
+
+Seeding is implemented with:
+
+- A **seed job registry** in `backend/app/seed/__init__.py`
+- **Loader modules** in `backend/app/seed/loaders/core/`, `backend/app/seed/loaders/init/`, and `backend/app/seed/loaders/sample/`
+- A **runner framework** in `backend/app/seed/loader.py`
+- **Environment/profile resolution** in `backend/app/seed/profiles.py`
+- **Central environment-aware app config** in `backend/app/config.py`
+
+Datasets are organized by category under:
+
+- `backend/app/seed/datasets/core/`
+- `backend/app/seed/datasets/init/`
+- `backend/app/seed/datasets/sample/`
+- `backend/app/seed/datasets/test/`
+
+Each seed job has:
+
+- `key` (unique identifier, e.g. `core.codes`)
+- `category` (`core`, `init`, `sample`, `test`)
+- `description`
+- `loader` (the Python function that writes data)
+
+## Seed Categories
+
+### Core
+
+Loaded for all environments by default.
+Includes baseline users: `SYSTEM`, `SAMPLE`, `QATEST_TKOORD`, `QATEST_TARZT`, `QATEST_SYSTEM`.
+Core user seed now ensures each `USER` is linked to exactly one `PERSON`, and seeded user display names are derived from person first/surname data.
+
+Examples in current registry:
+
+- `core.codes`
+- `core.users` (baseline users, including SAMPLE and QATEST_*)
+- `core.colloqium_types`
+- `core.medical_value_groups`
+- `core.medical_value_templates`
+- `core.coordination_procurement_field_templates` (includes grouped layout metadata via `group_key` and complex value mode via `value_mode`)
+- `core.coordination_procurement_field_scopes`
+- `core.translation_bundles` (baseline from `frontend/src/i18n/translations.json` plus runtime snapshot overlay)
+
+Procurement runtime values are not part of core seeds. Only procurement metadata (groups/templates/scopes) is seeded. Runtime procurement rows are created by application write flows and explicit DB migration scripts. Person/team references for runtime procurement are stored in relational link tables (`COORDINATION_PROCUREMENT_DATA_PERSON`, `COORDINATION_PROCUREMENT_DATA_TEAM`), not JSON arrays.
+
+Medical value core seeds now define a template universe with:
+
+- group applicability flags (`is_static`, organ flags, donor flag)
+- ordered template values per group
+- a static blood type template (`STATIC_BLOOD_TYPE`) using `DATATYPE=BLOOD_TYPE`
+- global per-template runtime instantiation for non-donor contexts (templates applicable to multiple organs are still instantiated once per patient)
+
+Translation core seeding uses two inputs:
+
+- frontend baseline file: `frontend/src/i18n/translations.json`
+- runtime snapshot dataset: `backend/app/seed/datasets/core/translations_runtime_snapshot.py`
+
+Before `db_data clean`/`refresh`, current DB translation bundles are exported into the runtime snapshot dataset so admin translation edits are preserved across clean + reseed cycles.
+
+### Init
+
+Loaded for all environments by default.
+Contains initial production catalogue values that operators can maintain over time.
+
+Examples in current registry:
+
+- `init.catalogues`
+
+### Sample
+
+Loaded for DEV by default, intended for demos only.
+Sample records are authored with `changed_by_id=2` (`SAMPLE` user).
+Patient-centric sample data is intentionally bundled in one file: `backend/app/seed/datasets/sample/patient_cases.py`.
+
+Examples in current registry:
+
+- `sample.users`
+- `sample.task_templates` (includes coordination protocol templates with common + organ-specific groups/tasks)
+- `sample.colloqiums`
+- `sample.patients`
+- `sample.tasks`
+
+### Test
+
+Loaded for TEST by default and intended for deterministic test fixtures.
+Profile support is active; dedicated `test.*` jobs can be added as needed.
+
+## Environment Switches
+
+Seeding is controlled by environment variables.
+
+### 1) `TPL_ENV`
+
+Allowed values:
+
+- `DEV` (default): loads `core + init + sample`
+- `TEST`: loads `core + init + test`
+- `PROD`: loads `core + init`
+
+### 2) `TPL_SEED_PROFILE` (optional override)
+
+Overrides `TPL_ENV` category selection.
+
+Allowed values:
+
+- `NONE`
+- `INIT`
+- `CORE`
+- `CORE_SAMPLE`
+- `CORE_TEST`
+
+## Practical Examples
+
+### DEV with demo data (default behavior)
+
+```{bash}
+export TPL_ENV=DEV
+```
+
+### PROD-safe startup (no demo data)
+
+```{bash}
+export TPL_ENV=PROD
+```
+
+### TEST profile using explicit override
+
+```{bash}
+export TPL_ENV=DEV
+export TPL_SEED_PROFILE=CORE_TEST
+```
+
+## Manual Seed CLI
+
+You can run seeding without restarting the server via:
+
+```{bash}
+cd backend
+python -m app.seed <command>
+```
+
+Supported commands:
+
+- `list` - show all registered seed jobs
+- `resolve` - print resolved categories for current env/profile
+- `run` - execute seeding manually
+
+Examples:
+
+```{bash}
+python -m app.seed list
+python -m app.seed resolve
+python -m app.seed run --env DEV
+python -m app.seed run --env PROD --profile CORE
+```
+
+## Runtime Execution
+
+Seeding is executed explicitly via CLI (`python -m app.seed ...`) and DB admin/data scripts.
+There is no automatic startup seeding in `backend/app/main.py`.
+
+## How To Add A New Seed Job
+
+1. Implement loader function in `backend/app/seed/loaders/core/`, `backend/app/seed/loaders/init/`, or `backend/app/seed/loaders/sample/`.
+2. Add a `SeedJob(...)` entry in `get_seed_jobs()`.
+3. Assign correct category (`core` / `init` / `sample` / `test`).
+4. Verify dependencies by order in `get_seed_jobs()`.
+5. Run `python -m app.seed run --env <ENV>` and verify executed job keys.
+
+## Conventions
+
+- Use `core.*` job keys for production-safe baseline data.
+- Use `init.*` job keys for initial production configuration values.
+- Use `sample.*` for demonstration-only data.
+- Use `test.*` for CI and test fixtures.
+- Keep loaders idempotent where possible for core data.
+- Keep destructive resets restricted to non-production categories.
+
+## Implemented Extensions
+
+The following extensions are now implemented:
+
+- Seed datasets are split by category under `seed/datasets/{core,sample,test}`.
+- Manual seed execution is available via `python -m app.seed ...`.
+- Environment-aware configuration is centralized in `backend/app/config.py` and used by startup and DB initialization.

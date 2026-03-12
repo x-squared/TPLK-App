@@ -1,0 +1,179 @@
+# Test Manual
+
+This manual explains how testing works in TPL-App, where test files live, how to create new tests, how to run them, and how to evaluate results.
+
+For specification authoring conventions and structure, see `doc/specification-manual.qmd`.
+
+## 1) Test Structure
+
+The project uses three complementary testing workflows:
+
+- **Spec-derived API checks** (lightweight HTTP assertions)
+- **Partner-driven UI + DB scenarios** (Playwright + SQLite verification)
+- **Conceptual consistency checks** (domain/model and architecture/dependency conformance)
+
+Main folders:
+
+- Specification files for testing: `spec/testing/server/`, `spec/testing/client-server/`
+- Conceptual specification files: `spec/testing/conceptual/`
+- Requirement specifications: `spec/requirements/`
+- Test tooling: `qa/spec_tools/`
+- Executable frontend browser tests: `frontend/test/`
+- Generated/temporary outputs:
+  - `qa/tests/generated/`
+  - `qa/reports/`
+  - `frontend/test-results/`
+  - `frontend/playwright-report/`
+
+## 2) Why `frontend/test/` (renamed from `e2e`)
+
+Executable frontend scenario tests are stored in `frontend/test/` for a clear, conventional location and simpler discovery.
+
+Playwright is configured in:
+
+- `frontend/playwright.spec.config.ts`
+
+## 3) Git Ignore Decision
+
+The following outputs are excluded from Git (in root `.gitignore`):
+
+- `frontend/test-results/`
+- `frontend/playwright-report/`
+- `qa/reports/`
+- `qa/tests/generated/`
+
+Reason:
+
+- These are run artifacts or generated files, not source-of-truth specifications.
+- Avoids noisy diffs and keeps commits focused on specs + tooling + application code.
+
+## 4) How To Add Coverage
+
+### A) Add or update a human-readable spec
+
+Create a new Markdown file under:
+
+- `spec/testing/server/` for server-only behavior
+- `spec/testing/client-server/` for cross-layer behavior
+
+Specification format details live in `doc/specification-manual.qmd`.
+
+### B) Add/extend executable scenario logic (only for partner scenarios)
+
+For browser-driven flows, add or update a Playwright test in:
+
+- `frontend/test/`
+
+Current example:
+
+- `frontend/test/create-patient-from-recipients.spec.ts`
+
+## 5) How To Run Tests
+
+From repository root:
+
+### Standard spec pipeline
+
+```{bash}
+python -m qa.spec_tools.run_specs
+```
+
+This regenerates tests from specs and runs generated checks.
+
+### Server spec pipeline
+
+```{bash}
+python -m qa.spec_tools.run_server_specs
+```
+
+### Client-server spec pipeline
+
+```{bash}
+python -m qa.spec_tools.run_client_server_specs
+```
+
+### Conceptual domain-model sync check
+
+```{bash}
+cd backend
+source .venv/bin/activate
+cd ..
+python -m qa.spec_tools.check_domain_sync
+```
+
+This verifies that conceptual entities/relations in `spec/domain/gen-domain.puml` still map to backend SQLAlchemy model intent, using `spec/domain/domain-sync-mapping.json`.
+
+### Architecture dependency check
+
+```{bash}
+cd backend
+source .venv/bin/activate
+cd ..
+python -m qa.spec_tools.check_architecture_dependencies
+```
+
+This verifies backend dependency boundaries from `spec/architecture/dependency-rules.json`.
+
+### Conceptual spec runner (`conceptual-case`)
+
+```{bash}
+python -m qa.spec_tools.run_conceptual_specs
+```
+
+This executes conceptual checks defined under `spec/testing/conceptual/*.md` and writes:
+
+- `qa/reports/latest-conceptual-report.md`
+
+### Run all pipelines in sequence
+
+```{bash}
+python -m qa.spec_tools.run_all_tests
+```
+
+This runs `run_conceptual_specs`, `run_client_server_specs`, and `run_server_specs` in sequence and writes:
+
+- `qa/reports/latest-all-tests-report.md`
+
+## 6) How To Evaluate Results
+
+Reports are written to:
+
+- `qa/reports/latest-spec-report.md`
+- `qa/reports/latest-conceptual-report.md`
+- `qa/reports/latest-client-server-spec-report.md`
+- `qa/reports/latest-server-spec-report.md`
+- `qa/reports/latest-all-tests-report.md`
+
+Each report includes:
+
+- execution summary
+- test-case result table (case ID, name, status, optional message, link to testcase document)
+- failure excerpt
+- suggestion list with action IDs
+
+## 7) How To Execute Suggestions Step-by-Step
+
+Run:
+
+```{bash}
+python -m qa.spec_tools.run_suggestions --report qa/reports/latest-spec-report.md
+python -m qa.spec_tools.run_suggestions --report qa/reports/latest-partner-report.md
+```
+
+Then apply one suggestion at a time and rerun the respective pipeline.
+
+## 8) Typical Local Sequence
+
+1. Start backend (`doc/server-manual.qmd`)
+2. Start frontend (`doc/client-manual.qmd`)
+3. Run partner specs
+4. Read partner report
+5. Execute suggestions
+6. Rerun until green
+
+## 9) Related Manuals
+
+- `doc/specification-manual.qmd`
+- `doc/server-manual.qmd`
+- `doc/client-manual.qmd`
+- `doc/seeding-manual.qmd`

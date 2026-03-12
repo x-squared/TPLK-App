@@ -1,0 +1,293 @@
+# Dev Process Manual
+
+Target workflow for delivering larger features from specification to automated deployment on DEV servers.
+
+This manual describes the intended process model (future-state), not only the current minimum workflow.
+
+## Goals
+
+-   Keep one business specification source, while implementation can span backend, frontend, seed, and docs.
+-   Split large work into independent slices that can run in parallel.
+-   Use AI agents as execution accelerators with explicit handoff contracts.
+-   Keep all code changes traceable via Git and quality gates.
+-   Deploy to DEV automatically after passing required checks.
+
+## Process Overview
+
+1.  Specification and acceptance criteria
+2.  Work breakdown and parallel planning
+3.  Implementation in short-lived branches
+4.  Continuous verification (local + CI)
+5.  Pull request review and merge
+6.  Automatic deployment to DEV
+7.  Post-deploy verification and feedback loop
+
+## 1) Specification First
+
+### Required artifacts
+
+-   Business requirements in `spec/requirements/` (German, Topic -\> Use Case -\> Story -\> Item).
+-   Definition of Done per slice:
+    -   behavior
+    -   data/seed impact
+    -   tests
+    -   documentation impact
+
+### Rule
+
+-   Do not start coding on large features before the spec items are at least `Ready`.
+
+## 2) Split Work Into Parallel Slices
+
+### Slice types
+
+-   `Domain/API slice`: models, schemas, services, contracts.
+-   `UI slice`: view-model hooks, components, i18n keys, UX states.
+-   `Data slice`: seed datasets/loaders, migration/backfill.
+-   `Quality slice`: tests, QA scripts, regression checks.
+-   `Documentation slice`: relevant manuals and operational notes.
+
+### Parallelization pattern
+
+-   Create one parent feature ticket/spec topic.
+-   Create multiple child slices with explicit dependencies:
+    -   `A` provides contract
+    -   `B` and `C` implement in parallel against that contract
+    -   `D` validates end-to-end behavior
+
+## 3) Agent and Human Collaboration Model
+
+### Principle split (high level)
+
+-   Use agents for parallelizable implementation work (for example backend/frontend/QA/docs slices).
+-   Keep human ownership for domain decisions, architecture trade-offs, and final acceptance.
+-   Require explicit handoffs between lanes to keep assumptions and risks visible.
+
+Operational lane setup, handoff format, autonomy boundaries, and merge order are defined in:
+
+-   `## 11) Multi-Agent Operating Playbook (Conductor + Specialists)`
+
+## 4) Git Workflow (Recommended Baseline)
+
+### Branch model
+
+-   `main`: always releasable.
+-   `feature/<topic>-<slice>`: short-lived implementation branches.
+-   Optional integration branch only for very large cross-cutting work.
+
+### Commit and PR conventions
+
+-   Small, coherent commits per slice.
+-   PR description must include:
+    -   why
+    -   what changed
+    -   test plan
+    -   seed/doc impact
+
+### Example branch and PR flow
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App
+git checkout -b feature/coordination-organ-workflow-backend
+# implement slice
+git add .
+git commit -m "Implement organ workflow domain rules and sync handling"
+git push -u origin HEAD
+```
+
+## 5) Verification Gates
+
+### Local pre-PR checks (minimum)
+
+-   Backend: type/lint/tests for touched modules.
+-   Frontend: build/typecheck for touched flows.
+-   Cross-layer checks if contracts changed.
+-   Seed impact verification when model/config data changed.
+
+### Project-level command examples
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App
+python -m qa.spec_tools.run_specs
+python -m qa.spec_tools.run_client_server_specs
+```
+
+For environment and database commands, follow `doc/diy-manual.qmd`, `doc/database-manual.qmd`, and `doc/seeding-manual.qmd`.
+
+## 6) CI Pipeline and Automatic DEV Deployment (Target State)
+
+### Pipeline stages
+
+1.  `validate`: lint, typecheck, unit/integration tests.
+2.  `package`: build backend/frontend artifacts.
+3.  `deploy-dev`: auto-deploy on merge to `main` (or `develop`, if used).
+4.  `smoke-dev`: run smoke checks against DEV endpoints.
+
+### Deployment policy
+
+-   Automatic DEV deployment only when required checks are green.
+-   Rollback script/step must be available.
+-   Deployment status must be posted to PR/release channel.
+
+## 7) Suggested Tooling Stack
+
+-   Source control and reviews: GitHub (or equivalent Git platform).
+-   Work planning: issue tracker with parent/child slice tickets.
+-   Agent orchestration: Conductor-style workflow app for lane assignment and execution tracking.
+-   CI/CD: GitHub Actions, GitLab CI, or similar.
+-   Quality evidence: automated test reports + smoke logs.
+
+## 8) Definition of Done (Feature Level)
+
+A feature is done only if all are true:
+
+-   Spec items updated and statuses moved appropriately.
+-   Backend/frontend/data/doc changes are aligned.
+-   Seed impact addressed (or explicitly documented as not required).
+-   Tests and checks pass.
+-   PR reviewed and merged.
+-   DEV deployment succeeded and smoke checks passed.
+
+## 9) Minimal Operating Rhythm
+
+-   Daily: short async lane updates (progress, blockers, risks).
+-   Per slice: open PR as soon as behavior is testable.
+-   Per feature: integration demo on DEV before closing the parent item.
+
+## 10) Adoption Plan
+
+1.  Start with one pilot feature using this full process.
+2.  Measure lead time, review time, and escaped defects.
+3.  Tighten handoff contracts and CI gates based on findings.
+4.  Roll out as default workflow for all medium/large features.
+
+## 11) Multi-Agent Operating Playbook (Conductor + Specialists)
+
+Use this operating model when you want high parallelism with low coordination overhead.
+
+### Roles
+
+-   **Conductor lane (single owner)**:
+    -   owns feature decomposition, dependency map, and final integration
+    -   decides conflict resolution and architecture trade-offs
+    -   runs final full checks before merge
+-   **Specialist lanes (parallel)**:
+    -   backend/domain lane
+    -   frontend/ui lane
+    -   qa/testing lane
+    -   docs/spec lane
+
+### Independence contract
+
+Each specialist lane should be able to work independently for one iteration if all are true:
+
+-   input contract is explicit (API schema, DTO, state shape, or UX contract)
+-   file ownership is clear (primary files + allowed shared files)
+-   acceptance criteria are measurable
+-   validation commands are listed
+
+If any of the above is missing, the lane is not `Ready`.
+
+### Slice readiness checklist (must be true before work starts)
+
+-   scope statement in 1-2 sentences
+-   input/output contract defined
+-   affected files listed
+-   known dependencies listed
+-   tests to add/update listed
+-   manual/spec impact declared
+
+### Branch and integration strategy
+
+Use one branch per lane and one optional short-lived integration branch.
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App
+git checkout -b feature/<topic>-backend
+git checkout -b feature/<topic>-frontend
+git checkout -b feature/<topic>-qa
+git checkout -b feature/<topic>-docs
+```
+
+If integration conflicts are expected:
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App
+git checkout -b feature/<topic>-integration
+```
+
+### Mandatory handoff payload (from each specialist lane)
+
+Each lane handoff must include:
+
+1.  changed files
+2.  behavior changes (why)
+3.  commands run + outcomes
+4.  assumptions and unresolved questions
+5.  risks and suggested follow-up
+
+### Merge order for low-risk integration
+
+Recommended order:
+
+1.  backend/domain contract slice
+2.  frontend consumer slice
+3.  qa/tests
+4.  docs/spec/manual updates
+
+### Autonomy boundaries (what lanes must not do)
+
+-   no destructive git operations
+-   no changes outside lane scope unless explicitly approved by conductor
+-   no contract-breaking changes without updating dependent slices
+-   no "silent" behavior changes without test updates
+
+### Conductor final gate (required before merge)
+
+The conductor must complete all checks:
+
+-   architecture drift sweep on touched flows
+-   backend compile/tests for touched and integration paths
+-   frontend build/typecheck for touched and integration paths
+-   i18n visible-text review for frontend UI changes
+-   seed/model impact check when persistence changed
+-   manual/spec updates aligned with final behavior
+
+### Cadence for mostly-independent operation
+
+-   planning cycle: one clear slice set
+-   execution cycle: parallel specialist implementation
+-   integration cycle: conductor-only integration and final checks
+-   repeat in short iterations (small vertical slices over large monolith batches)
+
+## 12) Glossary (Dev Process)
+
+-   **PR (Pull Request)**: proposed set of code changes submitted for review before merge into a shared branch.
+-   **Slice**: small, bounded work package that can be implemented and verified independently.
+-   **Lane**: responsibility stream (for example backend, frontend, QA, docs) assigned to one contributor/agent.
+-   **Conductor**: single owner coordinating decomposition, integration, conflict resolution, and final validation.
+-   **Handoff**: structured transfer from one lane to another, including changed files, checks, assumptions, and risks.
+-   **Contract-first**: define API/data/UI contract before parallel implementation to reduce rework.
+-   **Integration branch**: temporary branch used to combine multiple lane branches before final merge.
+-   **Verification gate**: mandatory check stage (build/tests/lints/spec checks) that must pass before progression.
+-   **Drift sweep**: explicit check for architecture drift after implementation (duplication, boundary violations, monolith growth).
+-   **DoD (Definition of Done)**: completion criteria that must be true before a feature/slice is considered finished.
+
+## 13) Round Closure Policy (Local Main Is Runnable Truth)
+
+To keep local validation simple and reliable, each round is only considered closed when local `main` contains the integrated and validated result.
+
+### Mandatory closure sequence
+
+1. integrate all slice branches (or lane outputs)
+2. run final validation gates (build/tests/lints + required manual/spec checks)
+3. merge validated integration result into local `main`
+4. verify application behavior from local `main`
+
+If step 3 is skipped, the round is not `Done`.
+
+### Why this policy
+
+- You always have one runnable local baseline.
+- Manual feature checks are unambiguous (test from `main`).
+- Drift and regressions are detected earlier at round boundaries.

@@ -1,0 +1,118 @@
+# Scheduler Manual
+
+This manual explains the scheduler framework, operations, and extension workflow.
+
+For backend runtime basics, see `doc/server-manual.qmd`.
+For practical command sequences, see `doc/diy-manual.qmd`.
+
+## Scope
+
+The scheduler provides:
+
+- persistent job registry (`ScheduledJob`)
+- persistent run history (`ScheduledJobRun`)
+- background polling runtime in backend lifecycle
+- admin APIs to list jobs/runs, trigger jobs, and enable/disable jobs
+
+## Architecture Overview
+
+Core modules:
+
+- model: `backend/app/model/scheduler.py`
+- service: `backend/app/features/scheduler/service.py`
+- runtime loop: `backend/app/features/scheduler/runtime.py`
+- job registry/handlers: `backend/app/features/scheduler/jobs.py`
+- admin router: `backend/app/routers/admin_scheduler.py`
+
+The runtime starts in FastAPI lifespan (`backend/app/main.py`) and polls due jobs.
+
+## Persistence Model
+
+### `SCHEDULED_JOB`
+
+Tracks static and operational job state:
+
+- `job_key`, `name`, `description`
+- `is_enabled`, `interval_seconds`
+- `next_run_at`
+- `last_started_at`, `last_finished_at`, `last_status`
+- retry fields (`max_retries`, `retry_delay_seconds`)
+
+### `SCHEDULED_JOB_RUN`
+
+Tracks each execution:
+
+- `trigger_type` (`SCHEDULED` or `MANUAL`)
+- `status` (`RUNNING`, `SUCCESS`, `FAILED`)
+- `started_at`, `finished_at`, `duration_ms`
+- `summary`, `error_text`, `metrics_json`, `correlation_id`
+
+## Runtime Behavior
+
+- Poll interval defaults to 30 seconds.
+- Due jobs are selected by `is_enabled=true` and `next_run_at <= now`.
+- Each run is persisted, including failures.
+- Next run timestamp is recalculated for scheduled executions.
+
+## Seeded Jobs
+
+Core seeded scheduler job definitions are loaded from:
+
+- dataset: `backend/app/seed/datasets/core/scheduled_jobs.py`
+- loader: `backend/app/seed/loaders/core/scheduler.py`
+
+Run refresh/reseed if job definitions changed:
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App/backend
+source .venv/bin/activate
+python -m app.db_admin --mode refresh --env DEV
+```
+
+## Admin API
+
+Endpoints:
+
+- `GET /api/admin/scheduler/jobs`
+- `GET /api/admin/scheduler/jobs/{job_key}/runs?limit=50`
+- `POST /api/admin/scheduler/jobs/{job_key}/trigger`
+- `PUT /api/admin/scheduler/jobs/{job_key}/enabled`
+
+All scheduler admin endpoints require admin access.
+
+## Admin UI
+
+The Admin tab `Scheduler` supports:
+
+- viewing all jobs and latest status
+- manually triggering a job (`Run now`)
+- enabling/disabling jobs (`Enable` / `Pause`)
+- inspecting recent run history including summary and metrics
+
+## Adding A New Job
+
+1. Add a `SchedulerJobDefinition` in `backend/app/features/scheduler/jobs.py`.
+2. Add a matching handler in `JOB_HANDLERS`.
+3. Add/adjust seed record in `backend/app/seed/datasets/core/scheduled_jobs.py`.
+4. Run DB refresh (or seed run) so persisted jobs are synchronized.
+5. Validate manually via admin trigger and run history.
+
+## Handler Guidelines
+
+- Keep handlers idempotent.
+- Return concise summary and numeric metrics.
+- Avoid long blocking operations without timeout strategy.
+- Keep job logic in feature services; do not add business logic to routers.
+
+## Troubleshooting
+
+- Job not running automatically:
+ - verify `is_enabled=true`
+ - verify `next_run_at` is set and in the past
+ - check backend logs for scheduler runtime errors
+- Job trigger fails:
+ - verify job key exists in seeded/registered jobs
+ - inspect latest run `error_text` in admin run history
+- Missing jobs after deployment:
+ - run seed refresh and verify `SCHEDULED_JOB` rows
+

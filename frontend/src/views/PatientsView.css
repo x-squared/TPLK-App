@@ -1,0 +1,278 @@
+/* ── Filter bar ── */
+
+.patients-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.patients-add-btn {
+  background: transparent;
+  border: 1px solid #7c8aff;
+  color: #7c8aff;
+  border-radius: 4px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.patients-add-btn:hover {
+  background: #7c8aff;
+  color: #fff;
+}
+
+.patients-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: rgba(124, 138, 255, 0.05);
+}
+
+.patients-add-form input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #f5f5fa;
+  color: #222;
+  font-size: 0.85rem;
+  min-width: 10rem;
+}
+
+.patients-add-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.patients-save-btn,
+.patients-cancel-btn {
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 1.7rem;
+  padding: 0.2rem 0.7rem;
+}
+
+.patients-save-btn {
+  background: #4a6cf7;
+  border: 1px solid #4a6cf7;
+  color: #fff;
+}
+
+.patients-save-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.patients-cancel-btn {
+  background: transparent;
+  border: 1px solid #888;
+  color: #aaa;
+}
+
+.patients-add-error {
+  margin: 0;
+  color: #e55;
+  font-size: 0.8rem;
+  flex-basis: 100%;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-bar input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #f5f5fa;
+  color: #222;
+  font-size: 0.85rem;
+  flex: 1;
+  min-width: 100px;
+}
+
+.filter-bar input::placeholder {
+  color: #777;
+}
+
+.filter-select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #f5f5fa;
+  color: #222;
+  font-size: 0.85rem;
+  min-width: 100px;
+}
+
+.filter-episode-filters {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+
+/* ── Open button ── */
+
+.open-col {
+  width: 1.5rem;
+  padding-right: 0 !important;
+}
+
+.open-btn {
+  background: none;
+  border: none;
+  color: #7c8aff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.open-btn:hover {
+  color: #fff;
+}
+
+/* ── Patient table ── */
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #7c8aff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.row-expanded {
+  background: rgba(124, 138, 255, 0.1);
+}
+
+.row-selected-for-tasks {
+  background: rgba(124, 138, 255, 0.1);
+}
+
+.patients-table-wrap {
+  overflow-x: auto;
+}
+
+.patients-table-wrap .data-table {
+  min-width: 1150px;
+}
+
+.patients-static-medical-cell {
+  max-width: 24rem;
+  white-space: normal;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+/* ── Contact info ── */
+
+.contact-row > td {
+  padding: 0 !important;
+  border-bottom: 2px solid #ccc;
+}
+
+.contact-section {
+  padding: 0.75rem 1.5rem 1rem;
+  background: #e8e8f0;
+  color: #222;
+}
+
+.contact-section h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.contact-table {
+  margin-bottom: 0.25rem;
+}
+
+.contact-table th,
+.contact-table td {
+  padding: 0.35rem 0.75rem;
+  border-bottom: 1px solid #ccc;
+  color: #222;
+}
+
+.contact-table th {
+  color: #222;
+}
+
+.contact-table tbody tr:hover {
+  background: #dddde8;
+}
+
+.contact-main-cell {
+  width: 2.5rem;
+  padding-right: 0.5rem !important;
+}
+
+.main-badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #a0aaf0;
+  color: #222;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+}
+
+.contact-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #222;
+  font-style: italic;
+}
+
+.ep-open-indicators {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #5a6abf;
+  margin-right: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.patients-tasks-section {
+  margin-top: 4rem;
+}
+
+.patients-tasks-selection-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.patients-clear-selection-btn {
+  border: 1px solid #888;
+  background: transparent;
+  color: #444;
+  border-radius: 4px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.patients-clear-selection-btn:hover {
+  background: #ececf4;
+}

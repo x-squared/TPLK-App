@@ -1,0 +1,138 @@
+# Setup Manual
+
+This is the **start-here** manual for setting up the full TPL-App development environment.
+
+After this baseline setup, use the specialized manuals for details:
+
+- Server: `doc/server-manual.qmd`
+- Client: `doc/client-manual.qmd`
+- Seeding: `doc/seeding-manual.qmd`
+- Specification authoring: `doc/specification-manual.qmd`
+- Test execution and reports: `doc/test-manual.qmd`
+
+## 1) Prerequisites
+
+Install on your machine:
+
+- Git
+- Python 3.10+ (recommended)
+- Node.js 18+ (recommended)
+- npm
+
+## 2) Clone and enter project
+
+```{bash}
+git clone <your-repo-url>
+cd TPL-App
+```
+
+## 3) Backend bootstrap (one-time)
+
+```{bash}
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd ..
+```
+
+## 4) Frontend bootstrap (one-time)
+
+```{bash}
+cd frontend
+npm install
+cd ..
+```
+
+## 5) Playwright browser bootstrap (for partner UI tests)
+
+```{bash}
+cd frontend
+npx playwright install
+cd ..
+```
+
+## 6) Default runtime configuration
+
+Important environment variables:
+
+- `TPL_ENV` (`DEV`, `TEST`, `PROD`)
+- `TPL_DATABASE_URL`
+- `TPL_CORS_ORIGINS`
+- `TPL_SEED_PROFILE`
+
+Typical local defaults:
+
+```{bash}
+export TPL_ENV=DEV
+export TPL_CORS_ORIGINS=http://localhost:5173
+```
+
+## 7) Start services (daily)
+
+Open two terminals.
+
+### Terminal A: backend
+
+```{bash}
+cd backend
+source .venv/bin/activate
+uvicorn app.main:app --reload
+```
+
+### Terminal B: frontend
+
+```{bash}
+cd frontend
+npm run dev
+```
+
+## 8) Smoke-check the environment
+
+- Backend health: `http://localhost:8000/api/health`
+- Swagger: `http://localhost:8000/docs`
+- Frontend: `http://localhost:5173`
+
+## 9) Test workflow checks
+
+From repository root:
+
+```{bash}
+python -m qa.spec_tools.run_specs
+python -m qa.spec_tools.run_partner_specs
+```
+
+Then review reports:
+
+- `qa/reports/latest-spec-report.md`
+- `qa/reports/latest-partner-report.md`
+
+If suggestions are present:
+
+```{bash}
+python -m qa.spec_tools.run_suggestions --report qa/reports/latest-spec-report.md
+python -m qa.spec_tools.run_suggestions --report qa/reports/latest-partner-report.md
+```
+
+## 10) Troubleshooting quick list
+
+- Backend not reachable: ensure backend terminal is running and on port `8000`.
+- Frontend not reachable: ensure `npm run dev` is running on `5173`.
+- Playwright browser launch errors: rerun `npx playwright install` in `frontend/`.
+- Missing Python deps: reactivate venv and rerun `pip install -r requirements.txt`.
+- Missing Node deps: rerun `npm install` in `frontend/`.
+
+## 11) What is committed vs generated
+
+Generated artifacts are intentionally excluded from Git (see `.gitignore`), including:
+
+- `qa/reports/`
+- `qa/tests/generated/`
+- `frontend/test-results/`
+- `frontend/playwright-report/`
+
+Source of truth remains:
+
+- app code under `backend/` and `frontend/`
+- specifications under `spec/`
+- manuals under `doc/`

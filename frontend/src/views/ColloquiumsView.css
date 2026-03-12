@@ -1,0 +1,364 @@
+.colloquiums-filter-bar {
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.colloquiums-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #5f6678;
+  min-width: 9.5rem;
+}
+
+.colloquiums-filter-control {
+  margin-top: 0;
+  width: 100%;
+}
+
+.colloquiums-top-controls {
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.colloquiums-view-toggle {
+  display: inline-flex;
+  gap: 0.45rem;
+}
+
+.colloquiums-view-toggle .btn-secondary.is-active {
+  background: #dfe8ff;
+  border-color: #a8bcf0;
+  color: #1f376f;
+}
+
+.colloquiums-add-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.colloquiums-add-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.colloquiums-add-row-primary {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.colloquiums-add-row-secondary {
+  justify-content: space-between;
+}
+
+.colloquiums-add-names-picker {
+  flex: 1 1 32rem;
+}
+
+.colloquiums-add-selected-names {
+  flex: 1 1 14rem;
+  align-self: center;
+  color: #5f6678;
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.colloquiums-calendar {
+  margin-top: 0.9rem;
+}
+
+.colloquiums-calendar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
+}
+
+.colloquiums-calendar-grid {
+  display: grid;
+  grid-template-columns: minmax(3rem, 4rem) repeat(5, minmax(10rem, 1fr));
+  border: 1px solid #c7cedc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.colloquiums-calendar-row {
+  display: contents;
+}
+
+.colloquiums-calendar-header {
+  padding: 0.48rem 0.42rem;
+  border-bottom: 1px solid #c7cedc;
+  border-right: 1px solid #cfd5e1;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: #4f576a;
+  background: #edf1f9;
+}
+
+.colloquiums-calendar-week-header {
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.colloquiums-calendar-week-number {
+  border-bottom: 1px solid #e1e6f0;
+  border-right: 1px solid #d6dcea;
+  padding: 0.5rem 0.35rem;
+  font-weight: 700;
+  color: #6d7587;
+  background: #f8faff;
+  text-align: center;
+}
+
+.colloquiums-calendar-day {
+  min-height: 7rem;
+  border-bottom: 1px solid #e1e6f0;
+  border-right: 1px solid #e1e6f0;
+  padding: 0.38rem;
+  background: #fff;
+}
+
+.colloquiums-calendar-day.is-outside-month {
+  background: #f7f8fb;
+}
+
+.colloquiums-calendar-day.is-today {
+  border: 2px solid #1f376f;
+}
+
+.colloquiums-calendar-day-date {
+  font-size: 0.76rem;
+  color: #656f84;
+  font-weight: 600;
+  margin-bottom: 0.28rem;
+}
+
+.colloquiums-calendar-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.colloquiums-calendar-badge {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  text-align: left;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  padding: 0.15rem 0.45rem;
+  cursor: pointer;
+  background: #eef1f7;
+}
+
+.colloquiums-calendar-badge:hover {
+  filter: brightness(0.97);
+}
+
+.colloquiums-detail-section {
+  margin-top: 1.5rem;
+}
+
+.colloquiums-edit-note {
+  margin: 0.2rem 0 0.75rem;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.colloquiums-detail-meta {
+  margin: 0.7rem 0 0;
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.colloquiums-agenda-section {
+  margin-top: 4em;
+}
+
+.colloquium-agenda-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.2rem 0 0.6rem;
+}
+
+.colloquium-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 20, 32, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.colloquium-dialog {
+  width: min(980px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: #f8f8fc;
+  border: 1px solid #c6ccda;
+  border-radius: 8px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.colloquium-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.colloquium-dialog-header h3 {
+  margin: 0;
+  color: #222;
+}
+
+.colloquium-dialog-search .detail-input {
+  width: 100%;
+}
+
+.colloquiums-protocol.paper-layout {
+  background: #fff;
+  color: #1f2430;
+  border: 1px solid #d7dce6;
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 1px 2px rgba(24, 30, 45, 0.06);
+  margin-top: 1.8rem;
+}
+
+.colloquium-protocol-tab-wrap {
+  padding-top: 1.25rem;
+}
+
+.colloquiums-protocol-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.colloquiums-protocol-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6f768a;
+}
+
+.colloquiums-protocol-meta {
+  margin-top: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.colloquiums-protocol-episode-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: #4b5365;
+}
+
+.colloquiums-protocol-episode-fields input,
+.colloquiums-protocol-episode-fields select,
+.colloquiums-protocol-episode-fields textarea {
+  border: 1px solid #c8cfde;
+  border-radius: 4px;
+  padding: 0.42rem 0.56rem;
+  background: #fcfdff;
+  color: #1f2430;
+  font-size: 0.86rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.colloquiums-protocol-episode-fields textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.colloquiums-protocol-agenda {
+  margin-top: 0.9rem;
+}
+
+.colloquiums-protocol-episode {
+  padding: 0.8rem 0;
+  border-top: 1px solid #d9deea;
+  border-bottom: 1px solid #d9deea;
+}
+
+.colloquiums-protocol-episode.with-divider {
+  border-top: 1px solid #d9deea;
+}
+
+.colloquiums-protocol-episode-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+}
+
+.colloquiums-protocol-episode-head strong {
+  font-size: 0.95rem;
+  color: #1f2430;
+}
+
+.colloquiums-protocol-episode-head span {
+  font-size: 0.8rem;
+  color: #6a7285;
+  text-align: right;
+}
+
+.colloquiums-protocol-episode-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  font-size: 0.8rem;
+  color: #6a7285;
+  margin-bottom: 0.6rem;
+}
+
+.colloquiums-protocol-episode-fields {
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) minmax(220px, 1fr);
+  gap: 0.65rem 1rem;
+}
+
+.colloquiums-protocol-episode-fields label:last-child {
+  grid-column: 1 / -1;
+}
+
+.colloquiums-protocol-decision-field {
+  grid-column: 1 / -1;
+}
+
+.colloquiums-protocol-decision-select {
+  min-height: 3.1rem;
+}
+
+.colloquiums-protocol-tasks-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.colloquiums-protocol-tasks-placeholder span {
+  font-size: 0.78rem;
+  color: #707a8f;
+}
+

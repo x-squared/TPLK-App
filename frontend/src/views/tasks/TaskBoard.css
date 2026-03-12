@@ -1,0 +1,279 @@
+.task-board-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.86rem;
+}
+
+.task-board-heading-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-board-heading-main h2 {
+  flex: 0 0 auto;
+}
+
+.task-board-header-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  white-space: nowrap;
+}
+
+.task-board-heading-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-right: 0.4rem;
+}
+
+.task-board-heading-actions button {
+  border-radius: 4px;
+  font-size: 0.68rem;
+  line-height: 1;
+  padding: 0.08rem 0.22rem;
+  min-height: 1.2rem;
+  min-width: 1.2rem;
+  cursor: pointer;
+}
+
+.task-board-heading-actions .edit-btn {
+  background: transparent;
+  border: 1px solid #888;
+  color: #444;
+}
+
+.task-board-heading-actions .cancel-btn {
+  background: transparent;
+  border: 1px solid #888;
+  color: #555;
+}
+
+.task-board-section .ci-add-btn:disabled,
+.task-board-section .ci-add-btn:disabled:hover {
+  background: transparent;
+  color: #7c8aff;
+  border-color: #7c8aff;
+  opacity: 0.45;
+  cursor: default;
+}
+
+.task-board-filters .ui-filter-input {
+  min-width: 10rem;
+}
+
+.task-board-table .open-col {
+  width: 1.5rem;
+  padding-right: 0 !important;
+}
+
+.task-board-table .open-btn {
+  background: none;
+  border: none;
+  color: #7c8aff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.task-board-table .open-btn:hover {
+  color: #fff;
+}
+
+.task-board-table td,
+.task-board-table th {
+  vertical-align: middle;
+}
+
+.task-board-table .task-sortable-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.task-board-action-form {
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.65rem;
+  margin: 0.2rem 0;
+  background: rgba(124, 138, 255, 0.05);
+}
+
+.task-board-inline-action-row td {
+  background: rgba(124, 138, 255, 0.04);
+}
+
+.task-board-inline-create-row td {
+  background: rgba(124, 138, 255, 0.04);
+}
+
+.task-board-inline-group-edit-row td {
+  background: rgba(124, 138, 255, 0.04);
+}
+
+.task-board-group-edit-fields label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-board-group-edit-fields label .ui-filter-input {
+  min-width: 16rem;
+}
+
+.task-board-action-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.88rem;
+  color: #222;
+}
+
+.task-board-action-comment {
+  width: 100%;
+  min-height: 3.2rem;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #f5f5fa;
+  color: #222;
+  padding: 0.35rem 0.45rem;
+  box-sizing: border-box;
+}
+
+.task-board-action-buttons,
+.task-board-row-actions {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.task-board-action-buttons {
+  margin-top: 0.45rem;
+}
+
+.task-board-row-actions button {
+  border-radius: 4px;
+  font-size: 0.68rem;
+  line-height: 1;
+  padding: 0.08rem 0.22rem;
+  min-height: 1.2rem;
+  min-width: 1.2rem;
+  cursor: pointer;
+}
+
+.task-board-row-actions .edit-btn,
+.task-board-row-actions .save-btn,
+.task-board-action-buttons .save-btn {
+  background: transparent;
+  border: 1px solid #888;
+  color: #444;
+}
+
+.task-board-row-actions .cancel-btn,
+.task-board-action-buttons .cancel-btn {
+  background: transparent;
+  border: 1px solid #888;
+  color: #555;
+}
+
+.task-board-cell-input {
+  min-width: 7rem !important;
+  width: 100%;
+}
+
+.task-board-table-scroll {
+  overflow: auto;
+}
+
+.task-board-state {
+  width: 2.5rem;
+  text-align: center;
+  font-size: 0.92rem;
+  color: #111;
+}
+
+.task-board-status-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: inherit;
+  line-height: 1;
+  padding: 0;
+}
+
+.task-col-description {
+  min-width: 20rem;
+}
+
+.task-col-comment {
+  min-width: 14rem;
+}
+
+.task-board-kind-select {
+  min-width: 5.8rem !important;
+}
+
+.task-board-group-row td {
+  background: #f4f6fb;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.task-board-group-label {
+  text-align: left;
+}
+
+.task-ref-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.task-ref-chip {
+  display: inline-block;
+  border: 1px solid #8b93aa;
+  border-radius: 999px;
+  padding: 0.08rem 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: #1b2233;
+  background: #f3f5fa;
+  max-width: 24rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-ref-chip--patient {
+  background: #eef4ff;
+  border-color: #9bb0e0;
+}
+
+.task-ref-chip--episode {
+  background: #eefaf4;
+  border-color: #9ec7b3;
+}
+
+.task-ref-chip--phase {
+  background: #fbf3ec;
+  border-color: #d9b79d;
+}
+
+.task-board-task-row.is-done,
+.task-board-task-row.is-cancelled {
+  opacity: 0.55;
+}
+
+.task-board-task-row.is-selected td {
+  background: rgba(124, 138, 255, 0.12);
+}
+
+.task-board-task-row.is-cancelled td {
+  text-decoration: line-through;
+}

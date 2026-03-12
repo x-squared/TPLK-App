@@ -1,0 +1,539 @@
+# Specification Manual
+
+This document defines how specifications are authored and maintained in TPL-App.
+
+For test execution, reports, and suggestion handling, see `doc/test-manual.qmd`.
+
+## Scope of This Manual
+
+- Keep specifications human-readable in Markdown
+- Keep them in a separate global location
+- Define clear, stable expected behavior
+- Keep specs independent from generated run artifacts
+
+## Where Specification Files Live
+
+- Server-only test specs: `spec/testing/server/*.md`
+- Client-server-wide test specs: `spec/testing/client-server/*.md`
+- Conceptual consistency specs: `spec/testing/conceptual/*.md`
+- Business/domain requirement specifications: `spec/requirements/*.md`
+- Formal architecture specs: `spec/architecture/*`
+
+Test specs are plain Markdown documents with structured `spec-case` blocks.
+
+Business requirement specs in `spec/requirements/*.md` are maintained as plain Markdown.
+
+## Domain Concept Model (PlantUML)
+
+TPL-App also keeps intent-level conceptual domain specification artifacts in:
+
+- `spec/domain/*.puml`
+
+These files describe business concepts and conceptual relationships independently from direct database implementation details.
+
+### Artifacts and purpose
+
+- `spec/domain/gen-domain.puml`: integrated overview across all architecture domains
+- `spec/domain/gen-paths-domain.puml`: path/scenario view (`P1..P6`) for cross-domain journeys
+- `spec/domain/BASE-domain.puml`: BASE foundations (identity/reference/scheduler/translation)
+- `spec/domain/CROSS-domain.puml`: CROSS cross-cutting runtime concerns (tasks/information/favorites)
+- `spec/domain/pat-domain.puml`: PAT patient and medical-values concepts
+- `spec/domain/tplk-domain.puml`: TPLK episode/coordination/procurement concepts
+- `spec/domain/koll-domain.puml`: KOLL colloquium and agenda relationships
+- `spec/domain/ltpl-domain.puml`: LTPL domain boundary/status in current model
+- `spec/domain/stcs-domain.puml`: STCS domain boundary/status in current model
+- `spec/domain/domain-sync-mapping.json`: alias/exception config for conceptual-vs-model checks
+
+### How to work with these files
+
+- Source of truth is the `.puml` text files in `spec/domain/`
+- Edit manually in the editor
+- Render/preview visually via PlantUML
+- Keep concept names aligned with business language (not DB naming)
+
+Render example:
+
+```{bash}
+plantuml spec/domain/gen-domain.puml
+```
+
+### Automated conceptual/model sync check
+
+Use the checker to verify that conceptual entities/relations still match SQLAlchemy model intent:
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App/backend
+source .venv/bin/activate
+cd /Users/stephan/Workspace/TPL-App
+python -m qa.spec_tools.check_domain_sync
+```
+
+Default check inputs:
+
+- diagram: `spec/domain/gen-domain.puml`
+- mapping config: `spec/domain/domain-sync-mapping.json`
+
+If the checker fails, update the conceptual diagrams and/or mapping config in the same change set as the model change.
+
+### Update rules (required)
+
+Update affected `spec/domain/*.puml` files in the same change set when any of these change:
+
+- a conceptual entity is added/removed/renamed
+- a conceptual relationship or cardinality changes
+- a key domain invariant or ownership intent changes
+- a primary path in `gen-paths-domain.puml` changes (`P1..P6`)
+
+Usually no conceptual diagram update is required for implementation-only technical changes (for example index changes or internal column refactors) when concept intent is unchanged.
+
+### Pull request checklist for domain changes
+
+- identify impacted conceptual diagram(s)
+- update diagram(s) and path view if needed
+- mention impacted path IDs (`P1..P6`) in PR notes when behavior/journey changes
+
+## Architecture Specification
+
+TPL-App keeps formal architecture artifacts in:
+
+- `spec/architecture/context.puml`
+- `spec/architecture/container.puml`
+- `spec/architecture/backend-components.puml`
+- `spec/architecture/dependency-rules.json`
+
+These artifacts define architecture intent and machine-checkable dependency constraints.
+
+### Automated architecture dependency check
+
+Run:
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App/backend
+source .venv/bin/activate
+cd /Users/stephan/Workspace/TPL-App
+python -m qa.spec_tools.check_architecture_dependencies
+```
+
+The checker validates backend imports against `spec/architecture/dependency-rules.json`.
+
+## Requirement Specification Standard
+
+All requirement specification documents under `spec/requirements/` must follow the same hierarchy:
+
+1. Feature
+2. Use Case
+3. Story
+4. Item
+
+Use Case, Story, and Item levels should each contain exactly one status label.
+
+Allowed labels:
+
+- `Spec`: ongoing specification
+- `Ready`: ready for implementation
+- `Impl`: currently being implemented
+- `QA`: implementation done, QA test creation outstanding
+- `Done`: fully completed
+
+Feature hub document pattern:
+
+- `spec/requirements/<LABEL>-<Feature-Name>.md` (for example `spec/requirements/TPLK-Koordination-Transplantation.md`)
+
+Meta/template documents:
+
+- Spec-system definition: `spec/requirements/GEN-Spec-Spezifikation.md`
+- Architecture baseline: `spec/requirements/GEN-Architektur-Spezifikation.md`
+- Architecture review backlog: `spec/requirements/GEN-Architektur-Backlog.md`
+- Short starter template for new specs: `spec/requirements/TEMPLATE-Spezifikation.md`
+
+### Label format (low-overhead Markdown)
+
+Business requirement specifications in `spec/requirements/` use plain Markdown status tokens:
+
+Apply labels directly in Use Case/Story/Item headings (without a dash before the status):
+
+```md
+# Feature [TPLK]: Koordination Transplantation
+# Feature-of [TPLK]: Koordination Transplantation
+## Use Case: <Name> [Ready]
+### Story: <Name> [Impl]
+```
+
+Item level should use the same heading-inline style:
+
+```md
+#### Item: <Description> [QA]
+```
+
+Rules:
+
+- Exactly one top heading is allowed per file: either `# Feature [<LABEL>]: ...` (hub) or `# Feature-of [<LABEL>]: ...` (child).
+- Every Use Case, Story, or Item heading must have exactly one status marker. 
+- If a Use Case, Story, or Item heading has no status marker, default to `Spec`.
+- During edits, missing labels are normalized by adding `[Spec]`.
+
+### Translation hints in headings (optional)
+
+Translation hints are allowed directly in headings using:
+
+- `[<LANG>: <text>]` (for example `[EN: Coordination Protocol]`)
+
+Placement rule:
+
+- Put translation hints before the status token.
+- Example: `### Story: Koordinationsprotokoll [EN: Coordination Protocol] [Spec]`
+
+Notes:
+
+- This does not replace the required status label.
+- Use this only for language hints; requirement text remains in the primary document language.
+
+### Semantic hint labels (optional)
+
+Semantic labels can be used to indicate the nature of a requirement in these formats:
+
+- `{name}`
+- `{name1, name2, ...}`
+
+Initial examples with intent:
+
+- `{view}`: page/view-level behavior
+- `{tab}`: tab-scoped behavior
+- `{panel}`: panel/section-level behavior
+- `{process}`: process/workflow guidance
+- `{function}`: functional behavior or capability
+- `{structure}`: structural decomposition or architecture/layout hints
+- `{design}`: visual design and UX appearance hints
+- `{architecture}`: system/module architecture concerns
+- `{data}`: data-handling semantics and default/core seed-data expectations
+- `{quality}`: quality targets, testability expectations, and verification criteria
+- `{documentation}`: documentation scope, authoring guidance, and manual maintenance requirements
+- `{specification}`: specification-system rules, structure, and requirement-model conventions
+
+Extensibility:
+
+- You may introduce additional local labels where useful.
+
+Interpretation:
+
+- Labels are guidance, not hard constraints.
+- Example: `{process}` suggests considering the process framework, but does not require using it.
+
+Placement recommendation in headings:
+
+- Put semantic labels directly after the heading title, before translation hints and status.
+- Example: `### Story: Koordinationsprotokoll {process} [EN: Coordination Protocol] [Spec]`
+- Example with multiple hints: `### Story: Koordinationsprotokoll {design, function} [EN: Coordination Protocol] [Spec]`
+
+### Feature label and file-family convention
+
+Every feature must define a short label (for example `TPLK`).
+
+- Each feature has exactly one feature hub file named `<LABEL>-<Feature-Name>.md`.
+- Hub file heading format: `# Feature [<LABEL>]: <Feature-Name>`.
+- Immediately under the hub heading, add `## Spezifikationen` and list all subsidiary files there.
+- Sub-specification files belonging to this feature use the same label prefix, for example `<LABEL>-Episode-Spezifikation.md`.
+- Child file heading format: `# Feature-of [<LABEL>]: <Feature-Name>`.
+- The hub file lists all subsidiary files; each child file should reference the hub file.
+
+### Change-marker workflow for implementation handover
+
+To support low-friction changes directly in requirement text, use inline markers in `spec/requirements/*.md`:
+
+- `[[ADD]] ... [[/ADD]]` for inserted text
+- `[[REPLACE: "<old snippet>"]] ... [[/REPLACE]]` for targeted replacement
+- `[[DELETE: "<old snippet>"]]` for targeted deletion
+- `[[NOTE]] ... [[/NOTE]]` for temporary implementation hints
+
+Workflow:
+
+1. Mark the requested changes directly in the specification file.
+2. Tell the assistant to implement.
+3. The assistant implements code changes from the marked content.
+4. The assistant integrates the text seamlessly by resolving markers with minimal wording changes outside marked regions.
+5. The assistant removes markers, so the final specification stays clean and readable.
+
+Guardrails:
+
+- Markers may appear at any level (Feature, Use Case, Story, Item, or paragraph text).
+- Unaffected specification text should not be rewritten.
+- Heading hierarchy and status labels should be preserved unless explicitly requested otherwise.
+
+### Temporary scope markers (for focused assistant work)
+
+When you want the assistant to consider only a specific region in a spec file, you may use temporary delimiters directly in the document:
+
+- `>>>>>` opens the scope to consider/edit
+- `<<<<<` closes that scope
+
+Usage notes:
+
+- These delimiters are temporary working marks and are not part of the final requirement text.
+- Remove them after the requested implementation/update is completed.
+- Combine them with an explicit instruction like "only use content between `>>>>>` and `<<<<<`" for strict scoping.
+
+Status hierarchy gate:
+
+- A parent level cannot be marked `Done` before all lower levels under it are also `Done`.
+- Therefore:
+ - Use Case `Done` only when all nested Stories/Items are `Done`.
+ - Story `Done` only when all nested Items are `Done`.
+
+Starting-status policy during updates:
+
+- Default assumption is `Spec`.
+- Exception: when requirements are reverse-engineered from existing implementation code, starting status is `Impl`.
+
+TODO marker for open discussion:
+
+- The inline text label `TODO` is allowed in specification documents.
+- Anything after `TODO` on the same textual line is treated as still to be discussed (not yet finalized requirement text).
+- If the TODO sentence wraps into visual overflow lines, those wrapped continuations belong to the same TODO statement.
+
+## How Specs Map To Test Pipelines
+
+Specs are consumed by tooling in `qa/spec_tools/`, which supports:
+
+- `spec-case` -> spec-derived HTTP checks
+- `partner-case` -> partner-driven UI + DB scenarios
+
+Operational commands are documented in `doc/test-manual.qmd`.
+
+## Writing New Specs
+
+Use fenced blocks with JSON payload:
+
+```md
+```spec-case
+{
+  "id": "example-id",
+  "scope": "server",
+  "name": "Short human-readable title",
+  "request": { "method": "GET", "path": "/api/health" },
+  "expect": { "status": 200, "json_subset": { "status": "ok" } }
+}
+```
+```
+
+Supported scope values:
+
+- `server`
+- `client_server`
+
+For complex user-workflow scenarios that include UI interaction and DB verification, use `partner-case` blocks and execute them via `python -m qa.spec_tools.run_partner_specs`.
+
+## Grammar of JSON Sections (JSPON/JSON)
+
+The parser reads fenced blocks with either:
+
+- ```` ```spec-case ```` for standard HTTP checks
+- ```` ```partner-case ```` for richer scenario checks
+- ```` ```conceptual-case ```` for conceptual/domain consistency checks
+
+Inside the fence, the content must be valid JSON (double quotes, no trailing commas).
+
+### `spec-case` shape
+
+```json
+{
+  "id": "string-unique-id",
+  "scope": "server | client_server",
+  "name": "human readable title",
+  "request": {
+    "method": "GET | POST | PATCH | DELETE | ...",
+    "path": "/api/..."
+  },
+  "expect": {
+    "status": 200,
+    "json_subset": { "optional": "partial JSON match" },
+    "body_contains": ["optional text fragment"]
+  }
+}
+```
+
+Required fields:
+
+- `id`, `scope`, `request.method`, `request.path`, `expect.status`
+
+### `partner-case` shape
+
+`partner-case` is for workflow-style scenarios (UI + DB checks). Keep it explicit and deterministic:
+
+- Scenario identity: `id`, `scope`, `name`
+- UI intent and actions (for example `ui_flow`)
+- Verifications (for example `verify.ui_...`, `verify.database_...`)
+
+Tip: copy an existing partner case and adapt values incrementally.
+
+### `conceptual-case` shape
+
+`conceptual-case` is for conceptual architecture/domain consistency checks.
+
+```json
+{
+  "id": "domain-database-consistency",
+  "name": "Conceptual model and SQLAlchemy model stay aligned",
+  "checker": "domain_database_sync",
+  "diagram": "spec/domain/gen-domain.puml",
+  "mapping": "spec/domain/domain-sync-mapping.json"
+}
+```
+
+Required fields:
+
+- always required: `id`, `name`, `checker`
+- checker-specific:
+  - `domain_database_sync`: `diagram`, `mapping`
+  - `architecture_dependency_sync`: `rules`
+
+### Important note on key stability vs flexibility
+
+- For `spec-case`, keys are effectively **stable** because they are parsed into generated tests (`id`, `scope`, `request`, `expect`, etc.).
+- For `partner-case`, keys like `open_recipients_view` and `database_contains_created_patient` are currently **conventions** (human-readable contract), not yet a strict machine-enforced schema.
+- For `conceptual-case`, keys are effectively **stable** because they are parsed by `qa.spec_tools.run_conceptual_specs`.
+
+So:
+
+- `open_recipients_view` is a recommended, readable key (not globally reserved yet).
+- `database_contains_created_patient` is also a recommended verification key (not globally reserved yet).
+
+Best practice for now: keep these names stable across files for consistency, even though the parser does not strictly enforce them yet.
+
+## Writing JSON By Hand (Practical Hints)
+
+- Start from a known-good template and edit one field at a time.
+- Keep `id` stable and unique (kebab-case works well).
+- Use only double quotes in JSON keys/values.
+- Validate from outside in:
+  1) braces/brackets match,
+  2) commas are correct,
+  3) required fields are present.
+- Prefer deterministic values:
+  - stable endpoints
+  - stable expected status
+  - avoid fragile text unless necessary
+- Keep one behavior per block; split big scenarios into multiple cases.
+
+## How I Can Help From Our Dialogue
+
+From your plain-language requirements, the AI assistant can:
+
+1. Draft a first `spec-case` or `partner-case` block in Markdown,
+2. Place it in the correct `spec/...` folder,
+3. Generate/adjust executable tests,
+4. Run the pipelines and interpret failures,
+5. Produce a step-by-step improvement plan and execute fixes with you.
+
+A good prompt style is:
+
+- "Create a spec for X, precondition Y, expected result Z."
+- "Turn this flow into a partner-case and run it."
+- "Update the spec after this behavior change and rerun tests."
+
+## How Test-Code Generation Works (In Principle)
+
+At a high level:
+
+1. The parser scans Markdown files in `spec/` for fenced blocks.
+2. `spec-case` JSON blocks are parsed and normalized into internal case objects.
+3. The generator writes executable Python `unittest` files into `qa/tests/generated/`.
+4. The runner executes those tests and writes a Markdown report with suggestions.
+
+For partner scenarios:
+
+- `run_partner_specs.py` currently executes the Playwright scenario suite in `frontend/test/` and then performs DB verification.
+- This is an intentionally flexible partner-assisted setup: the `partner-case` text guides scenario intent, while executable scenario logic currently lives in maintained Playwright tests.
+
+For conceptual scenarios:
+
+- `run_conceptual_specs.py` parses `spec/testing/conceptual/*.md` for `conceptual-case` blocks.
+- The `domain_database_sync` checker compares conceptual domain spec (`spec/domain/*.puml`) against SQLAlchemy model graph and writes `qa/reports/latest-conceptual-report.md`.
+- The `architecture_dependency_sync` checker validates backend dependencies against `spec/architecture/dependency-rules.json` and also reports via `qa/reports/latest-conceptual-report.md`.
+
+## About Playwright Code Generation
+
+There are two different things to distinguish:
+
+1. **Playwright test execution** (what this repo does now): runs existing test files from `frontend/test/`.
+2. **Playwright codegen/recorder** (optional): records browser actions and emits starter test code.
+
+Key points:
+
+- Playwright itself is **rule-based tooling**, not an AI model.
+- Playwright codegen is generally **deterministic for a given interaction sequence**, but output can still vary when UI structure/selectors change.
+- Playwright codegen runs **locally** on your machine and does **not require remote AI requests**.
+
+In this project:
+
+- The current pipeline does not auto-call Playwright codegen.
+- Test code is maintained in-repo (`frontend/test/`) and can be authored manually or with assistant help.
+- If AI assistant help is used to write or refactor tests, whether that assistant is local or remote depends on the assistant platform configuration (separate from Playwright itself).
+
+## Copy-Paste Templates
+
+### Template: `spec-case`
+
+```md
+```spec-case
+{
+  "id": "server-example-id",
+  "scope": "server",
+  "name": "Describe expected behavior",
+  "request": {
+    "method": "GET",
+    "path": "/api/health"
+  },
+  "expect": {
+    "status": 200,
+    "json_subset": {
+      "status": "ok"
+    },
+    "body_contains": [
+      "ok"
+    ]
+  }
+}
+```
+```
+
+### Template: `partner-case`
+
+```md
+```partner-case
+{
+  "id": "partner-example-id",
+  "scope": "client_server_partner",
+  "name": "Describe end-to-end user workflow",
+  "ui_flow": {
+    "login_ext_id": "TKOORD",
+    "open_recipients_view": true,
+    "create_patient": {
+      "pid_prefix": "AUTO",
+      "first_name": "Spec",
+      "name": "Patient",
+      "date_of_birth": "1990-01-01"
+    }
+  },
+  "verify": {
+    "ui_contains_created_pid": true,
+    "database_contains_created_patient": true
+  }
+}
+```
+```
+
+## Authoring Guidelines
+
+- Keep one business behavior per `id`.
+- Use stable expectations (avoid brittle UI text unless required).
+- Prefer deterministic data and explicit preconditions.
+- For workflow cases, capture user intent and verification criteria (`ui` and `db`) clearly.
+
+## Relationship To Other Manuals
+
+- Server startup and env config: `doc/server-manual.qmd`
+- Client startup and dev runtime: `doc/client-manual.qmd`
+- Seed profiles and data categories: `doc/seeding-manual.qmd`
+- Test workflow operations: `doc/test-manual.qmd`
+- Architecture review operations: `doc/architecture-review-manual.qmd`
+- Shared architecture vocabulary: `doc/architecture-glossary.qmd`

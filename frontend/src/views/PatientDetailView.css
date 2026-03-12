@@ -1,0 +1,418 @@
+/* ── Patient detail view ── */
+
+.patient-detail {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.edit-btn {
+  background: transparent;
+  border: 1px solid #7c8aff;
+  color: #7c8aff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 1.7rem;
+  line-height: 1;
+}
+
+.edit-btn:hover {
+  background: #7c8aff;
+  color: #fff;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.save-btn {
+  background: #4a6cf7;
+  border: 1px solid #4a6cf7;
+  color: #fff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 1.7rem;
+  line-height: 1;
+}
+
+.save-btn:hover {
+  background: #3b5de6;
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid #888;
+  color: #aaa;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 1.7rem;
+  line-height: 1;
+}
+
+.cancel-btn:hover {
+  border-color: #ccc;
+  color: #fff;
+}
+
+.patient-detail h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.detail-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Tab bar ── */
+
+.detail-tab-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0 0.5rem;
+}
+
+.tab-placeholder {
+  margin-top: 1.5rem;
+}
+
+.detail-tab-content {
+  padding-top: 1.25rem;
+}
+
+/* ── Detail sections ── */
+
+.detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem 2rem;
+}
+
+.detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  color: #6f768a;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.detail-value {
+  font-size: 0.95rem;
+}
+
+.detail-input {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #f5f5fa;
+  color: #222;
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lang-custom-row {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.lang-custom-row .detail-input {
+  flex: 1;
+}
+
+.lang-switch-btn {
+  background: transparent;
+  border: 1px solid #222;
+  border-radius: 4px;
+  color: #888;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.4rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.lang-switch-btn:hover {
+  color: #222;
+  background: #f5f5fa;
+}
+
+.detail-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* ── Contact table in detail ── */
+
+.detail-contact-table th {
+  padding: 0.35rem 0.75rem;
+  border-bottom: 1px solid #555;
+  color: #222;
+}
+
+.detail-contact-table td {
+  padding: 0.35rem 0.75rem;
+  border-bottom: 1px solid #333;
+}
+
+.detail-ci-main {
+  width: 2.5rem;
+  padding-right: 0.5rem !important;
+}
+
+.diag-main {
+  width: 4.5rem;
+  padding-right: 0.5rem !important;
+}
+
+.main-badge {
+  display: inline-block;
+  background: #e8edf9;
+  color: #33436b;
+  border: 1px solid #a9b8df;
+  border-radius: 10px;
+  padding: 0.05rem 0.38rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.diag-main-badge {
+  display: inline-block;
+  background: #33436b;
+  color: #f4f7ff;
+  border: 1px solid #1f2f53;
+  border-radius: 10px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.diag-main-hint {
+  font-size: 0.82rem;
+  color: #666;
+  margin-left: 0.25rem;
+}
+
+.detail-ci-type {
+  color: #222;
+  width: 6rem;
+}
+
+.detail-ci-comment {
+  color: #222;
+  font-size: 0.85rem;
+}
+
+.detail-ci-actions {
+  width: auto;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* ── Inline edit/delete buttons ── */
+
+.ci-edit-inline,
+.ci-delete-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  line-height: 1;
+}
+
+.ci-edit-inline:hover {
+  color: #7c8aff;
+}
+
+.ci-delete-btn:hover {
+  color: #e55;
+}
+
+.ci-save-inline,
+.ci-cancel-inline {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  line-height: 1;
+}
+
+.ci-save-inline {
+  color: #4a6;
+}
+
+.ci-save-inline:hover {
+  color: #6c8;
+}
+
+.ci-save-inline:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.ci-cancel-inline {
+  color: #888;
+}
+
+.ci-cancel-inline:hover {
+  color: #ccc;
+}
+
+.ci-inline-input {
+  width: 100%;
+  padding: 0.2rem 0.4rem !important;
+  font-size: 0.85rem !important;
+}
+
+.ci-editing-row {
+  background: rgba(124, 138, 255, 0.08);
+}
+
+.ci-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.ci-confirm-text {
+  font-size: 0.8rem;
+  color: #e55;
+}
+
+.ci-confirm-yes,
+.ci-confirm-no {
+  background: transparent;
+  border: 1px solid #888;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.4rem;
+  cursor: pointer;
+}
+
+.ci-confirm-yes {
+  color: #e55;
+  border-color: #e55;
+}
+
+.ci-confirm-yes:hover {
+  background: #e55;
+  color: #fff;
+}
+
+.ci-confirm-no {
+  color: #aaa;
+}
+
+.ci-confirm-no:hover {
+  color: #fff;
+  border-color: #ccc;
+}
+
+/* ── Add contact form ── */
+
+.ci-add-btn {
+  background: transparent;
+  border: 1px solid #7c8aff;
+  color: #7c8aff;
+  padding: 0.2rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 1.7rem;
+  line-height: 1;
+}
+
+.ci-add-btn:hover {
+  background: #7c8aff;
+  color: #fff;
+}
+
+.ci-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: rgba(124, 138, 255, 0.05);
+}
+
+.ci-add-form .detail-input {
+  flex: 1;
+  min-width: 6rem;
+  width: auto;
+}
+
+.ci-add-form select.detail-input {
+  flex: 0 0 auto;
+  min-width: 7rem;
+  width: auto;
+}
+
+.ci-main-check {
+  flex: 0 0 auto;
+}
+
+.ci-add-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.detail-empty {
+  color: #222;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.open-col {
+  width: 1.5rem;
+  padding-right: 0 !important;
+}
+
+.open-btn {
+  background: none;
+  border: none;
+  color: #7c8aff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.open-btn:hover {
+  color: #fff;
+}

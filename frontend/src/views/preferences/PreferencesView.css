@@ -1,0 +1,15 @@
+.preferences-translations-textarea {
+  width: 100%;
+  min-height: 16rem;
+  resize: vertical;
+  border: 1px solid #d7dae6;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.preferences-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}

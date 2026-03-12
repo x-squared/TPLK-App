@@ -1,0 +1,43 @@
+.my-work-tabs {
+  margin-bottom: 0.7rem;
+}
+
+.my-work-nav-cell {
+  width: 8rem;
+  text-align: right;
+}
+
+.my-work-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.my-work-actions .ci-delete-btn {
+  display: inline-block;
+  border: 1px solid #c7cbdb;
+  border-radius: 999px;
+  background: #f4f5fa;
+  color: #626b84;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0.08rem 0.42rem;
+}
+
+.my-work-actions .ci-delete-btn:hover {
+  background: #eff2fb;
+  border-color: #a8b1cd;
+  color: #455072;
+}
+
+.my-work-favorites-table tbody tr[draggable="true"] {
+  cursor: grab;
+}
+
+.favorite-dragging {
+  opacity: 0.45;
+}
+
+.favorite-drag-over {
+  border-top: 2px solid #7c8aff;
+}

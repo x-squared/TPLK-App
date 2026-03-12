@@ -1,0 +1,180 @@
+.e2e-config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.e2e-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.e2e-action-btn {
+  background: transparent;
+  border: 1px solid #7c8aff;
+  color: #7c8aff;
+  padding: 0.2rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 1.7rem;
+  line-height: 1;
+}
+
+.e2e-action-btn:hover:not(:disabled) {
+  background: #7c8aff;
+  color: #fff;
+}
+
+.e2e-action-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.e2e-clear-btn {
+  border-color: #8f99bb;
+  color: #5f6b90;
+}
+
+.e2e-clear-btn:hover:not(:disabled) {
+  background: #8f99bb;
+  border-color: #8f99bb;
+  color: #fff;
+}
+
+.e2e-clear-inline {
+  margin-top: 0.35rem;
+}
+
+.e2e-runner-help {
+  text-align: left;
+  margin-top: 0.75rem;
+}
+
+.e2e-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.e2e-result-meta {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #626b84;
+}
+
+.e2e-run-state {
+  border-radius: 999px;
+  border: 1px solid #b8bfd4;
+  padding: 0.12rem 0.5rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.e2e-run-state.ok {
+  color: #266738;
+  border-color: #98d1a8;
+  background: #e8f7ec;
+}
+
+.e2e-run-state.fail {
+  color: #9e3030;
+  border-color: #e4a1a1;
+  background: #fbeaea;
+}
+
+.e2e-output-block pre {
+  margin: 0.35rem 0 0;
+  background: #121523;
+  color: #dce2ff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  overflow: auto;
+  max-height: 320px;
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.e2e-result-view-switch {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.e2e-table-wrap {
+  overflow: auto;
+  max-height: 340px;
+}
+
+.e2e-results-table {
+  min-width: 920px;
+}
+
+.e2e-results-table td {
+  vertical-align: top;
+}
+
+.e2e-spec-link-cell a {
+  text-decoration: none;
+}
+
+.e2e-health-grid {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: stretch;
+}
+
+.e2e-health-box {
+  border: 1px solid #222;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem 0.7rem;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.e2e-health-box legend {
+  padding: 0 0.35rem;
+  font-weight: 600;
+}
+
+.e2e-health-help {
+  text-align: left;
+}
+
+.e2e-health-actions {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.e2e-health-result-meta {
+  margin: 0.45rem 0;
+  min-width: 0;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.e2e-health-box .e2e-output-block {
+  min-width: 0;
+}
+
+.e2e-health-box .e2e-output-block pre {
+  max-width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+.e2e-health-result-box {
+  max-height: 340px;
+  overflow: auto;
+}
+
+.e2e-health-result-box pre {
+  max-height: none;
+}

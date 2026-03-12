@@ -1,0 +1,1 @@
+export const MY_WORK_OPEN_TASK_COUNT_POLL_MS = 60_000;

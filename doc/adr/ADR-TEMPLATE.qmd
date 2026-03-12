@@ -1,0 +1,41 @@
+# ADR Template
+
+Use this template for architecture decisions that affect structure, boundaries, workflows, or cross-module invariants.
+
+## ADR-<NNNN>: <Title>
+
+- Status: `Proposed | Accepted | Superseded`
+- Date: `<YYYY-MM-DD>`
+- Related stories: `<AR-xxx, ...>`
+- Related specs:
+  - `spec/requirements/GEN-Architektur-Spezifikation.md`
+  - `spec/requirements/GEN-Architektur-Backlog.md`
+
+## Context
+
+- What drift/risk/problem triggered this decision?
+- Which alternatives were considered?
+- Which constraints are relevant (compatibility, migration risk, deadlines)?
+
+## Decision
+
+- The chosen architecture decision in concise, concrete terms.
+- Boundary and ownership implications (router/service/model/frontend split).
+- What stays intentionally unchanged.
+
+## Consequences
+
+- Expected benefits.
+- Known trade-offs/costs.
+- New obligations (tests, checks, docs, migration runs).
+
+## Verification
+
+- Technical checks (commands/tests) that prove decision compliance.
+- Operational checks (migration/reporting/runtime checks), if relevant.
+
+## Rollout and Compatibility
+
+- Migration/backfill plan.
+- Compatibility strategy for existing API/data behavior.
+- Fallback/rollback guidance.
