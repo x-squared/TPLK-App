@@ -1,0 +1,12 @@
+---
+description: Labeling pattern for editable fields and date inputs
+globs: frontend/src/**/*.{tsx,css}
+alwaysApply: false
+---
+
+# Editable Field Labeling
+
+When adding labels for editable fields:
+
+1. Prefer inline/placeholder labeling when control type supports it.
+2. If not feasible (common for date-like fields), add a subtle micro-label directly above that specific field.

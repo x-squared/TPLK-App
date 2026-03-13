@@ -38,8 +38,18 @@ def sync_patients(db: Session) -> None:
             .filter(Code.type == raw.pop("code_type"), Code.key == raw.pop("code_key"))
             .first()
         )
+        use_code_type = raw.pop("use_code_type", "CONTACT_USE")
+        use_code_key = raw.pop("use_code_key", "OTHER")
+        use_code = db.query(Code).filter(Code.type == use_code_type, Code.key == use_code_key).first()
         if patient and code:
-            db.add(ContactInfo(patient_id=patient.id, type_id=code.id, **raw))
+            db.add(
+                ContactInfo(
+                    patient_id=patient.id,
+                    type_id=code.id,
+                    use_id=use_code.id if use_code else None,
+                    **raw,
+                )
+            )
 
     for entry in EPISODES:
         raw = dict(entry)

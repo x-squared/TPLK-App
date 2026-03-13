@@ -1,0 +1,10 @@
+---
+description: Keep business logic identical across environments
+alwaysApply: true
+---
+
+# No Environment Branching In Business Logic
+
+- Do not change business/domain behavior based on environment flags (`DEV`, `PROD`, `TEST`, `import.meta.env`, etc.).
+- Keep the same resolution and decision logic across environments.
+- Environment differences are allowed only for operational concerns (logging level, diagnostics visibility, local tooling).

@@ -1,0 +1,12 @@
+---
+description: When data model changes, update all dependent layers
+alwaysApply: true
+---
+
+# Data Model Impact Sweep
+
+When entities/attributes/relations/cardinalities change:
+
+- Perform an explicit dependent-layer impact sweep.
+- Update models, schema/contracts, routers/services, frontend API consumers, and docs as needed.
+- Treat seed updates as mandatory and include seed-impact review in the same change set.

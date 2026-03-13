@@ -1,0 +1,14 @@
+---
+description: Backend test clarity and assertion quality
+globs: backend/tests/**/*.py
+alwaysApply: false
+---
+
+# Backend Pytest Clarity
+
+Apply this when creating or editing backend test files (`backend/tests/**/*.py`).
+
+- Add a short docstring to every test function describing behavior under test.
+- Use explanatory assert messages that explain expected behavior.
+- Prefer one behavior per test; keep grouped checks tightly related.
+- Use explicit `pytest.raises(..., match="...")` for expected exceptions.

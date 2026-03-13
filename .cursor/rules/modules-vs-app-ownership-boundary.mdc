@@ -1,0 +1,12 @@
+---
+description: Keep business logic in app repos and infrastructure in AppModules
+alwaysApply: true
+---
+
+# Modules vs App Ownership Boundary
+
+- This repository owns business-domain logic, DTO semantics, mappings, and workflow behavior for TPLK.
+- `AppModules` owns reusable infrastructure only (call runtime scaffolding, generic observability, technical helper layers).
+- Do not move domain value universes or business-specific endpoint semantics into `AppModules`.
+- Extract to `AppModules` only when logic is demonstrably domain-agnostic and reusable across multiple apps.
+- If a component references patient/condition/procedure domain semantics, keep it in `TPLK-App`.

@@ -66,11 +66,11 @@ export default function useTaskBoardData(criteria: TaskBoardCriteria, statusKeys
         };
         const groups = await api.listTaskGroups(groupParams);
         const [me, users, organs, priorities, taskStatuses] = await Promise.all([
-          api.getMe(),
-          api.listUsers(),
-          api.listCodes('ORGAN'),
-          api.listCodes('PRIORITY'),
-          api.listCodes('TASK_STATUS'),
+          api.getMe().catch(() => null),
+          api.listUsers().catch(() => []),
+          api.listCodes('ORGAN').catch(() => []),
+          api.listCodes('PRIORITY').catch(() => []),
+          api.listCodes('TASK_STATUS').catch(() => []),
         ]);
 
         const groupsWithPhase = criteria.tplPhaseId == null
@@ -90,7 +90,10 @@ export default function useTaskBoardData(criteria: TaskBoardCriteria, statusKeys
             .map((group) => group.patient_id)
             .filter((id): id is number => id != null),
         )];
-        const patientDetails = await Promise.all(patientIds.map((id) => api.getPatient(id)));
+        const patientDetailsSettled = await Promise.allSettled(patientIds.map((id) => api.getPatient(id)));
+        const patientDetails = patientDetailsSettled
+          .filter((result): result is PromiseFulfilledResult<Patient> => result.status === 'fulfilled')
+          .map((result) => result.value);
         const coordinationIds = [...new Set(
           groupsWithContext
             .map((group) => group.coordination_id)
@@ -122,7 +125,7 @@ export default function useTaskBoardData(criteria: TaskBoardCriteria, statusKeys
           }),
         );
 
-        const tasksPerGroup = await Promise.all(
+        const tasksPerGroupSettled = await Promise.allSettled(
           groupsWithContext.map(async (group) => ({
             groupId: group.id,
             tasks: await api.listTasks({
@@ -132,8 +135,13 @@ export default function useTaskBoardData(criteria: TaskBoardCriteria, statusKeys
             }),
           })),
         );
+        const tasksPerGroup = tasksPerGroupSettled.map((result, index) => (
+          result.status === 'fulfilled'
+            ? result.value
+            : { groupId: groupsWithContext[index].id, tasks: [] }
+        ));
         const needsAgendas = groupsWithContext.some((group) => group.colloqium_agenda_id != null);
-        const agendas = needsAgendas ? await api.listColloqiumAgendas() : [];
+        const agendas = needsAgendas ? await api.listColloqiumAgendas().catch(() => []) : [];
 
         if (cancelled) return;
 
@@ -185,7 +193,7 @@ export default function useTaskBoardData(criteria: TaskBoardCriteria, statusKeys
           allUsers: nextUsers,
           colloqiumAgendasById: nextColloqiumAgendasById,
           coordinationLabelsById: nextCoordinationLabelsById,
-          currentUserId: me.id,
+          currentUserId: me?.id ?? null,
         });
       } catch (err) {
         if (cancelled) return;

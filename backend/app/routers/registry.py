@@ -34,6 +34,7 @@ from . import (
     medical_data,
     medical_value_groups,
     medical_values,
+    patient_interface,
     persons,
     patients,
     reports_router as reports,
@@ -60,6 +61,7 @@ def register_routers(app: FastAPI) -> None:
     app.include_router(e2e_tests.router, prefix="/api")
     app.include_router(dev_forum.router, prefix="/api")
     app.include_router(patients.router, prefix="/api")
+    app.include_router(patient_interface.router, prefix="/api")
     app.include_router(reports.router, prefix="/api")
     app.include_router(contact_infos.router, prefix="/api")
     app.include_router(absences.router, prefix="/api")

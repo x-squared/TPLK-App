@@ -1,0 +1,12 @@
+---
+description: Context-aware medical value universe architecture and ownership boundaries
+alwaysApply: true
+---
+
+# Medical Value Universe
+
+- Keep medical value templates and runtime values context-aware (`STATIC`, `EPISODE:*`, `DONOR`) with explicit context metadata.
+- Treat blood type as medical value concern, not a patient-core field.
+- Datatype rendering and validation metadata are backend-owned; frontend consumes metadata before hardcoded fallbacks.
+- Use deterministic, idempotent instantiation operations for missing values from templates.
+- Model applicability via explicit context relation entities (N:M), not hardcoded `use_*` flags.

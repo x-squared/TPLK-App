@@ -1,0 +1,14 @@
+---
+description: Model multi-step domain flows as backend workflows with thin routers and UI command-refresh coordination
+alwaysApply: true
+---
+
+# Workflow Orchestration Boundary
+
+Use this when one user action triggers multiple dependent side effects.
+
+- Implement orchestration in `backend/app/features/**/service.py` (or focused workflow modules).
+- Keep routers transport-thin (auth, parsing, delegation, HTTP mapping).
+- Do not orchestrate domain workflows in frontend components.
+- Prefer one intent command endpoint that executes full flow atomically where possible.
+- Return updated state/projections so UI can re-sync from server truth.

@@ -71,11 +71,29 @@ RECORDS = RECORDS + TASK_SCOPE
 CONTACT = [
     {"type": "CONTACT", "key": "EMAIL", "pos": 1, "ext_sys": "", "ext_key": "", "name_default": "Email"},
     {"type": "CONTACT", "key": "PHONE", "pos": 2, "ext_sys": "", "ext_key": "", "name_default": "Telefon"},
-    {"type": "CONTACT", "key": "SOCIAL", "pos": 6, "ext_sys": "", "ext_key": "", "name_default": "Social"},
-    {"type": "CONTACT", "key": "OTHER", "pos": 7, "ext_sys": "", "ext_key": "", "name_default": "Andere"},
+    {"type": "CONTACT", "key": "FAX", "pos": 3, "ext_sys": "", "ext_key": "", "name_default": "Fax"},
+    {"type": "CONTACT", "key": "PAGER", "pos": 4, "ext_sys": "", "ext_key": "", "name_default": "Pager"},
+    {"type": "CONTACT", "key": "URL", "pos": 5, "ext_sys": "", "ext_key": "", "name_default": "URL"},
+    {"type": "CONTACT", "key": "SMS", "pos": 6, "ext_sys": "", "ext_key": "", "name_default": "SMS"},
+    {"type": "CONTACT", "key": "SOCIAL", "pos": 7, "ext_sys": "", "ext_key": "", "name_default": "Social"},
+    {"type": "CONTACT", "key": "OTHER", "pos": 8, "ext_sys": "", "ext_key": "", "name_default": "Andere"},
 ]
 
 RECORDS = RECORDS + CONTACT
+
+# ---- CONTACT_USE ----
+CONTACT_USE = [
+    {"type": "CONTACT_USE", "key": "WORK", "pos": 1, "ext_sys": "", "ext_key": "", "name_default": "Arbeit"},
+    {"type": "CONTACT_USE", "key": "PRIVATE", "pos": 2, "ext_sys": "", "ext_key": "", "name_default": "Privat"},
+    {"type": "CONTACT_USE", "key": "HOME", "pos": 3, "ext_sys": "", "ext_key": "", "name_default": "Zuhause"},
+    {"type": "CONTACT_USE", "key": "TEMP", "pos": 4, "ext_sys": "", "ext_key": "", "name_default": "Temporär"},
+    {"type": "CONTACT_USE", "key": "OLD", "pos": 5, "ext_sys": "", "ext_key": "", "name_default": "Alt"},
+    {"type": "CONTACT_USE", "key": "HOLIDAY", "pos": 6, "ext_sys": "", "ext_key": "", "name_default": "Ferien"},
+    {"type": "CONTACT_USE", "key": "MOBILE", "pos": 7, "ext_sys": "", "ext_key": "", "name_default": "Mobil"},
+    {"type": "CONTACT_USE", "key": "OTHER", "pos": 8, "ext_sys": "", "ext_key": "", "name_default": "Andere"},
+]
+
+RECORDS = RECORDS + CONTACT_USE
 
 # --- SEX ----
 SEX = [

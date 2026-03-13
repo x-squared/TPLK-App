@@ -1,0 +1,2995 @@
+openapi: 3.0.0
+info:
+  version: v1
+  title: Clinical Data Platform API - USZ
+  description: This API provides access to Clinical Data Platform (CDP) to provide a structured overview for clinical purposes.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: https://api.usz.ch
+    description: USZ Clinical Data Platform System API
+security:
+  - client_id: []
+    client_secret: []
+tags: []
+paths:
+  /patients/{patientId}:
+    get:
+      operationId: getPatientById
+      tags:
+        - Patient
+      summary: Get Patient by ID
+      description: Gets a patient by its ID.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+              examples:
+                Patient:
+                  $ref: '#/components/examples/Patient'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/chronology:
+    get:
+      operationId: getPatientChronology
+      tags:
+        - Patient
+      summary: Get all chronological relevant health events of a patient.
+      description: Get all chronological relevant health events of a patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+              examples:
+                Chronology:
+                  $ref: '#/components/examples/Chronology'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/conditions:
+    get:
+      operationId: getPatientConditions
+      tags:
+        - Conditions
+      summary: Get conditions
+      description: Gets all conditions matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Condition'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/conditions/{conditionId}:
+    get:
+      operationId: getPatientConditionById
+      tags:
+        - Conditions
+      summary: Get condition by ID
+      description: Gets a condition by its ID for a given cancer patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: conditionId
+          description: Condition ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+            example: kis_con_M2FjOS00Zm
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Condition'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/procedures:
+    get:
+      operationId: getPatientProcedures
+      tags:
+        - Treatments
+      summary: Get procedures for a patient
+      description: Get all procedures (surgeries, interventions, etc.) matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Procedure'
+              examples:
+                AllProcedures:
+                  $ref: '#/components/examples/Procedures'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/procedures/{procedureId}:
+    get:
+      operationId: getPatientProcedureById
+      tags:
+        - Treatments
+      summary: Get patient procedure by ID
+      description: Gets a procedure by its ID for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: procedureId
+          description: Procedure ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+            example: kis_pro_M2FjOS00Zm
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Procedure'
+              examples:
+                Lobectomy:
+                  $ref: '#/components/examples/Procedure_lobectomy'
+                Biopsy:
+                  $ref: '#/components/examples/Procedure_biopsy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/care-plans:
+    get:
+      operationId: getPatientCarePlans
+      tags:
+        - Treatments
+      summary: Get care plans for a patient
+      description: Get all care plans matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+        - name: category
+          description: |
+            The SNOMED code categorizing the type of care plan
+                * `736249004` - Radiotherapy Care Plan
+                * `736401008` - Chemotherapy Care Plan
+          in: query
+          schema:
+            type: string
+            enum:
+              - '736249004'
+              - '736401008'
+          example: '736249004'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - $ref: '#/components/schemas/RadiotherapyCarePlan'
+                    - $ref: '#/components/schemas/ChemotherapyCarePlan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/care-plans/{carePlanId}:
+    get:
+      operationId: getPatientCarePlanById
+      tags:
+        - Treatments
+      summary: Gets a care plan by ID for a given patient.
+      description: Gets a care plan by its ID for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: carePlanId
+          description: Care plan Id.
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/RadiotherapyCarePlan'
+                  - $ref: '#/components/schemas/ChemotherapyCarePlan'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/medication-administrations:
+    get:
+      operationId: getPatientMedicationAdministrations
+      tags:
+        - Treatments
+      summary: Get all medication adminsitrations matching the query for a given patient.
+      description: Get all medication adminsitrations matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MedicationAdministration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/medication-administrations/{medicationAdministrationId}:
+    get:
+      operationId: getPatientMedicationAdministrationById
+      tags:
+        - Treatments
+      summary: Get a patient's medication adminsitrations by its Id.
+      description: Get a patient's medication adminsitrations by its Id.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - name: medicationAdministrationId
+          description: The global unique identifier of the medication administration
+          required: true
+          in: path
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MedicationAdministration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/adverse-events:
+    get:
+      operationId: getPatientAdverseEvents
+      tags:
+        - Adverse Events
+      summary: Get adverse events
+      description: Get all adverse events matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - $ref: '#/components/schemas/RadiotherapyAdverseEvent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/adverse-events/{adverseEventId}:
+    get:
+      operationId: getPatientAdverseEventById
+      tags:
+        - adverse events
+      summary: Get adverse event by ID
+      description: Get adverse event by ID.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: adverseEventId
+          description: adverse event ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+            example: pro_kis_M2FjOSXXsfad
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/RadiotherapyAdverseEvent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/clinical-reports:
+    get:
+      operationId: getPatientClinicalReports
+      tags:
+        - Clinical Reports
+      summary: Get clinical reports
+      description: Get all clinical reports matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/clinicalReportClinic'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  anyOf:
+                    - $ref: '#/components/schemas/DischargeReport'
+                    - $ref: '#/components/schemas/ClinicalProgressReport'
+                    - $ref: '#/components/schemas/MedicalConsultationReport'
+              examples:
+                AllClinicalReports:
+                  $ref: '#/components/examples/ClinicalReports'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/clinical-reports/{clinicalReportId}:
+    get:
+      operationId: getPatientClinicalReportById
+      tags:
+        - Clinical Reports
+      summary: Get clinical report by ID
+      description: Get all clinical reports by ID.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: clinicalReportId
+          description: Clinical report ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+            example: crp_kis_M2FjOSXXsfad
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/DischargeReport'
+                  - $ref: '#/components/schemas/ClinicalProgressReport'
+                  - $ref: '#/components/schemas/MedicalConsultationReport'
+              examples:
+                Radiology:
+                  $ref: '#/components/examples/ClinicalReport_radiology'
+                Pathology:
+                  $ref: '#/components/examples/ClinicalReport_pathology'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/performance-scores:
+    get:
+      operationId: getPatientPerformanceScores
+      tags:
+        - Scores
+      summary: Get performance scores for a patient
+      description: Get all performance scores (ECOG, Karnosfky, etc.) matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ECOG'
+              examples:
+                ECOGs:
+                  $ref: '#/components/examples/ECOGS'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/performance-scores/{performanceScoreId}:
+    get:
+      operationId: getPatientPerformanceScoreById
+      tags:
+        - Scores
+      summary: Get performance score by ID for a patient
+      description: Get a performance score (ECOG, Karnosfky, etc.) by ID for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: performanceScoreId
+          description: Performace score ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+            example: kis_obs_M2FjOS00Zm
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ECOG'
+              examples:
+                ECOG1:
+                  $ref: '#/components/examples/ECOG_1'
+                ECOG2:
+                  $ref: '#/components/examples/ECOG_2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/vitals:
+    get:
+      operationId: getPatientVitalSigns
+      tags:
+        - Observations
+      summary: Get vital signs
+      description: Get all vital signs matching the query for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - $ref: '#/components/parameters/dateFromParam'
+        - $ref: '#/components/parameters/dateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VitalSign'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /patients/{patientId}/vitals/{vitalSignId}:
+    get:
+      operationId: getPatientVitalSignById
+      tags:
+        - Treatments
+      summary: Get vitals sign by ID for a patient
+      description: Gets a vitals sign by its ID for a given patient.
+      parameters:
+        - $ref: '#/components/parameters/patientIdPathParam'
+        - in: path
+          name: vitalSignId
+          description: Vitals ID
+          required: true
+          schema:
+            $ref: '#/components/schemas/GlobalIdentifier'
+            example: kis_obs_M2Fj0YafTI
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalSign'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /redcap-patient-feeds/{redcapPatientFeedId}:
+    delete:
+      tags:
+        - redcap-patient-feed
+      summary: Delete Redcap Patient Feed
+      description: Delete one Redcap Patient Feed Message by ID
+      operationId: deleteRedcalPatientFeed
+      parameters:
+        - $ref: '#/components/parameters/redcapPatientFeedIdPathParam'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /redcap-patient-feeds:
+    get:
+      operationId: getRedcapPatientFeeds
+      tags:
+        - RedcapPatientFeeds
+      summary: Get Redcap Patient Feeds
+      description: Gets all open RedcapPatientFeed Messages.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RedcapPatientFeed'
+              examples:
+                AllRedcapPatientFeeds:
+                  $ref: '#/components/examples/RedcapPatientFeeds'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /redcap-instruments:
+    post:
+      tags:
+        - redcap-instruments
+      summary: Post REDCap instrument
+      description: Write REDCap Instrument Record
+      operationId: writeRedcapInstrument
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  securitySchemes:
+    client_id:
+      type: apiKey
+      in: header
+      name: client_id
+      description: Client ID Enforcement policy
+    client_secret:
+      type: apiKey
+      in: header
+      name: client_secret
+      description: Client Secret Enforcement policy
+  schemas:
+    GlobalIdentifier:
+      title: Global USZ Identifier
+      type: string
+      pattern: ^([a-z]{2,3})_(?:([a-z]{2,3})_)?([a-zA-Z0-9]+)$
+      readOnly: true
+      description: |
+        The universal unique (machine) identifier of the resource: 
+
+          `{resourceType}_[{sourceSystem}_]{base58Id}`
+
+        Components:
+          - `resourceType`: The type of resource being identified (e.g. `obs` or `cnd`)
+          - `sourceSystem`: (optional) The name/label of the source system of the data (e.g. `ks` or `sp`)
+          - `base58Id`: A base58-endocoded representation of the internal unique ID of the data element (preferrably a UUID). 
+
+          This identification should in particular be used for CRUD operations.
+      example: pat_ish_9EGJCxbxRGT
+    DateTime:
+      title: DateTime
+      type: string
+      format: date-time
+      example: '2018-11-13T20:20:39+00:00'
+    Period:
+      title: Period
+      type: object
+      description: A time period defined by a start and end date/time.
+      properties:
+        start:
+          $ref: '#/components/schemas/DateTime'
+          x-fhirpath: '%context.start'
+          example: 2018-04-13T16:00+01:00
+        end:
+          $ref: '#/components/schemas/DateTime'
+          x-fhirpath: '%context.end'
+          example: 2019-05-14T12:00+01:00
+    Resource:
+      title: Resource
+      type: object
+      required:
+        - id
+        - resourceType
+        - resourceName
+      properties:
+        id:
+          $ref: '#/components/schemas/GlobalIdentifier'
+        resourceType:
+          type: string
+          description: Type of resource to discriminate between resources. Typically preset by the schema definition.
+          enum:
+            - AdverseEvent
+            - Condition
+            - Encounter
+            - Observation
+            - Patient
+            - Practitioner
+            - Specimen
+            - ClinicalCase
+            - MedicationAdministration
+            - ClinicalReport
+            - ServiceRequest
+            - Procedure
+            - CarePlan
+            - Other
+        resourceName:
+          type: string
+        resourceTimestamp:
+          description: Time stamp when resource is intended for chronological purposes.
+          oneOf:
+            - type: string
+              format: date-time
+            - $ref: '#/components/schemas/Period'
+        summary:
+          type: string
+        url:
+          type: string
+          format: url
+          description: Endpoint where the resource came from.
+    Address:
+      type: object
+      properties:
+        country:
+          type: string
+          example: Switzerland
+        city:
+          type: string
+          example: Zurich
+        state:
+          type: string
+          example: Zurich
+        postalCode:
+          type: string
+          example: '8019'
+        street:
+          type: string
+          example: Rosengartenstrasse 22
+        addressSupplement:
+          type: string
+          example: c/o Amtsvormundbüro 33
+    Date:
+      title: Date
+      type: string
+      description: A date as used in human communication. The format is YYYY-MM-DD, eg. 1905-08-23. There SHALL be no time zone. Dates SHALL be valid dates
+      format: date
+      example: '2018-04-13'
+    Communication:
+      type: object
+      required:
+        - communicationType
+        - use
+        - value
+      properties:
+        communicationType:
+          type: string
+          enum:
+            - phone
+            - email
+            - fax
+            - pager
+            - url
+            - sms
+            - other
+          example: email
+        use:
+          type: string
+          enum:
+            - work
+            - private
+            - home
+            - temp
+            - old
+            - holiday
+            - mobile
+            - other
+          example: private
+        value:
+          type: string
+          example: muster@mail.ch
+    Patient:
+      title: Patient
+      description: |
+        Demographics and other administrative information about an individual receiving
+        care or other health-related services.
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          required:
+            - ehrId
+          properties:
+            resourceType:
+              enum:
+                - Patient
+              default: Patient
+            ehrId:
+              description: Internal EHR identifier of the patient (e.g. KISIM ID)
+              type: string
+              example: '123456789'
+            ahvNumber:
+              description: AHV number of the patient
+              type: string
+              example: 756.1234.5678.90
+            gender:
+              description: Gender for administrative purposes
+              type: string
+              enum:
+                - male
+                - female
+                - other
+              example: male
+            name:
+              description: Name(s) associated with the patient (including middle names, space-delimited)
+              type: string
+              example: Markus Stephan
+            surname:
+              description: Surname(s) associated with the patient (space-delimited)
+              type: string
+              example: Muster
+            addresses:
+              description: Addresses of the patient
+              type: array
+              items:
+                $ref: '#/components/schemas/Address'
+            birthdate:
+              description: Date of birth of the patient
+              $ref: '#/components/schemas/Date'
+            communications:
+              description: Communications details for the patient
+              type: array
+              items:
+                $ref: '#/components/schemas/Communication'
+            deceased:
+              description: Flag indicating the vital status of the patient
+              type: boolean
+              example: false
+    CommonErrorResponse:
+      title: CommonErrorResponse
+      type: object
+      description: Common error response.
+      required:
+        - message
+        - correlationId
+        - createdAt
+      properties:
+        message:
+          type: string
+          description: Message of the error response.
+          example: This is the general problem description
+        correlationId:
+          type: string
+        createdAt:
+          $ref: '#/components/schemas/DateTime'
+    Coding:
+      title: Coding
+      type: object
+      description: A Coding is a representation of a defined concept using a symbol from a defined code system
+      required:
+        - system
+        - code
+      properties:
+        system:
+          type: string
+          description: Canonical URL/UUID of the code system
+          x-fhirpath: '%context.system'
+        code:
+          type: string
+          description: Preset string/code defined by the code system
+          x-fhirpath: '%context.code'
+        display:
+          type: string
+          description: Human-readable representation of the code given by the system
+          x-fhirpath: '%context.display'
+        version:
+          type: string
+          description: Version identifier of the code system
+          x-fhirpath: '%context.version'
+    Condition:
+      title: Condition
+      description: |
+        A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical 
+        concept that has risen to a level of concern. At USZ a condition/diagnosis can cover multiple standardized coded conditions.
+      required:
+        - patientId
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          properties:
+            id:
+              example: cnd_kis_KtaEVLFWtK2mZ6GXiWV
+            resourceType:
+              enum:
+                - Condition
+              default: Condition
+            clinicalStatus:
+              description: The clinical status of the condition.
+              type: string
+              x-fhirpath: Condition.clinicalStatus
+              enum:
+                - active
+                - recurrence
+                - relapse
+                - inactive
+                - remission
+                - resolved
+              example: active
+            verificationStatus:
+              description: The verification status to support the clinical status of the condition.
+              type: string
+              x-fhirpath: Condition.verificationStatus
+              enum:
+                - active
+                - deleted
+                - partial
+                - completed
+                - provisional
+                - formal-complete
+                - content-complete
+              example: completed
+            diagnosis:
+              description: Human-redable text-based description of the diagnosis
+              type: string
+            notes:
+              description: Comments left by the responsible practitioner
+              type: string
+            classifications:
+              description: |
+                Identification of the condition, problem or diagnosis (Coded - ICD10, ICD-O-3, SNOMEDCT).
+                The binding to a specific valueset is left for derived schemas or the implementer if not specified.
+              type: array
+              items:
+                $ref: '#/components/schemas/Coding'
+                x-valueset: null
+                example:
+                  display: Fracture of lunate
+                  system: "http://snomed.info/sct\t"
+                  code: '2012002'
+            severity:
+              description: A subjective assessment of the severity of the condition as evaluated by the clinician.
+              type: string
+              enum:
+                - severe
+                - moderate
+                - mild
+              example: moderate
+            bodySites:
+              description: |
+                The anatomical locations where this condition manifests itself (if relevant)
+                Coding System:
+              type: array
+              items:
+                $ref: '#/components/schemas/Coding'
+                x-valueset: http://hl7.org/fhir/ValueSet/body-site
+            stagings:
+              description: Clinical stage or grade of a condition. May include formal severity assessments.
+              type: array
+              items:
+                $ref: '#/components/schemas/Coding'
+            onsetDate:
+              description: Estimated or actual date or date-time the condition began, in the opinion of the clinician.
+              $ref: '#/components/schemas/Date'
+              x-fhirpath: Condition.onsetDate
+            abatementDate:
+              description: The date or estimated date that the condition resolved or went into remission.
+              $ref: '#/components/schemas/Date'
+            recordedDate:
+              description: Date record was first recorded
+              $ref: '#/components/schemas/Date'
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+            encounterId:
+              description: Unique global identifier of the encounter for billing purposes of this condition
+              $ref: '#/components/schemas/GlobalIdentifier'
+            clinicalCaseId:
+              description: Unique global identifier of the medical case related to this condition
+              $ref: '#/components/schemas/GlobalIdentifier'
+            recordingPractitionerId:
+              description: Unique global identifier of the recording practitioner (if relevant)
+              $ref: '#/components/schemas/GlobalIdentifier'
+            assertingPractitionerId:
+              description: Unique global identifier of the asserting practitioner (if relevant)
+              $ref: '#/components/schemas/GlobalIdentifier'
+    Procedure:
+      title: Procedure
+      description: |
+        An action that is or was performed on or for a patient, practitioner, device, organization, or location. 
+        For example, this can be a physical intervention on a patient like an operation, or less invasive like long term services, counseling, or hypnotherapy. 
+        This can be a quality or safety inspection for a location, organization, or device. This can be an accreditation procedure on a practitioner for licensing.
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          properties:
+            id:
+              example: proc_kis_KtaEVLFWtK2mZ6GXiWV
+            resourceType:
+              enum:
+                - Procedure
+              default: Procedure
+            category:
+              description: Broad classification of the procedure
+              enum:
+                - other
+                - surgical
+                - nuclear
+                - imaging
+                - diagnostic
+                - psychiatric
+                - rehabilitation
+                - measurement
+            procedureType:
+              description: Code identifying the procedure
+              $ref: '#/components/schemas/Coding'
+              x-valueset: null
+              example:
+                display: Destruction of lesion of liver
+                system: http://snomed.info/sct
+                code: '5415002'
+            dateTime:
+              description: Date/time when the procedure occurred
+              $ref: '#/components/schemas/DateTime'
+            targetedBodySites:
+              description: Targeted natomical locations
+              type: array
+              items:
+                $ref: '#/components/schemas/Coding'
+                x-fhirpath: Observation.bodySite.coding
+                x-valueset: https://api.usz.ch/terminology-service/value-set/SNOMEDCTBodyStructures
+                example:
+                  display: Left parietal lobe
+                  system: http://snomed.info/sct
+                  code: '9003000'
+            outcome:
+              description: Outcome of the procedure
+              type: string
+              enum:
+                - successful
+                - unsuccessful
+                - partially successful
+              example: successful
+            reports:
+              description: |
+                Any diagnostic reports resulting from this procedure. Specified as API endpoint URLs where 
+                the structured `ClinicalReport` objects for a specific procedure are served (if available).
+              type: array
+              items:
+                type: string
+                format: url
+            notes:
+              description: Additional information/comments about the procedure
+              type: string
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Procedure.subject.identifier.value
+            encounterId:
+              description: Unique global identifier of the encounter for billing purposes of this procedure
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Procedure.encounter.identifier.value
+            clinicalCaseId:
+              description: Unique global identifier of the clinical case related to this procedure
+              $ref: '#/components/schemas/GlobalIdentifier'
+            performingPractitionerId:
+              description: Unique global identifier of the performing practitioner
+              $ref: '#/components/schemas/GlobalIdentifier'
+            serviceRequestId:
+              description: Unique global identifier of the service request
+              $ref: '#/components/schemas/GlobalIdentifier'
+            treatedConditionId:
+              description: Unique global identifier of the condition/problem treated by this procedure
+              $ref: '#/components/schemas/GlobalIdentifier'
+    CarePlan:
+      title: CarePlan
+      description: |
+        Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community 
+        for a period of time, possibly limited to care for a specific condition or set of conditions.
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          properties:
+            resourceType:
+              type: string
+              enum:
+                - CarePlan
+              default: CarePlan
+            id:
+              type: string
+              example: cpln_kis_KtaEVLFWtK2mZ6GXiWV
+            status:
+              type: string
+              enum:
+                - draft
+                - active
+                - completed
+                - entered-in-error
+                - cancelled
+              description: The current state of the care plan.
+            intent:
+              type: string
+              enum:
+                - plan
+                - order
+                - proposal
+              description: The intention of the care plan.
+            category:
+              $ref: '#/components/schemas/Coding'
+              description: Identifies the category of the care plan.
+            title:
+              type: string
+              description: A short title for the care plan.
+            description:
+              type: string
+              description: A description of the care plan.
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+            encounterId:
+              description: Unique global identifier of the encounter during which this care plan was created
+              $ref: '#/components/schemas/GlobalIdentifier'
+            period:
+              $ref: '#/components/schemas/Period'
+              description: The time period over which the care plan is intended to be in effect.
+            created:
+              type: string
+              format: dateTime
+              description: The date the care plan was created.
+            modified:
+              type: string
+              format: dateTime
+              description: The date the care plan was last modified.
+            authorId:
+              $ref: '#/components/schemas/GlobalIdentifier'
+              description: Unique global identifier of the person or organization responsible for the care plan.
+            clinic:
+              description: Clinic that released the care plan
+              type: string
+            careTeams:
+              type: array
+              items:
+                $ref: '#/components/schemas/GlobalIdentifier'
+              description: Identifies the individuals or organizations involved in the care plan.
+            addressesConditionsIds:
+              type: array
+              items:
+                $ref: '#/components/schemas/GlobalIdentifier'
+              description: Conditions addressed by the care plan.
+            note:
+              type: string
+              description: Any additional notes about the care plan.
+          required:
+            - resourceType
+            - resourceName
+            - patientId
+    PhysicalUnit:
+      title: Physical Unit
+      description: Machine- and human-readable representation of a physical unit based on the UCUM system
+      type: object
+      properties:
+        unit:
+          description: Code representing the physical unit (must be a valid UCUM unit code)
+          type: string
+          x-valueset: ' https://api.usz.ch/terminology-service/code-system/UCUM'
+          x-fhirpath: '%context.code'
+          example: u[iU]/ml
+        unitDescription:
+          description: Human readeable form of the unit (as given by UCUM)
+          type: string
+          x-fhirpath: '%context.unit'
+          example: MicroInternationalUnitsPerMilliLiter
+    Quantity:
+      title: Quantity
+      description: A measured amount (or an amount that can potentially be measured).
+      type: object
+      required:
+        - value
+      allOf:
+        - properties:
+            value:
+              description: Numerical component of the quantity (integer or float)
+              type: number
+              x-fhirpath: '%context.value'
+              example: 2.5
+        - $ref: '#/components/schemas/PhysicalUnit'
+    RadiotherapyCarePlan:
+      title: RadiotherapyCarePlan
+      description: |
+        A a treatment approach that combines two or more therapeutic modalities, such as surgery,
+        chemotherapy, radiation therapy, and immunotherapy, to provide a comprehensive and 
+        personalized treatment plan for patients with cancer.
+      allOf:
+        - $ref: '#/components/schemas/CarePlan'
+        - type: object
+          required:
+            - resourceName
+          properties:
+            resourceName:
+              enum:
+                - RadiotherapyCarePlan
+              default: RadiotherapyCarePlan
+            category:
+              properties:
+                code:
+                  enum:
+                    - '736249004'
+                  default: '736249004'
+                display:
+                  enum:
+                    - Radiotherapy care plan
+                  default: Radiotherapy care plan
+                system:
+                  enum:
+                    - http://snomed.info/sct
+                  default: http://snomed.info/sct
+            intent:
+              enum:
+                - order
+              default: order
+            treatmentIntent:
+              type: string
+              enum:
+                - curative
+                - palliative
+              description: The therapeutic intent of the radiotherapy
+            treatmentPriority:
+              type: string
+              enum:
+                - low
+                - intermediate
+                - high
+              description: Priorization of the radiotherapy treatment
+            isRadiochemotherapy:
+              type: boolean
+              description: Whether the radiotherapy is to be administered along chemotherapy
+            chemotherapyLocation:
+              type: string
+              description: Where the chemotherapy is to be administered (if applicable)
+            chemotherapeuticAgents:
+              type: string
+              description: Chemotherapeutic agents to be administered along radiotherapy (if applicable)
+            paceMaker:
+              type: boolean
+              description: Whether the patient has a pace maker
+            dentalCare:
+              type: boolean
+              description: Whether the patient requires dental care
+            preRadioationExposure:
+              type: boolean
+              description: Whether the patient has been exposed to radiation prior to starting the main course of radiotherapy
+            phases:
+              type: array
+              items:
+                type: object
+                properties:
+                  phaseSequence:
+                    type: integer
+                    description: Ordinal number of the radiotherapy course phase
+                  description:
+                    type: string
+                    description: Description of the radiotherapy phase
+                  fractions:
+                    description: Total number of fractions delivered to the volume in the body
+                    type: integer
+                  volume:
+                    type: string
+                    description: Irradiated volume in the body.
+                  fractionDose:
+                    description: Physical radiation dose to be delivered to the volume in the body during a complete fraction
+                    $ref: '#/components/schemas/Quantity'
+                  totalDose:
+                    description: Physical radiation dose to be delivered to the volume in the body during a complete phase
+                    $ref: '#/components/schemas/Quantity'
+                  cumulativeDose:
+                    description: Physical radiation dose to be delivered cumulatively to the volume in the body over the complete course of radiotherapy
+                    $ref: '#/components/schemas/Quantity'
+                  goal:
+                    type: string
+                    description: The overall goal of the radiotherapy course phase
+                  imaging:
+                    type: string
+                    description: Imaging selection relevant for the phase
+                  plans:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the radiotherapy phase delivery plan
+                        planningTargetVolume:
+                          type: string
+                          description: Planning target volume (PTV)
+                        fractionDose:
+                          description: Physical radiation dose to be delivered to the volume in the body during a complete fraction
+                          $ref: '#/components/schemas/Quantity'
+                        totalDose:
+                          description: Physical radiation dose to be delivered to the volume in the body during a complete phase
+                          $ref: '#/components/schemas/Quantity'
+                        cumulativeDose:
+                          description: Physical radiation dose to be delivered cumulatively to the volume in the body over the complete course of radiotherapy
+                          $ref: '#/components/schemas/Quantity'
+                        note:
+                          type: string
+                          description: Any additional information on the plan
+    ChemotherapyCarePlan:
+      title: ChemotherapyCarePlan
+      description: |
+        A a treatment approach that combines two or more therapeutic modalities, such as surgery,
+        chemotherapy, radiation therapy, and immunotherapy, to provide a comprehensive and 
+        personalized treatment plan for patients with cancer.
+      allOf:
+        - $ref: '#/components/schemas/CarePlan'
+        - type: object
+          required:
+            - resourceName
+          properties:
+            resourceName:
+              enum:
+                - ChemotherapyCarePlan
+              default: ChemotherapyCarePlan
+            category:
+              properties:
+                code:
+                  enum:
+                    - '736401008'
+                  default: '736401008'
+                display:
+                  enum:
+                    - Chemotherapy care plan
+                  default: Chemotherapy care plan
+                system:
+                  enum:
+                    - http://snomed.info/sct
+                  default: http://snomed.info/sct
+            intent:
+              enum:
+                - order
+              default: order
+            station:
+              type: string
+              description: Station responsible for the chemotherapy
+            approvalLevel:
+              type: integer
+            currentCycle:
+              type: integer
+              description: The current cycle of overall chemotherapy being planned
+            protocolCycle:
+              type: integer
+              description: A reference to the protocol cycle being applied/repeated
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: Status of the schema
+                created:
+                  type: string
+                  format: dateTime
+                  description: Date/time when the schema was created
+                authorId:
+                  $ref: '#/components/schemas/GlobalIdentifier'
+                  description: Unique global identifier of the person that last authored the schema.
+                modified:
+                  type: string
+                  format: dateTime
+                  description: Date/time when the schema was last modified
+                name:
+                  type: string
+                  description: Title of the schema
+            protocol:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Protocol ID
+                version:
+                  type: string
+                  description: Version of the protocol contents
+                created:
+                  type: string
+                  format: dateTime
+                  description: Date/time when the protocol was created
+                authorId:
+                  $ref: '#/components/schemas/GlobalIdentifier'
+                  description: Unique global identifier of the person that last authored the protocol.
+                modified:
+                  type: string
+                  format: dateTime
+                  description: Date/time when the protocol was last modified
+                approved:
+                  type: boolean
+                  description: Whether the protocol has been approved
+                title:
+                  type: string
+                  description: Title of the protocol
+                summary:
+                  type: string
+                  description: Free-text brief description of the protocol
+                description:
+                  type: string
+                  description: Free-text detailed description of the protocol
+                status:
+                  type: string
+                  description: Status of the protocol
+                category:
+                  type: string
+                  description: Classification of the protocol
+                notes:
+                  type: string
+                  description: Free-text notes relevant to the protocol content
+                cycles:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      cycleSequence:
+                        type: integer
+                        description: Ordinal describing the sequential position of the cycle within the protocol
+                      description:
+                        type: string
+                        description: Description of the protocol cycle
+    Ratio:
+      title: Ratio
+      type: object
+      description: A ratio between two values/quantities
+      allOf:
+        - properties:
+            numerator:
+              description: The numerator value
+              type: number
+            denominator:
+              description: The denominator value
+              type: number
+        - $ref: '#/components/schemas/PhysicalUnit'
+    Medication:
+      title: Medication
+      type: object
+      required:
+        - classification
+      properties:
+        text:
+          description: Human readable summary of the medication
+          type: string
+        classification:
+          description: Set of codes that specify this medication
+          type: array
+          items:
+            description: Standard medication code such as a code from RxNorm, SNOMED CT, IDMP, ATC, etc.
+            $ref: '#/components/schemas/Coding'
+            x-valueset: https://api.usz.ch/terminology-service/value-set/medication-codes
+          example:
+            - display: Carboplatin
+              system: http://www.nlm.nih.gov/research/umls/rxnorm
+              code: '40048'
+            - display: Pemetrexed
+              system: http://www.nlm.nih.gov/research/umls/rxnorm
+              code: '68446'
+        ingeredients:
+          description: Set of codes that specify the chemical/biological ingredients that are part of the medication.
+          type: array
+          items:
+            description: Standard ingredient code such as a code from RxNorm, SNOMED CT, IDMP, ATC, etc.
+            $ref: '#/components/schemas/Coding'
+            x-valueset: https://api.usz.ch/terminology-service/value-set/medication-ingredients-codes
+          example:
+            - display: Carboplatin
+              system: http://www.nlm.nih.gov/research/umls/rxnorm
+              code: '40048'
+            - display: Pemetrexed tromethamine anhydrous
+              system: http://www.nlm.nih.gov/research/umls/rxnorm
+              code: '2604776'
+        form:
+          description: A code representing the physical form of the medication (powder, tablet, liquid, etc.).
+          $ref: '#/components/schemas/Coding'
+          x-valueset: https://api.usz.ch/terminology-service/value-set/medication-form-codes
+        amount:
+          description: Specific amount of the drug in the packaged product.
+          $ref: '#/components/schemas/Ratio'
+        lotNumber:
+          description: The assigned lot number of a batch of the specified product.
+          type: string
+        expirationDate:
+          description: Expiration date of the medication
+          $ref: '#/components/schemas/Date'
+    Dosage:
+      type: object
+      properties:
+        text:
+          description: |
+            Free text dosage can be used for cases where the dosage administered is too complex to code. 
+            When coded dosage is present, the free text dosage may still be present for display to humans.
+          type: string
+        site:
+          description: A SNOMED-CT coded specification of the anatomic site where the medication first entered the body.
+          $ref: '#/components/schemas/Coding'
+          x-valueset: https://api.usz.ch/terminology-service/value-set/approach-site-codes
+          example:
+            display: Below knee region
+            system: http://snomed.info/sct
+            code: '8289001'
+        route:
+          description: A SNOMED-CT code specifying the route or physiological path of administration of a therapeutic agent into or onto the patient.
+          $ref: '#/components/schemas/Coding'
+          x-valueset: https://api.usz.ch/terminology-service/value-set/approach-site-codes
+          example:
+            display: Intravenous use
+            system: http://snomed.info/sct
+            code: '47625008'
+        dose:
+          description: |
+            The amount of the medication given at one administration event.
+          $ref: '#/components/schemas/Quantity'
+          example:
+            value: 200
+            unit: mg
+        rate:
+          description: |
+            Identifies the speed with which the medication was or will be introduced into the patient. ypically, the rate for an infusion.
+          $ref: '#/components/schemas/Ratio'
+          example:
+            numerator:
+              value: 200
+              unit: mg
+            denominator:
+              value: 3
+              unit: h
+    MedicationAdministration:
+      title: MedicationAdministration
+      description: |
+        Describes the event of a patient consuming or otherwise being administered a medication. This may be as simple as swallowing
+        a tablet or it may be a long running infusion. Related resources tie this event to the authorizing prescription, and the
+        specific encounter between patient and health care practitioner.
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          required:
+            - medication
+          properties:
+            id:
+              example: med_kis_KtaEVLFWtK2mZ6GXiWV
+            resourceType:
+              enum:
+                - MedicationAdministration
+              default: MedicationAdministration
+            partOfProcedureId:
+              description: Unique Id of the procedure of which this particular event is a component or step (if applicable).
+              $ref: '#/components/schemas/GlobalIdentifier'
+              examples:
+                - pro_kis_KtaEVLFWtK2mZ6GXiWV
+            status:
+              description: |
+                The status of the administration. 
+                Generally it will be set to show that the administration has been completed. 
+                For some long running administrations such as infusions, it is possible for an administration 
+                to be started but not completed or it may be paused while some other process is under way.
+              type: string
+              enum:
+                - in-progress
+                - not-done
+                - on-hold
+                - completed
+                - stopped
+                - unknown
+              example: completed
+            category:
+              description: Categorization of the hospitalization status of the patient for the medication administration.
+              type: string
+              enum:
+                - inpatient
+                - outpatient
+                - community
+            medication:
+              description: Identifies the medication that was administered.
+              $ref: '#/components/schemas/Medication'
+            treatmentDateTime:
+              description: Date/time of the administration (if administered within a single day)
+              $ref: '#/components/schemas/DateTime'
+            treatmentPeriod:
+              description: Time period of administration (if administered over multiple days)
+              $ref: '#/components/schemas/Period'
+            terminationReason:
+              description: A code indicating why the administration was terminated or not performed.
+              $ref: '#/components/schemas/Coding'
+              x-valueset: https://api.usz.ch/terminology-service/value-set/TBD
+            dosage:
+              description: Identifies the dosage that was administred.
+              $ref: '#/components/schemas/Dosage'
+            notes:
+              description: Extra information about the medication administration that is not conveyed by the other attributes.
+              type: string
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Procedure.subject.identifier.value
+            encounterId:
+              description: Unique global identifier of the encounter for billing purposes of this procedure
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Procedure.encounter.identifier.value
+            clinicalCaseId:
+              description: Unique global identifier of the medical case related to this procedure
+              $ref: '#/components/schemas/GlobalIdentifier'
+            performingPractitionerId:
+              description: Unique global identifier of the practitioner who performed the medication administration.
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Procedure.performer.identifier.value
+            serviceRequestId:
+              description: Unique global identifier of the service request
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Procedure.request.identifier.value
+            carePlanId:
+              description: Unique global identifier of the care plan that this medication administration is based on
+              $ref: '#/components/schemas/GlobalIdentifier'
+            treatedConditionId:
+              description: Unique global identifier of the condition/problem treated by this procedure
+              $ref: '#/components/schemas/GlobalIdentifier'
+    AdverseEvent:
+      title: AdverseEvent
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          properties:
+            status:
+              type: string
+              enum:
+                - unknown
+                - anticipated
+                - experienced
+                - resolved
+              description: The status of the adverse event
+            eventDate:
+              type: string
+              format: date-time
+              description: Date and time when the adverse event occurred
+            seriousness:
+              type: string
+              enum:
+                - mild
+                - moderate
+                - severe
+              description: The seriousness of the adverse event
+            category:
+              type: array
+              items:
+                type: string
+                enum:
+                  - medication
+                  - device
+                  - procedure
+                  - environmental
+                  - other
+              description: The category of the adverse event
+            outcome:
+              type: string
+              enum:
+                - recovered
+                - not-recovered
+                - recovering
+                - unknown
+                - fatal
+              description: The outcome of the adverse event
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+            recorderId:
+              description: Reference to the person or organization recording the adverse event
+              $ref: '#/components/schemas/GlobalIdentifier'
+            resultingEffect:
+              type: string
+              description: Medical condition or problem on the subject due to this event
+            reportedDate:
+              type: string
+              format: date-time
+              description: Date and time when the adverse event was reported
+            severity:
+              oneOf:
+                - type: integer
+                - type: string
+                  enum:
+                    - low
+                    - moderate
+                    - high
+              description: The severity score of the adverse event
+    RadiotherapyAdverseEvent:
+      title: RadiotherapyAdverseEvent
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AdverseEvent'
+        - type: object
+          properties:
+            resourceName:
+              enum:
+                - RadiotherapyAdverseEvent
+            status:
+              enum:
+                - experienced
+            category:
+              enum:
+                - procedure
+    ClinicalReport:
+      title: ClinicalReport
+      description: |
+        The findings and interpretation of procedures performed on patients, groups of patients, devices, and locations, and/or 
+        specimens derived from these. The report includes clinical context such as requesting and provider information as well as 
+        text-form conclusions or observations.
+      required:
+        - patientId
+        - clinic
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          properties:
+            id:
+              example: crp_kis_KtaEVLFWtK2mZ6GXiWV
+            resourceType:
+              enum:
+                - ClinicalReport
+              default: ClinicalReport
+            category:
+              description: Report category
+              $ref: '#/components/schemas/Coding'
+              x-valueset: https://api.usz.ch/terminology-service/value-set/DiagnosticServiceSectionCodes
+              example:
+                display: Physician
+                system: http://terminology.hl7.org/CodeSystem/v2-0074
+                code: PHY
+            clinic:
+              description: Clinic that sent/released the report
+              type: string
+              nullable: true
+              enum:
+                - RAO
+                - DMR
+                - MOH
+                - PTY
+                - THO
+                - PNE
+                - ONK
+                - ''
+            reportType:
+              description: Code representing the type of report (e.g. SNOMED-CT code)
+              $ref: '#/components/schemas/Coding'
+              x-valueset: https://api.usz.ch/terminology-service/value-set/SNOMEDReportTypes
+              example:
+                display: Progress report
+                system: http://snomed.info/sct
+                code: '371532007'
+            reportDateTime:
+              description: Clinically relevant time/time-period for report
+              $ref: '#/components/schemas/DateTime'
+            issuedDateTime:
+              description: Date and time this version of the report was issued
+              $ref: '#/components/schemas/DateTime'
+            findings:
+              description: Text-form content of the report structured by sections (if available).
+              type: array
+              items:
+                description: Section of the report
+                type: object
+                properties:
+                  title:
+                    description: Title or brief description of the finding
+                    type: string
+                  description:
+                    description: Detailed description of the finding
+            presentedForm:
+              type: string
+              description: Base64-encoded form of the PDF report
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+            encounterId:
+              description: Unique global identifier of the encounter for billing purposes of this report
+              $ref: '#/components/schemas/GlobalIdentifier'
+            clinicalCaseId:
+              description: Unique global identifier of the medical case related to this report
+              $ref: '#/components/schemas/GlobalIdentifier'
+            serviceRequestId:
+              description: Unique global identifier of the service request
+              $ref: '#/components/schemas/GlobalIdentifier'
+            specimenId:
+              description: Unique global identifier of the specimen used for the report
+              $ref: '#/components/schemas/GlobalIdentifier'
+            performingPracticionerId:
+              description: Unique global identifier of the responsible diagnostic service provider
+              $ref: '#/components/schemas/GlobalIdentifier'
+            resultsInterpretingPracticionerId:
+              description: Unique global identifier of the primary results interpreter
+              $ref: '#/components/schemas/GlobalIdentifier'
+            approvingPracticionerId:
+              description: Unique global identifier of the approving practitioner
+              $ref: '#/components/schemas/GlobalIdentifier'
+            media:
+              type: array
+              description: Key images associated with this report
+              items:
+                type: object
+                properties:
+                  link:
+                    type: string
+                    format: url
+                    description: Reference to the image source
+                    x-fhirpath: '%context.link'
+                  comment:
+                    type: string
+                    description: Comment about the image (e.g. explanation)
+                    x-fhirpath: '%context.comment'
+    DischargeReport:
+      title: DischargeReport
+      description: |
+        A discharge report resource derived from ClinicalReport. Represents the findings, procedures, and outcomes for a patient at the end of a hospital stay. 
+      required:
+        - patientId
+      allOf:
+        - $ref: '#/components/schemas/ClinicalReport'
+        - type: object
+          properties:
+            resourceName:
+              enum:
+                - DischargeReport
+            validated:
+              type: integer
+              description: Whether the report has been validated.
+            validatorSignature:
+              type: string
+              description: Signature or identifier of the person who validated the report.
+            validatorTimestamp:
+              type: string
+              format: date-time
+              description: Date and time when the report was validated.
+            summaryTitle:
+              type: string
+              description: Title for the new clinical summary (epicrisis) section.
+            summaryContent:
+              type: string
+              description: Content for the new clinical summary (epicrisis) section.
+            therapyTitle:
+              type: string
+              description: Title for the therapy section.
+            therapyText:
+              type: string
+              description: Text content for the therapy section.
+            histologyTitle:
+              type: string
+              description: Title for the histology section.
+            histologyText:
+              type: string
+              description: Text content for the histology section.
+            assessmentTitle:
+              type: string
+              description: Title for the assessment section.
+            assessmentText:
+              type: string
+              description: Text content for the assessment section.
+            tumorBoardDecisionTitle:
+              type: string
+              description: Title for the tumor board decision section.
+            tumorBoardDecisionText:
+              type: string
+              description: Text content for the tumor board decision section.
+            dischgargeProcedureTitle:
+              type: string
+              description: Title for the procedure section.
+            dischgargeProcedureText:
+              type: string
+              description: Text content for the procedure section.
+            dischgargeProcedureContent:
+              type: string
+              description: Content for the new section describing recommended post-discharge procedures.
+            dischgargeProcedureInfo:
+              type: string
+              description: Additional information about procedures performed.
+            therapiesPerformedTitle:
+              type: string
+              description: Title for the performed therapies section.
+            therapiesPerformedText:
+              type: string
+              description: Text content for the performed therapies section.
+            therapyCourseTitle:
+              type: string
+              description: Title for the new section describing the therapy course.
+            therapyCourseContent:
+              type: string
+              description: Content for the new section describing the therapy course.
+            dischargeMedicationTitle:
+              type: string
+              description: Title for the discharge medication section.
+            dischargeNonMedicationMessage:
+              type: string
+              description: Message regarding non-medication related discharge instructions.
+            dischargeNoMedicationCheckbox:
+              type: integer
+              description: Whether there are no medications prescribed at discharge.
+    ClinicalProgressReport:
+      title: ClinicalProgressReport
+      description: |
+        A clinical progress report resource derived from ClinicalReport. Represents a detailed report on a patient's clinical progress, including diagnoses, medications, and various sections documenting subjective and objective findings, course of treatment, procedures, and remarks.
+      required:
+        - patientId
+      allOf:
+        - $ref: '#/components/schemas/ClinicalReport'
+        - type: object
+          properties:
+            resourceName:
+              enum:
+                - ClinicalProgressReport
+            conditionsIds:
+              type: array
+              items:
+                description: Unique global identifier of the diagnosis related to this report
+                $ref: '#/components/schemas/GlobalIdentifier'
+            medications:
+              type: array
+              items:
+                type: object
+                description: Unique identifier of the medication related to this report
+                allOf:
+                  - $ref: '#/components/schemas/Medication'
+                  - type: object
+                    properties:
+                      comment:
+                        type: string
+                        description: Comment added to the medication as reported
+            relevantClinic:
+              type: string
+              description: Category or classification code for the clinic
+            relevantClinicName:
+              type: string
+              description: Human-readable name of the clinic
+            professionGroup:
+              type: string
+              description: Category or classification code for the professional group
+            professionGroupName:
+              type: string
+              description: Human-readable name of the professional group
+            entryType:
+              type: string
+              description: Category or classification code for the entry type
+            entryTypeName:
+              type: string
+              description: Human-readable name of the entry type
+            creatorDisplayName:
+              type: string
+              description: Display name of the user who created the record
+            creatorSignature:
+              type: string
+              description: Validator or creator signature/visum associated with the record
+            radiationTreatmentContent:
+              type: string
+              description: Content/details describing the radiation treatment (Bestrahlung)
+            radiation:
+              type: string
+              description: Description of the radiation type or method used
+            radiationDosage:
+              type: string
+              description: Primary radiation dose information
+            radiationDosageModifier:
+              type: string
+              description: Additional radiation dose details or modifiers
+            subjectiveTitle:
+              type: string
+              description: Title for the subjective section (patient-reported)
+            subjectiveText:
+              type: string
+              description: Detailed subjective information reported by the patient
+            objectiveTitle:
+              type: string
+              description: Title for the objective section (clinician-observed)
+            objectiveText:
+              type: string
+              description: Detailed objective findings observed by the clinician
+            courseTitle:
+              type: string
+              description: Title for the course/progress section
+            courseText:
+              type: string
+              description: Detailed description of the clinical course or progression
+            procedureTitle:
+              type: string
+              description: Title for the procedural recommendations or plan
+            procedureText:
+              type: string
+              description: Detailed procedural recommendations or planned steps
+            remarksTitle:
+              type: string
+              description: Title for the remarks/notes section
+            remarksText:
+              type: string
+              description: Free-text remarks or notes
+            otherItems:
+              type: array
+              description: Additional items or information related to the clinical progress report
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Unique key for the progress report item context
+                  type:
+                    type: string
+                    description: Type of the report or entry
+                  title:
+                    type: string
+                    description: Title of the report or entry
+                  text:
+                    type: string
+                    description: Main text or content of the report or entry
+    MedicalConsultationReport:
+      title: MedicalConsultationReport
+      description: |
+        A consultation report resource derived from ClinicalReport. Represents a detailed report created after consultation with a patient.
+      required:
+        - patientId
+      allOf:
+        - $ref: '#/components/schemas/ClinicalReport'
+        - type: object
+          properties:
+            resourceName:
+              enum:
+                - MedicalConsultationReport
+            conditionsIds:
+              type: array
+              items:
+                description: Unique global identifier of the diagnosis related to this report
+                $ref: '#/components/schemas/GlobalIdentifier'
+            currentIllnessTitle:
+              type: string
+              description: Title of the current illness
+            currentIllnessText:
+              type: string
+              description: Description of the current illness
+            summaryTitle:
+              type: string
+              description: Title of the summary (epikrise)
+            summaryContent:
+              type: string
+              description: Content of the summary (epikrise)
+            medicalHistoryTitle:
+              type: string
+              description: Title of the History
+            medicalHistoryText:
+              type: string
+              description: Description of the History
+            personalHistoryTitle:
+              type: string
+              description: Title of the personal History
+            personalHistoryText:
+              type: string
+              description: Description of the personal History
+            systemHistoryTitle:
+              type: string
+              description: Title of the system History
+            systemHistoryText:
+              type: string
+              description: Description of the system History
+            socialHistoryTitle:
+              type: string
+              description: Title of the social History
+            socialHistoryText:
+              type: string
+              description: Description of the social History
+            familyHistoryTitle:
+              type: string
+              description: Title of the family History
+            familyHistoryText:
+              type: string
+              description: Description of the family History
+            interimHistoryTitle:
+              type: string
+              description: Title of the interim History
+            interimHistoryText:
+              type: string
+              description: Description of the interim History
+            findingsTitle:
+              type: string
+              description: Title of the findings
+            findingsText:
+              type: string
+              description: Description of the findings
+            courseTitle:
+              type: string
+              description: Title of the clinical course
+            courseText:
+              type: string
+              description: Description of the clinical course
+            generalStatusTitle:
+              type: string
+              description: Title of the general status
+            generalStatusText:
+              type: string
+              description: Description of the general status
+            localStatusTitle:
+              type: string
+              description: Title of the local status
+            localStatusText:
+              type: string
+              description: Description of the local status
+            additionalExaminationsTitle:
+              type: string
+              description: Title of the additional examinations
+            additionalExaminationsText:
+              type: string
+              description: Description of the additional examinations
+            xrayTitle:
+              type: string
+              description: Title of the X-ray findings
+            xrayText:
+              type: string
+              description: Description of the X-ray findings
+            labTitle:
+              type: string
+              description: Title of the laboratory findings
+            labText:
+              type: string
+              description: Description of the laboratory findings
+            histologyTitle:
+              type: string
+              description: Title of the histology findings
+            histologyText:
+              type: string
+              description: Description of the histology findings
+            tumorBoardDecisionTitle:
+              type: string
+              description: Title of the tumor board decision
+            tumorBoardDecisionText:
+              type: string
+              description: Description of the tumor board decision
+            performedTherapiesTitle:
+              type: string
+              description: Title of the performed therapies
+            performedTherapiesText:
+              type: string
+              description: Description of the performed therapies
+            therapyTitle:
+              type: string
+              description: Title of the therapy
+            therapyText:
+              type: string
+              description: Description of the therapy
+            therapyCourseTitle:
+              type: string
+              description: Title of the therapy course
+            therapyCourseContent:
+              type: string
+              description: Content of the therapy course
+            currentMedications:
+              type: array
+              items:
+                type: object
+                description: Unique identifier of the medication related to this report
+                allOf:
+                  - $ref: '#/components/schemas/Medication'
+                  - type: object
+                    properties:
+                      comment:
+                        type: string
+                        description: Comment added to the medication as reported
+            assessmentTitle:
+              type: string
+              description: Title of the assessment
+            assessmentText:
+              type: string
+              description: Description of the assessment
+            noMedicationsUponDischarge:
+              type: boolean
+              description: Indicates if there are no medications upon discharge
+            noMedicationsUponDischargeTitle:
+              type: string
+              description: Title for the discharge without medications
+            noMedicationsUponDischargeComment:
+              type: string
+              description: Message for discharge without medications
+            procedureTitle:
+              type: string
+              description: Title of the procedure
+            procedureText:
+              type: string
+              description: Description of the procedure
+            procedureInfo:
+              type: string
+              description: Additional information about the procedure
+            newProcedureTitle:
+              type: string
+              description: Title of the new procedure
+            newProcedureContent:
+              type: string
+              description: Content of the new procedure
+            followUp:
+              type: boolean
+              description: Indicates if a follow-up is needed
+            followUpTitle:
+              type: string
+              description: Title of the follow-up
+            followUpDate:
+              type: string
+              format: date
+              description: Date of the follow-up
+            followUpTime:
+              type: string
+              format: time
+              description: Time of the follow-up
+            validated:
+              type: boolean
+              description: Indicates if the record is validated
+            validatorSignature:
+              type: string
+              description: Signature of the validator
+            validatorTimestamp:
+              type: string
+              format: date-time
+              description: Timestamp of the validation
+            registrationDetails:
+              type: array
+              description: Details about the registration of the appointment(s) related to this report
+              items:
+                type: object
+                properties:
+                  sourceFeedName:
+                    type: string
+                    description: Name of the source feed
+                  type:
+                    type: string
+                    description: Type of the report or entry
+                  clinic:
+                    type: string
+                    description: Name of the clinic
+                  appointmentType:
+                    type: string
+                    description: Type of the appointment
+                  appointmentScheduling:
+                    type: string
+                    description: Scheduling information for the appointment
+    Range:
+      title: Range
+      description: A range of values/quantities
+      type: object
+      required:
+        - low
+        - high
+      allOf:
+        - properties:
+            low:
+              type: number
+              x-fhirpath: '%context.low.value'
+              example: 1.5
+            high:
+              type: number
+              x-fhirpath: '%context.high.value'
+              example: 4.75
+        - $ref: '#/components/schemas/PhysicalUnit'
+    Observation:
+      title: Observation
+      description: Measurements and simple assertions made about a patient, device or other subject.
+      allOf:
+        - $ref: '#/components/schemas/Resource'
+        - type: object
+          required:
+            - patientId
+            - observationType
+          properties:
+            id:
+              example: obs_kis_KtaEVaAwCNEoYtqQ3td
+            resourceType:
+              enum:
+                - Observation
+              default: Observation
+            category:
+              description: A category assigned to the observation
+              type: string
+              enum:
+                - social-history
+                - vital-signs
+                - imaging
+                - laboratory
+                - procedure
+                - survey
+                - exam
+                - therapy
+                - activity
+              example: laboratory
+            observationType:
+              $ref: '#/components/schemas/Coding'
+              description: Coded classification of the specific observation type. Serves as a discriminator between observations.
+            bodySite:
+              $ref: '#/components/schemas/Coding'
+              description: Anatomical location related to this observation (if relevant)
+              x-fhirpath: Observation.bodySite.coding
+              x-valueset: https://api.usz.ch/terminology-service/value-set/SNOMEDCTBodyStructures
+              example:
+                display: Left parietal lobe
+                system: http://snomed.info/sct
+                code: '9003000'
+            date:
+              $ref: '#/components/schemas/DateTime'
+              description: Clinically relevant date for the observation
+              x-fhirpath: Observation.effectiveDateTime
+            interpretation:
+              $ref: '#/components/schemas/Coding'
+              description: A categorical assessment of an observation value
+              x-fhirpath: Observation.interpretation.coding
+              x-valueset: https://api.usz.ch/terminology-service/value-set/ObservationInterpretationCodes
+              example:
+                display: Significantly high
+                system: http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation
+                code: HU
+            issueDate:
+              description: Date this version was published
+              $ref: '#/components/schemas/Date'
+            method:
+              $ref: '#/components/schemas/Coding'
+              description: Indicates the mechanism used to perform the observation.
+              x-fhirpath: Observation.method.coding
+              x-valueset: https://api.usz.ch/terminology-service/value-set/ObservationMethods
+              example:
+                display: Molecular genetics
+                system: "http://snomed.info/sct\t"
+                code: '708068002'
+            observedValue:
+              description: Actual value of the observation (type is case-specific)
+              anyOf:
+                - type: string
+                - type: integer
+                - type: number
+                - type: boolean
+                - $ref: '#/components/schemas/Coding'
+                - $ref: '#/components/schemas/Date'
+                - $ref: '#/components/schemas/DateTime'
+                - $ref: '#/components/schemas/Period'
+                - $ref: '#/components/schemas/Quantity'
+                - $ref: '#/components/schemas/Range'
+                - $ref: '#/components/schemas/Ratio'
+                - $ref: '#/components/schemas/GlobalIdentifier'
+            patientId:
+              description: Unique global identifier of the patient
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Observation.subject.identifier.value
+            encounterId:
+              description: Unique global identifier of the encounter for billing purposes of this observation
+              $ref: '#/components/schemas/GlobalIdentifier'
+            clinicalCaseId:
+              description: Unique global identifier of the medical case related to this observation
+              $ref: '#/components/schemas/GlobalIdentifier'
+            performingPractitionerId:
+              description: Unique global identifier of the performing practitioner
+              $ref: '#/components/schemas/GlobalIdentifier'
+            specimenId:
+              description: Unique global identifier of the specimen used for the observation
+              $ref: '#/components/schemas/GlobalIdentifier'
+              x-fhirpath: Observation.specimen.identifier.value
+    ECOG:
+      title: ECOG Performance Status
+      description: |
+        Eastern Cooperative Oncology Group (ECOG) performance status observation
+      allOf:
+        - $ref: '#/components/schemas/Observation'
+        - type: object
+          properties:
+            resourceName:
+              enum:
+                - ECOGPerformanceStatus
+              default: ECOGPerformanceStatus
+            observationType:
+              properties:
+                code:
+                  enum:
+                    - 21936-9
+                  default: 21936-9
+                display:
+                  enum:
+                    - ECOG Performance Status
+                  default: ECOG Performance Status
+                system:
+                  enum:
+                    - http://loinc.org
+                  default: http://loinc.org
+            observedValue:
+              description: ECOG performance status score
+              type: integer
+              minimum: 0
+              maximum: 5
+              example: 1
+    VitalSign:
+      title: Vital Sign
+      description: |
+        An observation about a patient's vital sign (e.g. temperature, height, weight, blood pressure, etc.).
+      allOf:
+        - $ref: '#/components/schemas/Observation'
+        - type: object
+          properties:
+            resourceName:
+              enum:
+                - VitalSign
+              default: VitalSign
+            category:
+              enum:
+                - vital-signs
+              default: vital-signs
+            observationType:
+              properties:
+                code:
+                  enum:
+                    - 9279-1
+                    - 8867-4
+                    - 2708-6
+                    - 8310-5
+                    - 8302-2
+                    - 9843-4
+                    - 29463-7
+                    - 39156-5
+                    - 8480-6
+                    - 8462-4
+                system:
+                  enum:
+                    - http://loinc.org
+                  default: http://loinc.org
+            observedValue:
+              description: The actual vital sign quanity measured (with UCUM units)
+              $ref: '#/components/schemas/Quantity'
+    RedcapPatientFeed:
+      title: Redcap Patient Feed
+      type: object
+      required:
+        - redcapPatientFeedId
+        - patientId
+      properties:
+        redcapPatientFeedId:
+          type: integer
+          description: Unique ID of Redcap Patient Feed Message
+          example: 12
+        patientId:
+          $ref: '#/components/schemas/GlobalIdentifier'
+          description: ID of the Patient
+          example: pat_ish_UV5deaRQ
+        name:
+          type: string
+          description: Name of the patient
+          example: Meier
+        surname:
+          type: string
+          description: Surname of the patient
+          example: Hans
+        birthdate:
+          type: string
+          format: date
+          description: Birthdate of the patient
+          example: '1990-10-02'
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+          description: Gender of the patient
+          example: male
+        email:
+          type: string
+          format: email
+          description: e-mail address of the patient
+          example: hans.meier@email.ch
+        nextTermin:
+          type: string
+          format: date
+          description: Start date of the next relevant appointment
+          example: '2025-12-11'
+        keyword:
+          type: string
+          description: Keyword for REDCap event
+          example: tumor
+        redcapProjectId:
+          type: string
+          description: ID of the REDCap project
+          example: '18'
+        insertedInQueue:
+          type: string
+          format: date-time
+          description: Timestamp of message creation
+          example: '2025-09-08T08:15:32Z'
+  parameters:
+    patientIdPathParam:
+      name: patientId
+      description: The global unique identifier of the patient
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/GlobalIdentifier'
+        example: pat_sap_MDAwMTIzMTI0
+    dateFromParam:
+      in: query
+      name: dateFrom
+      description: Earliest date to consider (based on context).
+      schema:
+        type: string
+        format: date
+      example: '2025-03-31'
+    dateToParam:
+      in: query
+      name: dateTo
+      description: Latest date to consider (based on context).
+      schema:
+        type: string
+        format: date
+      example: '2025-06-30'
+    clinicalReportClinic:
+      name: clinicalReportClinic
+      description: |
+        The acronym of the clinic that sent/released the clinical report
+            * `RAO` - Radiooncology
+            * `DMR` - Radiology
+            * `MOH` - Medical Oncology and Hematology
+            * `PTY` - Pathology
+            * `THO` - Thorax
+            * `PNE` - Pneumology
+      in: query
+      schema:
+        type: string
+        enum:
+          - RAO
+          - DMR
+          - MOH
+          - PTY
+          - THO
+          - PNE
+      example: MOH
+    redcapPatientFeedIdPathParam:
+      name: redcapPatientFeedId
+      description: Unique ID of recap patient feed message
+      in: path
+      required: true
+      schema:
+        type: integer
+      example: 3865
+  examples:
+    Patient:
+      value:
+        id: pat_sap_MDAwMTIzMTI0
+        ehrId: '123456'
+        resourceType: Patient
+        resourceName: Patient
+        url: https://api.usz.ch/patient/pat_sap_MDAwMTIzMTI0
+        ahvNumber: 756.1234.5678.90
+        gender: male
+        name: Markus Stephan
+        surname: Muster
+        addresses:
+          - street: Bahnhofstrasse 11
+            postalCode: '8001'
+            city: Zurich
+            state: Zurich
+            country: Switzerland
+        birthdate: '2018-04-13'
+        communications:
+          - communicationType: email
+            use: private
+            value: muster@mail.ch
+          - communicationType: phone
+            use: mobile
+            value: +41 79 333 22 11
+        deceased: false
+    Chronology:
+      value:
+        - id: con_kis_001
+          resourceType: Condition
+          resourceName: Condition
+          resourceTimestamp: '2025-06-20T08:30:00Z'
+          summary: Diagnosed stage IIIA non-small cell lung cancer in upper right lobe
+        - id: pro_kis_005E
+          resourceType: Procedure
+          resourceName: RadiotherapyCourse
+          resourceTimestamp: '2025-07-05T10:00:00Z'
+          summary: Radiotherapy — 25.6 Gy over 30 sessions
+        - id: med_kis_003
+          resourceType: MedicationAdministration
+          resourceName: SystemicTherapy
+          resourceTimestamp: '2025-07-01T09:00:00Z'
+          summary: 5 cycles of chemotherapy with Cisplatin
+        - id: obs_kis_001G
+          resourceType: Observation
+          resourceName: ECOGPerformanceStatus
+          resourceTimestamp: '2025-06-30T10:00:00Z'
+          summary: ECOG performance status recorded as 1
+    Procedures:
+      value:
+        - id: pro_kis_002B
+          resourceType: Procedure
+          resourceName: Procedure
+          category: diagnostic
+          procedureType:
+            system: http://snomed.info/sct
+            code: '310634000'
+            display: CT guided core needle biopsy of lung
+          dateTime: '2025-06-12T13:30:00Z'
+          targetedBodySites:
+            - system: http://snomed.info/sct
+              code: '39607008'
+              display: Upper lobe of right lung
+          outcome: successful
+          reports:
+            - https://api.hospital.org/reports/crp_kis_DEF456
+          notes: Sample obtained successfully for histopathology and molecular profiling.
+          patientId: pat_kis_001
+          encounterId: enc_kis_001
+          clinicalCaseId: cas_kis_001
+          performingPractitionerId: prc_kis_004
+          serviceRequestId: srv_kis_004
+          treatedConditionId: con_kis_001
+        - id: pro_kis_001A
+          resourceType: Procedure
+          resourceName: Procedure
+          category: surgical
+          procedureType:
+            system: http://snomed.info/sct
+            code: '174041007'
+            display: Lobectomy of lung
+          dateTime: '2025-06-20T08:00:00Z'
+          targetedBodySites:
+            - system: http://snomed.info/sct
+              code: '39607008'
+              display: Upper lobe of right lung
+          outcome: successful
+          reports:
+            - https://api.hospital.org/reports/crp_kis_ABC123
+          notes: Procedure completed without complications. No pleural effusion noted intraoperatively.
+          patientId: pat_kis_001
+          encounterId: enc_kis_002
+          clinicalCaseId: cas_kis_001
+          performingPractitionerId: prc_kis_001
+          serviceRequestId: srv_kis_005
+          treatedConditionId: con_kis_001
+    Procedure_lobectomy:
+      value:
+        id: pro_kis_001A
+        resourceType: Procedure
+        resourceName: Procedure
+        category: surgical
+        procedureType:
+          system: http://snomed.info/sct
+          code: '174041007'
+          display: Lobectomy of lung
+        dateTime: '2025-06-20T08:00:00Z'
+        targetedBodySites:
+          - system: http://snomed.info/sct
+            code: '39607008'
+            display: Upper lobe of right lung
+        outcome: successful
+        reports:
+          - https://api.hospital.org/reports/crp_kis_ABC123
+        notes: Procedure completed without complications. No pleural effusion noted intraoperatively.
+        patientId: pat_kis_001
+        encounterId: enc_kis_002
+        clinicalCaseId: cas_kis_001
+        performingPractitionerId: prc_kis_001
+        serviceRequestId: srv_kis_005
+        treatedConditionId: con_kis_001
+    Procedure_biopsy:
+      value:
+        id: pro_kis_002B
+        resourceType: Procedure
+        resourceName: Procedure
+        category: diagnostic
+        procedureType:
+          system: http://snomed.info/sct
+          code: '310634000'
+          display: CT guided core needle biopsy of lung
+        dateTime: '2025-06-12T13:30:00Z'
+        targetedBodySites:
+          - system: http://snomed.info/sct
+            code: '39607008'
+            display: Upper lobe of right lung
+        outcome: successful
+        reports:
+          - https://api.hospital.org/reports/crp_kis_DEF456
+        notes: Sample obtained successfully for histopathology and molecular profiling.
+        patientId: pat_kis_001
+        encounterId: enc_kis_001
+        clinicalCaseId: cas_kis_001
+        performingPractitionerId: prc_kis_004
+        serviceRequestId: srv_kis_004
+        treatedConditionId: con_kis_001
+    ClinicalReports:
+      value:
+        - id: crp_kis_DEF456LMN
+          resourceType: ClinicalReport
+          resourceName: ClinicalProgressReport
+          clinic: PTY
+          category:
+            system: http://terminology.hl7.org/CodeSystem/v2-0074
+            code: PATH
+            display: Pathology
+          reportType:
+            system: http://snomed.info/sct
+            code: '721912009'
+            display: Histopathology report
+          reportDateTime: '2025-06-28T14:45:00Z'
+          issuedDateTime: '2025-06-28T15:30:00Z'
+          findings:
+            - title: Histological diagnosis
+              description: Biopsy of right upper lobe mass confirms invasive adenocarcinoma (non-small cell lung carcinoma, NSCLC). Tumor cells show positive TTF-1 immunostaining.
+            - title: Molecular analysis
+              description: EGFR exon 19 deletion detected. ALK and ROS1 rearrangements negative.
+          presentedForm: U2FtcGxlIFBERiByZXBvcnQgdGV4dCBoZXJlLg==
+          patientId: pat_kis_001
+          encounterId: enc_kis_002
+          clinicalCaseId: cas_kis_259dsaf49
+          serviceRequestId: srv_kis_1as5df9
+          specimenId: spe_kis_1sdaf89
+          performingPracticionerId: pct_kis_004
+          resultsInterpretingPracticionerId: pct_kis_3q5ad6s8
+          approvingPracticionerId: pct_kis_a5dgs7a3
+          media:
+            - link: https://pathology.hospital.org/slides/spec_002
+              comment: Histopathology slide showing adenocarcinoma morphology.
+        - id: crp_kis_ABC123XYZ
+          resourceType: ClinicalReport
+          resourceName: ClinicalProgressReport
+          clinic: DMR
+          category:
+            system: http://terminology.hl7.org/CodeSystem/v2-0074
+            code: RAD
+            display: Radiology
+          reportType:
+            system: http://snomed.info/sct
+            code: '721981007'
+            display: CT chest report
+          reportDateTime: '2025-07-01T09:30:00Z'
+          issuedDateTime: '2025-07-01T10:00:00Z'
+          findings:
+            - title: Primary lung mass
+              description: CT scan of the chest revealed a spiculated mass measuring 4.3 cm in the upper lobe of the right lung. No evidence of pleural effusion.
+            - title: Metastasis screening
+              description: No radiological evidence of metastatic disease in brain, adrenal glands, or liver.
+          presentedForm: VGhpcyBpcyBhIHNhbXBsZSBCT05BUklFIFBERg==
+          patientId: pat_kis_001
+          encounterId: enc_kis_003
+          clinicalCaseId: cas_kis_159563524
+          serviceRequestId: srv_kis_sad4fdg8f
+          specimenId: spe_kis_gdsf98ufeq3i
+          performingPracticionerId: prc_sap_dsma9fadsf
+          resultsInterpretingPracticionerId: prc_sap_adsg3dsf
+          approvingPracticionerId: prc_sap_6dsafdb8a1f
+          media:
+            - link: https://example.usz.org/images/ct_001
+              comment: Axial CT slice showing the primary lung mass.
+    ClinicalReport_radiology:
+      value:
+        id: crp_kis_ABC123XYZ
+        resourceType: ClinicalReport
+        resourceName: ClinicalProgressReport
+        clinic: DMR
+        category:
+          system: http://terminology.hl7.org/CodeSystem/v2-0074
+          code: RAD
+          display: Radiology
+        reportType:
+          system: http://snomed.info/sct
+          code: '721981007'
+          display: CT chest report
+        reportDateTime: '2025-07-01T09:30:00Z'
+        issuedDateTime: '2025-07-01T10:00:00Z'
+        findings:
+          - title: Primary lung mass
+            description: CT scan of the chest revealed a spiculated mass measuring 4.3 cm in the upper lobe of the right lung. No evidence of pleural effusion.
+          - title: Metastasis screening
+            description: No radiological evidence of metastatic disease in brain, adrenal glands, or liver.
+        presentedForm: VGhpcyBpcyBhIHNhbXBsZSBCT05BUklFIFBERg==
+        patientId: pat_kis_001
+        encounterId: enc_kis_003
+        clinicalCaseId: cas_kis_159563524
+        serviceRequestId: srv_kis_sad4fdg8f
+        specimenId: spe_kis_gdsf98ufeq3i
+        performingPracticionerId: prc_sap_dsma9fadsf
+        resultsInterpretingPracticionerId: prc_sap_adsg3dsf
+        approvingPracticionerId: prc_sap_6dsafdb8a1f
+        media:
+          - link: https://example.usz.org/images/ct_001
+            comment: Axial CT slice showing the primary lung mass.
+    ClinicalReport_pathology:
+      value:
+        id: crp_kis_DEF456LMN
+        resourceType: ClinicalReport
+        resourceName: ClinicalProgressReport
+        clinic: PTY
+        category:
+          system: http://terminology.hl7.org/CodeSystem/v2-0074
+          code: PATH
+          display: Pathology
+        reportType:
+          system: http://snomed.info/sct
+          code: '721912009'
+          display: Histopathology report
+        reportDateTime: '2025-06-28T14:45:00Z'
+        issuedDateTime: '2025-06-28T15:30:00Z'
+        findings:
+          - title: Histological diagnosis
+            description: Biopsy of right upper lobe mass confirms invasive adenocarcinoma (non-small cell lung carcinoma, NSCLC). Tumor cells show positive TTF-1 immunostaining.
+          - title: Molecular analysis
+            description: EGFR exon 19 deletion detected. ALK and ROS1 rearrangements negative.
+        presentedForm: U2FtcGxlIFBERiByZXBvcnQgdGV4dCBoZXJlLg==
+        patientId: pat_kis_001
+        encounterId: enc_kis_002
+        clinicalCaseId: cas_kis_259dsaf49
+        serviceRequestId: srv_kis_1as5df9
+        specimenId: spe_kis_1sdaf89
+        performingPracticionerId: pct_kis_004
+        resultsInterpretingPracticionerId: pct_kis_3q5ad6s8
+        approvingPracticionerId: pct_kis_a5dgs7a3
+        media:
+          - link: https://pathology.hospital.org/slides/spec_002
+            comment: Histopathology slide showing adenocarcinoma morphology.
+    ECOGS:
+      value:
+        - id: obs_kis_001G
+          resourceType: Observation
+          resourceName: ECOGPerformanceStatus
+          observationType:
+            system: http://loinc.org
+            code: 21936-9
+            display: ECOG Performance Status
+          patientId: pat_kis_001
+          encounterId: enc_kis_008
+          clinicalCaseId: cas_kis_001
+          effectiveDateTime: '2025-06-30T10:00:00Z'
+          performingPractitionerId: prc_kis_004
+          observedValue: 1
+        - id: obs_kis_001G
+          resourceType: Observation
+          resourceName: ECOGPerformanceStatus
+          observationType:
+            system: http://loinc.org
+            code: 21936-9
+            display: ECOG Performance Status
+          patientId: pat_kis_001
+          encounterId: enc_kis_008
+          clinicalCaseId: cas_kis_001
+          effectiveDateTime: '2025-06-30T10:00:00Z'
+          performingPractitionerId: prc_kis_004
+          observedValue: 2
+    ECOG_1:
+      value:
+        id: obs_kis_001G
+        resourceType: Observation
+        resourceName: ECOGPerformanceStatus
+        observationType:
+          system: http://loinc.org
+          code: 21936-9
+          display: ECOG Performance Status
+        patientId: pat_kis_001
+        encounterId: enc_kis_008
+        clinicalCaseId: cas_kis_001
+        effectiveDateTime: '2025-06-30T10:00:00Z'
+        performingPractitionerId: prc_kis_004
+        observedValue: 1
+    ECOG_2:
+      value:
+        id: obs_kis_001G
+        resourceType: Observation
+        resourceName: ECOGPerformanceStatus
+        observationType:
+          system: http://loinc.org
+          code: 21936-9
+          display: ECOG Performance Status
+        patientId: pat_kis_001
+        encounterId: enc_kis_008
+        clinicalCaseId: cas_kis_001
+        effectiveDateTime: '2025-06-30T10:00:00Z'
+        performingPractitionerId: prc_kis_004
+        observedValue: 2
+    RedcapPatientFeeds:
+      value:
+        - redcapPatientFeedId: 1
+          patientId: pat_ish_UV5deaRQ
+          name: Meier
+          surname: Hans
+          birthdate: '1990-10-02'
+          gender: male
+          email: hans.meier@email.ch
+          nextTermin: '2025-12-11'
+          keyword: tumor
+          redcapProjectId: '18'
+          insertedInQueue: '2025-09-08T08:15:32Z'
+        - redcapPatientFeedId: 2
+          patientId: pat_ish_2uLXHum8PV
+          name: Müller
+          surname: Petra
+          birthdate: '1991-09-12'
+          gender: female
+          email: petra.mueller@email.ch
+          nextTermin: '2025-11-01'
+          keyword: kiefergelenk
+          redcapProjectId: '13'
+          insertedInQueue: '2025-09-08T08:17:56Z'
+  responses:
+    BadRequest:
+      description: Bad Request - Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    Unauthorized:
+      description: Unauthorized - Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    Forbidden:
+      description: Forbidden - Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    NotFound:
+      description: Not Found - Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'
+    ServerError:
+      description: Server - Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/CommonErrorResponse'

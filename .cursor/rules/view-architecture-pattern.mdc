@@ -1,0 +1,12 @@
+---
+description: Structure complex frontend views with thin containers and composed view-model hooks
+alwaysApply: true
+---
+
+# Complex View Architecture Pattern
+
+- Keep top-level `*View.tsx` files thin; move behavior into composed `use*ViewModel` hooks.
+- Decompose large tabs/pages by section panels into focused components.
+- Pass grouped, typed models between container/tabs/sections; avoid long flat prop lists.
+- Place feature files under `frontend/src/views/<feature>/...` and prefer shared styles/utilities before local one-offs.
+- Preserve existing UX behavior unless explicitly requested to change it.

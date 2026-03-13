@@ -1,0 +1,10 @@
+---
+description: Prefer flexible template/value-set architecture for extensible clinical domains
+alwaysApply: true
+---
+
+# Flexible Value-Set Architecture
+
+- For extensible domains, avoid table-per-variant designs.
+- Use template/value-set architecture with explicit applicability relations (N:M), not hardcoded `use_*` flags.
+- Keep updates synchronized across model, schema, routers, seed loaders/datasets, and impacted UI contracts.

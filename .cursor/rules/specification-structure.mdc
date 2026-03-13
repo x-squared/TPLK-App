@@ -1,0 +1,14 @@
+---
+description: Author and update requirement specifications using the agreed Markdown hierarchy and labels
+alwaysApply: true
+---
+
+# Specification Structure Rule
+
+When creating or updating requirement specifications:
+
+- Requirement docs live in `spec/requirements/` as Markdown `.md`.
+- Use hierarchy `Feature -> Use Case -> Story -> Item` without skipping levels.
+- Every Use Case/Story/Item heading must carry one status label (`Spec`, `Ready`, `Impl`, `QA`, `Done`).
+- Requirement specifications under `spec/requirements/` must be written in German.
+- Keep `doc/specification-manual.qmd` synchronized if structure/system conventions change.

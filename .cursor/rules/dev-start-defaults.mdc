@@ -1,0 +1,12 @@
+---
+description: Default to DEV mode for server/client startup unless user overrides
+alwaysApply: true
+---
+
+# DEV Startup Default
+
+When asked to start or restart services:
+
+- Default to DEV mode unless the user explicitly requests another profile.
+- Backend default should use local DEV environment settings.
+- Frontend default should use Vite dev server (`npm run dev`).

@@ -1,0 +1,9 @@
+---
+description: All new entities must include audit fields and seed data must use the SYSTEM user
+globs: backend/app/**/*.py
+alwaysApply: false
+---
+
+# Entity Audit Fields Convention
+
+New SQLAlchemy entities must include audit columns/relations (created/changed by + timestamps), and seed rows should stamp SYSTEM user where applicable.

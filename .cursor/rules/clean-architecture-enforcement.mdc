@@ -1,0 +1,14 @@
+---
+description: Enforce proactive clean architecture and drift prevention
+alwaysApply: true
+---
+
+# Clean Architecture Enforcement
+
+Apply this quality gate to every non-trivial change set.
+Use `system-architecture-blueprint.mdc` and `router-service-boundaries.mdc` as canonical architecture rules.
+
+- Check for architectural drift in touched flows (duplicated logic, bloated routers/views, parallel implementations).
+- Keep shared-first behavior: reuse existing abstractions before adding new ones.
+- Keep boundaries thin: transport in routers/views, business logic in services/hooks.
+- If decomposition opportunities are found, propose explicit change stories before broad refactors.

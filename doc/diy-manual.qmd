@@ -62,7 +62,27 @@ source .venv/bin/activate
 python -m app.db_admin --mode refresh --env DEV
 ```
 
-#### Common full commands
+
+### 3) Start backend
+
+```{bash}
+clear
+echo "Starting backend..."
+cd backend
+source .venv/bin/activate
+export TPL_ENV=DEV
+uvicorn app.main:app --reload
+```
+
+### 4) Start frontend (not in same terminal as backend)
+
+```{bash}
+cd frontend
+npm run dev
+```
+
+
+#### Common full commands for database management
 
 **A) Recreate entirely (drop/create schema + seed):**
 
@@ -176,23 +196,6 @@ python -m app.db_admin --mode normalize-legacy-dev-forum-capture-label --env DEV
 
 This rewrites only legacy values of `devForum.capture.captureContext` (`Capture current context` / `Aktuellen Kontext erfassen`) to the current label (`Open ticket` / `Ticket öffnen`) inside DB translation bundles.
 
-### 3) Start backend
-
-```{bash}
-clear
-echo "Starting backend..."
-cd backend
-source .venv/bin/activate
-export TPL_ENV=DEV
-uvicorn app.main:app --reload
-```
-
-### 4) Start frontend (not in same terminal as backend)
-
-```{bash}
-cd frontend
-npm run dev
-```
 
 ### 5) Run standard spec tests
 
@@ -200,6 +203,7 @@ npm run dev
 cd /Users/stephan/Workspace/TPL-App
 python -m qa.spec_tools.run_specs
 ```
+
 
 ### 5a) Run backend unit tests (pytest)
 
@@ -357,6 +361,33 @@ export TPL_SEED_PROFILE=CORE_TEST
 
 ```{bash}
 curl -s http://localhost:8000/api/health
+```
+
+### Patient interface mock dashboard (DEV only)
+
+Use the web dashboard for interactive mock operations:
+
+- Open dashboard: `http://localhost:8000/api/interfaces/patients/mock/dashboard`
+- It shows all current operations with direct `Open form` links.
+- It provides trigger forms for:
+  - Patient operation (`patient_id`)
+  - Conditions operation (`patient_id`, optional `date_from` / `date_to`)
+
+Minimal backend env (example):
+
+```{bash}
+cd /Users/stephan/Workspace/TPL-App/backend
+source .venv/bin/activate
+export TPL_ENV=DEV
+export TPL_PATIENT_INTERFACE_PROVIDER=mock_form
+export TPL_PATIENT_INTERFACE_MOCK_AUTO_OPEN_FORM=0
+uvicorn app.main:app --reload
+```
+
+Optional JSON endpoint (same data as the dashboard table):
+
+```{bash}
+curl -s http://localhost:8000/api/interfaces/patients/mock/operations
 ```
 
 ### Check which process owns backend/frontend ports

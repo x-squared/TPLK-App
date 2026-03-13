@@ -1,0 +1,10 @@
+---
+description: Keep Admin tab sections aligned with shared panel layout
+globs: frontend/src/views/admin/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Admin Section Layout Consistency
+
+- Keep Admin tab containers on shared section shells (`detail-section` + `ui-panel-section`).
+- Reuse existing admin subsection cards/classes before adding new layout classes.

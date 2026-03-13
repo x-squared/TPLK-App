@@ -1,0 +1,13 @@
+---
+description: Backend-first architecture for external interfaces and integrations
+alwaysApply: true
+---
+
+# External Interfaces Architecture
+
+When implementing external interfaces, place them as feature modules under `backend/app/features/` and keep routers thin.
+
+- Use one module per external system under `backend/app/features/interfaces/<interface_key>/`.
+- Use typed contracts, client transport, mapper, and service orchestration separation.
+- Routers must not call external endpoints directly; call feature services.
+- Keep external payload shapes decoupled from SQLAlchemy and internal API schemas.

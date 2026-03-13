@@ -323,8 +323,16 @@ class ContactInfo(Base):
         Integer,
         ForeignKey("CODE.ID"),
         nullable=False,
-        comment="Contact channel type (`CODE.CONTACT_INFO_TYPE`).",
+        comment="Contact channel type (`CODE.CONTACT`).",
         info={"label": "Contact Type"},
+    )
+    use_id = Column(
+        "USE_ID",
+        Integer,
+        ForeignKey("CODE.ID"),
+        nullable=True,
+        comment="Contact usage context (`CODE.CONTACT_USE`).",
+        info={"label": "Contact Use"},
     )
     data = Column(
         "DATA",
@@ -386,6 +394,7 @@ class ContactInfo(Base):
     )
 
     patient = relationship("Patient", back_populates="contact_infos")
-    type = relationship("Code")
+    type = relationship("Code", foreign_keys=[type_id])
+    use = relationship("Code", foreign_keys=[use_id])
     changed_by_user = relationship("User", foreign_keys=[changed_by_id])
     created_by_user = relationship("User", foreign_keys=[created_by_id])

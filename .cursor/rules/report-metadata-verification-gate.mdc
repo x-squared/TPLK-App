@@ -1,0 +1,13 @@
+---
+description: Require report metadata verification after model changes
+alwaysApply: true
+---
+
+# Report Metadata Verification Gate
+
+When data-model changes affect entities/attributes/relations/source keys:
+
+1. Validate reporting metadata (for example via `/api/reports/metadata`).
+2. Confirm payloads match backend schemas and source registries.
+3. Fix mismatches in the same change set.
+4. State in final notes whether check passed (or why it was not required).

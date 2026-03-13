@@ -1,0 +1,12 @@
+---
+description: Dynamic references with patient base ownership and optional episode linkage
+alwaysApply: true
+---
+
+# Dynamic References Convention
+
+For entities that reference `PATIENT` and optionally `EPISODE` (where episode belongs to patient):
+
+- `patient_id` required, `episode_id` optional.
+- If `episode_id` is set, enforce `episode.patient_id == patient_id`.
+- Enforce in model relationships, schema validation, and router create/update handlers with clear `422` errors.

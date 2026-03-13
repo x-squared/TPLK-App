@@ -1,0 +1,11 @@
+---
+description: Require entity and attribute documentation metadata on SQLAlchemy models
+globs: backend/app/model/**/*.py
+alwaysApply: false
+---
+
+# Entity Documentation and Metadata
+
+- Add a short class docstring to each entity describing business purpose.
+- Ensure columns carry readable labels and comments metadata.
+- Keep template/runtime naming explicit (`*Template` for definition entities; no `Instance` suffix for runtime entities).

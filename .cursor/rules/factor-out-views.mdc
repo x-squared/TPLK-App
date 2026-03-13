@@ -1,0 +1,11 @@
+---
+description: Always extract views and API modules into separate files, organized by domain
+globs: frontend/src/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Factor Out Views and API Modules
+
+- Keep page-level views under `frontend/src/views/`.
+- Keep `App.tsx` focused on shell composition and routing, not feature-specific view logic.
+- Keep API modules under `frontend/src/api/` with one domain file per entity area and shared infra in `core.ts`.

@@ -1,0 +1,11 @@
+---
+description: Keep editable view layout, editing flow, and table styling consistent across frontend
+globs: frontend/src/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# UI Editing Consistency
+
+- Default flow is `Edit -> Save / Cancel`; avoid autosave unless explicitly requested.
+- Reuse shared button/table classes and existing row-action patterns.
+- For read-only display, prefer plain values over disabled inputs when appropriate.

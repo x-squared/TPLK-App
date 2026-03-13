@@ -122,6 +122,7 @@ class AbsenceResponse(AbsenceBase):
 class ContactInfoBase(BaseModel):
     patient_id: int
     type_id: int
+    use_id: int | None = None
     data: str
     comment: str = ""
     main: bool = False
@@ -130,6 +131,7 @@ class ContactInfoBase(BaseModel):
 
 class ContactInfoCreate(BaseModel):
     type_id: int
+    use_id: int | None = None
     data: str
     comment: str = ""
     main: bool = False
@@ -137,6 +139,7 @@ class ContactInfoCreate(BaseModel):
 
 class ContactInfoUpdate(BaseModel):
     type_id: int | None = None
+    use_id: int | None = None
     data: str | None = None
     comment: str | None = None
     main: bool | None = None
@@ -148,6 +151,7 @@ class ContactInfoResponse(ContactInfoBase):
 
     id: int
     type: CodeResponse | None = None
+    use: CodeResponse | None = None
     created_by_id: int | None = None
     created_by_user: UserResponse | None = None
     changed_by_id: int | None = None

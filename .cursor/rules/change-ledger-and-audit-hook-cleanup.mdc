@@ -1,0 +1,10 @@
+---
+description: Keep a touched-file change ledger and progressively remove redundant changed_by plumbing
+alwaysApply: true
+---
+
+# Change Ledger + Audit Hook Cleanup
+
+- For non-trivial changes, include a concise touched-file ledger in final notes.
+- When touching router/service paths, remove redundant manual `changed_by_id` propagation where global audit hook already covers request-authenticated writes.
+- Keep explicit stamping in non-request contexts (jobs/scripts/system flows) where needed.

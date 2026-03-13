@@ -1,0 +1,10 @@
+---
+description: Enforce translation keys for all visible UI text
+alwaysApply: true
+---
+
+# UI Text Must Use i18n Keys
+
+- Never hardcode visible UI text in frontend source files.
+- Use `t("<key>", "<english default>")` for user-visible labels/messages.
+- Add new keys to `frontend/src/i18n/translations.json` with both EN and DE text entries.

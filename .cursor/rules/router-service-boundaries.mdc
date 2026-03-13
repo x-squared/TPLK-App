@@ -1,0 +1,24 @@
+---
+description: Keep backend routers thin and move business logic to feature services
+alwaysApply: true
+---
+
+# Router Service Boundaries
+
+For backend API changes, separate transport concerns from business logic by default.
+
+## Layer responsibilities
+
+- Routers (`backend/app/routers/**`) focus on endpoint wiring, parsing, auth dependencies, and HTTP mapping.
+- Feature services (`backend/app/features/**/service.py`) own business rules, orchestration, sequencing, and non-trivial validation.
+- Shared query helpers stay in feature modules (for example `queries.py`), not spread across routers.
+
+## Extraction triggers
+
+Move logic from router to service when:
+
+- endpoint touches 2+ entities/tables in one workflow
+- validation is conditional/cross-field/cross-entity
+- endpoint performs upsert-or-create orchestration
+- endpoint includes reusable naming/derivation logic
+- endpoint contains repeated eager-load blocks or post-processing

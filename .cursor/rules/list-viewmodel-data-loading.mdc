@@ -1,0 +1,10 @@
+---
+description: Enforce list APIs to use view-dedicated view models and lean loading
+alwaysApply: true
+---
+
+# List View-Model Data Loading Rule
+
+- Use dedicated list response models for list/table views; do not default to full detail schemas.
+- Load key-first and project minimal joined data needed by visible list UI.
+- Load auxiliary dropdown datasets on demand and cache them in `use*ListViewModel` state.

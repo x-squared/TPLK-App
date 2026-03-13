@@ -1,0 +1,14 @@
+---
+description: Build text in English first, then add translation layer
+alwaysApply: true
+---
+
+# English-First Translation Rule
+
+Use `no-visible-source-text-i18n.mdc` as the canonical UI text rule.
+
+- Define and maintain product text in English first (keys + English defaults).
+- Add German as a separate translation layer, never by replacing English source text.
+- Keep i18n non-intrusive: use a shared translation helper/provider instead of scattered locale conditionals.
+- Keep translation config in `frontend/src/i18n/translations.json`.
+- For new UI text: add English key/default first, then add or adjust translation JSON.

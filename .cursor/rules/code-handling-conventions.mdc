@@ -1,0 +1,10 @@
+---
+description: General conventions for defining and consuming code/reference values
+alwaysApply: true
+---
+
+# Code Handling Conventions
+
+- Machine keys must be stable, English, ASCII uppercase with underscores.
+- Keep user-facing language in labels/translations, not in keys.
+- Update seed references, backend comparisons, and frontend i18n mappings together when keys change.

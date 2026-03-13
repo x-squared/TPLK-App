@@ -1,0 +1,9 @@
+---
+description: Factor tab/detail components by section panels as the default architecture
+globs: frontend/src/views/**/*.tsx
+alwaysApply: false
+---
+
+# Section Panel Factorization
+
+- If a tab/component grows to multiple independent section panels, extract those panels into focused components before adding more logic.

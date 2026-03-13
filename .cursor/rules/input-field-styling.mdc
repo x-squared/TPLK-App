@@ -1,0 +1,14 @@
+---
+description: Consistent styling for input fields across all views
+globs: frontend/src/**/*.css
+alwaysApply: false
+---
+
+# Input Field Styling
+
+All editable input fields should keep a consistent baseline:
+
+- text color `#222`
+- background `#f5f5fa`
+- border `1px solid #222`
+- border radius `4px`

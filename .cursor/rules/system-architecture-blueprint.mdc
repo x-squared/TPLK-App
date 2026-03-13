@@ -1,0 +1,15 @@
+---
+description: End-to-end architecture blueprint for building TPLK-App features from scratch
+alwaysApply: true
+---
+
+# System Architecture Blueprint
+
+Use this rule as the default blueprint when designing or implementing new capabilities.
+
+- Backend API is the security and business-truth boundary.
+- Frontend permission gating is UX support, not authorization enforcement.
+- Prefer explicit, composable modules over monolithic handlers/components.
+- Keep routers thin in `backend/app/routers/**`; keep workflow/business rules in `backend/app/features/**/service.py`.
+- Build complex screens as thin container views plus composed `use*ViewModel` hooks.
+- Treat model changes as cross-cutting updates across model/schema/router/frontend/docs in one change set.

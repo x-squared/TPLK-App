@@ -1,0 +1,11 @@
+---
+description: Require translation key constants in frontend code
+globs: frontend/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Translation Key Constants
+
+- Do not pass raw translation key literals directly in frontend TypeScript/TSX.
+- Define keys in constant maps under `frontend/src/i18n/keys.ts` (or feature-specific constants modules) and reuse constants.
+- Keep constants stable and English-first.

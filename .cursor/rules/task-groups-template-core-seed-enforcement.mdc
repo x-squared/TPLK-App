@@ -1,0 +1,15 @@
+---
+description: Enforce template-first, core-seeded task group definitions
+alwaysApply: true
+---
+
+# Task Group Definition Policy
+
+When new task groups/tasks are introduced:
+
+1. Define them through `TASK_GROUP_TEMPLATE` and `TASK_TEMPLATE`.
+2. Persist definitions in core seed data in the same change set under `backend/app/seed/datasets/core/`.
+3. Register core loader wiring under `backend/app/seed/loaders/core/` and `backend/app/seed/__init__.py`.
+4. Render via standard TaskBoard flow instead of custom one-off task UIs.
+
+Keep template keys stable and English. Use deterministic due-date offsets.
