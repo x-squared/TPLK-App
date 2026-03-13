@@ -1,25 +1,28 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from pathlib import Path
-import os
-import sys
+import importlib
 from typing import TypeVar
 
 T = TypeVar("T")
 
 
-def ensure_appmodules_pythonpath() -> None:
-    appspace_root = Path(__file__).resolve().parents[6]
-    configured_root = os.getenv("APPMODULES_ROOT", str(appspace_root / "AppModules"))
-    appmodules_root = Path(configured_root).resolve()
-    apifoundation_src = appmodules_root / "AppApiFoundation" / "src"
-    connectors_src = appmodules_root / "AppConnectors" / "src"
-    observability_src = appmodules_root / "AppObservability" / "src"
-    for path in (apifoundation_src, connectors_src, observability_src):
-        path_str = str(path)
-        if path.exists() and path_str not in sys.path:
-            sys.path.insert(0, path_str)
+def import_appmodules_symbol(module_name: str, symbol_name: str):
+    try:
+        module = importlib.import_module(module_name)
+    except ModuleNotFoundError as exc:
+        raise RuntimeError(
+            "Missing AppModules runtime dependency. "
+            f"Could not import module `{module_name}` required by interfaces runtime. "
+            "Install/configure AppModules packages (or set process PYTHONPATH) before startup."
+        ) from exc
+    try:
+        return getattr(module, symbol_name)
+    except AttributeError as exc:
+        raise RuntimeError(
+            "AppModules runtime dependency is incompatible. "
+            f"Module `{module_name}` does not export `{symbol_name}`."
+        ) from exc
 
 
 def execute_sync_call(
@@ -30,11 +33,10 @@ def execute_sync_call(
     max_attempts: int = 3,
     idempotent: bool = True,
 ) -> T:
-    ensure_appmodules_pythonpath()
-    from call_observer import create_call_attempt_observer
-    from call_policy import CallPolicy
-    from request_context import RequestContext
-    from sync_gateway import execute
+    create_call_attempt_observer = import_appmodules_symbol("call_observer", "create_call_attempt_observer")
+    CallPolicy = import_appmodules_symbol("call_policy", "CallPolicy")
+    RequestContext = import_appmodules_symbol("request_context", "RequestContext")
+    execute = import_appmodules_symbol("sync_gateway", "execute")
 
     policy = CallPolicy(timeout_ms=timeout_ms, max_attempts=max_attempts, idempotent=idempotent)
     context = RequestContext.create(timeout_ms=timeout_ms)

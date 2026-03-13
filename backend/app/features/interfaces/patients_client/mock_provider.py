@@ -4,7 +4,7 @@ import uuid
 import webbrowser
 from typing import TYPE_CHECKING
 
-from ..shared import ensure_appmodules_pythonpath
+from ..shared import import_appmodules_symbol
 from .dto import ConditionDto, PatientDto
 from .provider_base import ProviderClient, ProviderErrored, ProviderPending, ProviderReady, ProviderResult
 
@@ -16,8 +16,7 @@ class MockFormProviderClient(ProviderClient):
     """In-memory delayed provider used while manual web-form mocks are filled."""
 
     def __init__(self, *, ui_base_url: str, auto_open_form: bool = False, store_path: str | None = None) -> None:
-        ensure_appmodules_pythonpath()
-        from mock_operation_store import FileBackedMockOperationStore
+        FileBackedMockOperationStore = import_appmodules_symbol("mock_operation_store", "FileBackedMockOperationStore")
 
         self._ui_base_url = ui_base_url.rstrip("/")
         self._auto_open_form = auto_open_form

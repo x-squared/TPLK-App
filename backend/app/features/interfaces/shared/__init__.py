@@ -1,3 +1,3 @@
-from .runtime import ensure_appmodules_pythonpath, execute_sync_call
+from .runtime import execute_sync_call, import_appmodules_symbol
 
-__all__ = ["execute_sync_call", "ensure_appmodules_pythonpath"]
+__all__ = ["execute_sync_call", "import_appmodules_symbol"]
