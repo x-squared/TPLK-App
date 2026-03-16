@@ -4,7 +4,14 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
-from ...models import Colloqium, ColloqiumParticipant, ColloqiumType, ColloqiumTypeParticipant, Person
+from ...models import (
+    Colloqium,
+    ColloqiumParticipant,
+    ColloqiumSignatory,
+    ColloqiumType,
+    ColloqiumTypeParticipant,
+    Person,
+)
 from ...schemas import ColloqiumCreate, ColloqiumUpdate
 
 
@@ -21,6 +28,7 @@ def _colloqium_query(db: Session):
         joinedload(Colloqium.colloqium_type).joinedload(ColloqiumType.participant_links).joinedload(ColloqiumTypeParticipant.person),
         joinedload(Colloqium.changed_by_user),
         joinedload(Colloqium.participant_links).joinedload(ColloqiumParticipant.person),
+        joinedload(Colloqium.signatory_links).joinedload(ColloqiumSignatory.person),
     )
 
 
@@ -53,6 +61,19 @@ def _set_colloqium_participants(*, item: Colloqium, people: list[Person], db: Se
     item.participants = _format_participants(people)
 
 
+def _set_colloqium_signatories(*, item: Colloqium, people: list[Person], db: Session) -> None:
+    item.signatory_links.clear()
+    db.flush()
+    for pos, person in enumerate(people, start=1):
+        item.signatory_links.append(
+            ColloqiumSignatory(
+                person_id=person.id,
+                pos=pos,
+            )
+        )
+    item.signatories = _format_participants(people)
+
+
 def list_colloqiums(db: Session) -> list[Colloqium]:
     return (
         _colloqium_query(db)
@@ -65,6 +86,7 @@ def create_colloqium(*, payload: ColloqiumCreate, changed_by_id: int, db: Sessio
     colloqium_type = _validate_colloqium_type_or_422(db=db, colloqium_type_id=payload.colloqium_type_id)
     payload_data = payload.model_dump()
     participant_ids = payload_data.pop("participant_ids", [])
+    signatory_ids = payload_data.pop("signatory_ids", [])
     item = Colloqium(**payload_data, changed_by_id=changed_by_id)
     db.add(item)
     default_people = [link.person for link in (colloqium_type.participant_links or []) if link.person is not None]
@@ -73,6 +95,8 @@ def create_colloqium(*, payload: ColloqiumCreate, changed_by_id: int, db: Sessio
     else:
         people = default_people
     _set_colloqium_participants(item=item, people=people, db=db)
+    signatories_people = _resolve_people_or_422(db=db, participant_ids=signatory_ids)
+    _set_colloqium_signatories(item=item, people=signatories_people, db=db)
     try:
         db.commit()
     except IntegrityError:
@@ -97,12 +121,21 @@ def update_colloqium(
     data = payload.model_dump(exclude_unset=True)
     if "colloqium_type_id" in data:
         _validate_colloqium_type_or_422(db=db, colloqium_type_id=data["colloqium_type_id"])
+    if "completed" in data and item.completed and data["completed"] is False:
+        raise HTTPException(
+            status_code=422,
+            detail="completed colloqium cannot be reverted to agenda mode",
+        )
     participant_ids = data.pop("participant_ids", None)
+    signatory_ids = data.pop("signatory_ids", None)
     for key, value in data.items():
         setattr(item, key, value)
     if participant_ids is not None:
         people = _resolve_people_or_422(db=db, participant_ids=participant_ids)
         _set_colloqium_participants(item=item, people=people, db=db)
+    if signatory_ids is not None:
+        signatories_people = _resolve_people_or_422(db=db, participant_ids=signatory_ids)
+        _set_colloqium_signatories(item=item, people=signatories_people, db=db)
     item.changed_by_id = changed_by_id
     try:
         db.commit()

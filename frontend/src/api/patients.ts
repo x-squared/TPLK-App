@@ -14,6 +14,8 @@ export interface ContactInfo {
   patient_id: number;
   type_id: number;
   type: Code | null;
+  use_id: number | null;
+  use: Code | null;
   data: string;
   comment: string;
   main: boolean;
@@ -26,6 +28,7 @@ export interface ContactInfo {
 
 export interface ContactInfoCreate {
   type_id: number;
+  use_id?: number | null;
   data: string;
   comment?: string;
   main?: boolean;
@@ -33,6 +36,7 @@ export interface ContactInfoCreate {
 
 export interface ContactInfoUpdate {
   type_id?: number;
+  use_id?: number | null;
   data?: string;
   comment?: string;
   main?: boolean;
@@ -394,6 +398,44 @@ export interface PatientUpdate {
   translate?: boolean;
 }
 
+export interface InterfacePatientAddress {
+  country?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postalCode?: string | null;
+  street?: string | null;
+  addressSupplement?: string | null;
+}
+
+export interface InterfacePatientCommunication {
+  communicationType: string;
+  use: string;
+  value: string;
+}
+
+export interface InterfacePatientData {
+  id: string;
+  resourceType?: string;
+  resourceName: string;
+  ehrId: string;
+  ahvNumber?: string | null;
+  gender?: string | null;
+  name?: string | null;
+  surname?: string | null;
+  birthdate?: string | null;
+  deceased?: boolean | null;
+  addresses: InterfacePatientAddress[];
+  communications: InterfacePatientCommunication[];
+}
+
+export interface InterfacePendingOperation {
+  operation_id: string;
+  status: 'pending';
+  operation_type: string;
+  retry_after_seconds: number;
+  form_url?: string | null;
+}
+
 /* ── API methods ── */
 
 export const patientsApi = {
@@ -520,4 +562,8 @@ export const patientsApi = {
     }),
   deleteEpisode: (patientId: number, episodeId: number) =>
     request<void>(`/patients/${patientId}/episodes/${episodeId}`, { method: 'DELETE' }),
+  getInterfacePatient: (pid: string, signal?: AbortSignal) =>
+    request<InterfacePatientData | InterfacePendingOperation>(`/interfaces/patients/${encodeURIComponent(pid)}`, { signal }),
+  cancelInterfaceOperation: (operationId: string) =>
+    request<void>(`/interfaces/patients/mock/operations/${encodeURIComponent(operationId)}/cancel`, { method: 'POST' }),
 };

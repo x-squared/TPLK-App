@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
-import { api, type Code, type Patient, type PatientCreate, type PatientListItem } from '../../api';
+import {
+  api,
+  type Code,
+  type Patient,
+  type PatientCreate,
+  type PatientListItem,
+} from '../../api';
 import { toUserErrorMessage } from '../../api/error';
 import { formatDate, matchesFilter, matchesWildcardFlexible } from './patientsViewUtils';
+import { usePatientImportFlow } from './usePatientImportFlow';
 
 export function usePatientsViewModel() {
   const [patients, setPatients] = useState<PatientListItem[]>([]);
@@ -32,10 +39,11 @@ export function usePatientsViewModel() {
     date_of_birth: '',
   });
 
-  const fetchPatients = async () => {
+  const fetchPatients = async (): Promise<PatientListItem[]> => {
     try {
       const data = await api.listPatients();
       setPatients(data);
+      return data;
     } finally {
       setLoading(false);
     }
@@ -104,6 +112,11 @@ export function usePatientsViewModel() {
       setCreatingPatient(false);
     }
   };
+
+  const importFlow = usePatientImportFlow({
+    patients,
+    refreshPatients: fetchPatients,
+  });
 
   const filteredPatients = patients.filter((p) => {
     if (filterAny.trim()) {
@@ -175,6 +188,19 @@ export function usePatientsViewModel() {
     creatingPatient,
     createPatientError,
     setCreatePatientError,
+    importDialogOpen: importFlow.open,
+    setImportDialogOpen: importFlow.setOpen,
+    importPid: importFlow.pid,
+    setImportPid: importFlow.setPid,
+    importStage: importFlow.stage,
+    importOperationId: importFlow.operationId,
+    importError: importFlow.error,
+    importWarning: importFlow.warning,
+    importedPatientData: importFlow.importedPatientData,
+    closeImportDialog: importFlow.close,
+    runPatientImport: importFlow.runImport,
+    interruptPatientImport: importFlow.interruptImport,
+    confirmImportedPatientCreate: importFlow.confirmCreate,
     selectedTaskPatientId,
     setSelectedTaskPatientId,
     newPatient,

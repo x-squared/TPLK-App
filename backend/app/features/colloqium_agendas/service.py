@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 
-from ...models import Code, Colloqium, ColloqiumAgenda, ColloqiumType, Episode
+from ...models import Code, Colloqium, ColloqiumAgenda, ColloqiumType, Episode, Person
 from ...schemas import ColloqiumAgendaCreate, ColloqiumAgendaUpdate
 
 _DECISION_CODE_TYPE = "COLLOQUIUM_DECISION"
@@ -15,10 +15,33 @@ def _validate_colloqium_or_422(*, db: Session, colloqium_id: int) -> None:
         raise HTTPException(status_code=422, detail="colloqium_id references unknown COLLOQIUM")
 
 
+def _get_colloqium_or_422(*, db: Session, colloqium_id: int) -> Colloqium:
+    item = db.query(Colloqium).filter(Colloqium.id == colloqium_id).first()
+    if not item:
+        raise HTTPException(status_code=422, detail="colloqium_id references unknown COLLOQIUM")
+    return item
+
+
+def _ensure_colloqium_not_completed_or_422(*, colloqium: Colloqium) -> None:
+    if colloqium.completed:
+        raise HTTPException(
+            status_code=422,
+            detail="colloqium agenda is closed because the colloqium is completed",
+        )
+
+
 def _validate_episode_or_422(*, db: Session, episode_id: int) -> None:
     episode = db.query(Episode).filter(Episode.id == episode_id).first()
     if not episode:
         raise HTTPException(status_code=422, detail="episode_id references unknown EPISODE")
+
+
+def _validate_presenter_person_or_422(*, db: Session, person_id: int | None) -> None:
+    if person_id is None:
+        return
+    person = db.query(Person).filter(Person.id == person_id).first()
+    if not person:
+        raise HTTPException(status_code=422, detail="presented_by_id references unknown PERSON")
 
 
 def _validate_unique_episode_link_or_422(
@@ -44,7 +67,7 @@ def _validate_unique_episode_link_or_422(
 
 def _normalize_agenda_text_fields(data: dict[str, object]) -> dict[str, object]:
     normalized = dict(data)
-    for field in ("presented_by", "decision", "decision_reason", "comment"):
+    for field in ("decision", "decision_reason", "comment"):
         if field in normalized and isinstance(normalized[field], str):
             normalized[field] = normalized[field].strip()
     return normalized
@@ -91,6 +114,7 @@ def _agenda_query(db: Session):
         .joinedload(Colloqium.colloqium_type)
         .joinedload(ColloqiumType.organ),
         joinedload(ColloqiumAgenda.episode),
+        joinedload(ColloqiumAgenda.presented_by_person),
         joinedload(ColloqiumAgenda.changed_by_user),
     )
 
@@ -106,8 +130,10 @@ def list_colloqium_agendas(*, colloqium_id: int | None, episode_id: int | None, 
 
 def create_colloqium_agenda(*, payload: ColloqiumAgendaCreate, changed_by_id: int, db: Session) -> ColloqiumAgenda:
     normalized_payload = _normalize_agenda_text_fields(payload.model_dump())
-    _validate_colloqium_or_422(db=db, colloqium_id=payload.colloqium_id)
+    colloqium = _get_colloqium_or_422(db=db, colloqium_id=payload.colloqium_id)
+    _ensure_colloqium_not_completed_or_422(colloqium=colloqium)
     _validate_episode_or_422(db=db, episode_id=payload.episode_id)
+    _validate_presenter_person_or_422(db=db, person_id=payload.presented_by_id)
     _validate_decision_catalogue_or_422(db=db, decision_key=str(normalized_payload.get("decision", "")))
     _validate_decision_reason_or_422(
         decision=str(normalized_payload.get("decision", "")),
@@ -135,10 +161,17 @@ def update_colloqium_agenda(
     if not item:
         raise HTTPException(status_code=404, detail="Colloqium agenda not found")
     data = _normalize_agenda_text_fields(payload.model_dump(exclude_unset=True))
+    current_colloqium = _get_colloqium_or_422(db=db, colloqium_id=item.colloqium_id)
+    is_link_mutation = "colloqium_id" in data or "episode_id" in data
+    if is_link_mutation:
+        _ensure_colloqium_not_completed_or_422(colloqium=current_colloqium)
     if "colloqium_id" in data:
-        _validate_colloqium_or_422(db=db, colloqium_id=data["colloqium_id"])
+        target_colloqium = _get_colloqium_or_422(db=db, colloqium_id=data["colloqium_id"])
+        _ensure_colloqium_not_completed_or_422(colloqium=target_colloqium)
     if "episode_id" in data:
         _validate_episode_or_422(db=db, episode_id=data["episode_id"])
+    if "presented_by_id" in data:
+        _validate_presenter_person_or_422(db=db, person_id=data["presented_by_id"])
     target_decision = str(data["decision"]) if "decision" in data else str(item.decision or "")
     target_decision_reason = (
         str(data["decision_reason"]) if "decision_reason" in data else str(item.decision_reason or "")
@@ -167,5 +200,7 @@ def delete_colloqium_agenda(*, colloqium_agenda_id: int, db: Session) -> None:
     item = db.query(ColloqiumAgenda).filter(ColloqiumAgenda.id == colloqium_agenda_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Colloqium agenda not found")
+    colloqium = _get_colloqium_or_422(db=db, colloqium_id=item.colloqium_id)
+    _ensure_colloqium_not_completed_or_422(colloqium=colloqium)
     db.delete(item)
     db.commit()

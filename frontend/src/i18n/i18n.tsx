@@ -148,10 +148,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     const donorsTitleKey = 'donors.title';
     const donorsTitleValue = normalized[donorsTitleKey];
     if (typeof donorsTitleValue === 'string') {
-      const isLegacyEn = donorsTitleValue.trim().toLowerCase() === 'donors';
-      const isLegacyDe = donorsTitleValue.trim().toLowerCase() === 'spender';
+      const donorsTitleNormalized = donorsTitleValue.trim().toLowerCase();
+      const isLegacyEn = donorsTitleNormalized === 'donors' || donorsTitleNormalized === 'donors!';
+      const isLegacyDe = donorsTitleNormalized === 'spender' || donorsTitleNormalized === 'spender!';
       if (isLegacyEn || isLegacyDe) {
-        normalized[donorsTitleKey] = locale === 'de' ? 'Spender!' : 'Donors!';
+        normalized[donorsTitleKey] = locale === 'de' ? 'Spender!!!' : 'Donors!!!';
       }
     }
     setRuntimeTranslationsState(normalized);

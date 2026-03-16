@@ -112,6 +112,44 @@ function inferTargetFromErrorPath(path: string): ContextTarget {
   return '';
 }
 
+function resolveCapturedTab(captureState: Record<string, unknown>): string {
+  const raw = captureState.active_tab;
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return '';
+  const payload = raw as Record<string, unknown>;
+  const key = String(payload.key ?? '').trim().toLowerCase();
+  if (key) return key;
+  const label = String(payload.label ?? '').trim().toLowerCase();
+  return label;
+}
+
+function resolvePatientDetailTab(tabKey: string): 'patient' | 'medical' | 'episodes' | 'tasks' | undefined {
+  if (!tabKey) return undefined;
+  if (tabKey.includes('medical')) return 'medical';
+  if (tabKey.includes('episode')) return 'episodes';
+  if (tabKey.includes('task')) return 'tasks';
+  if (tabKey.includes('patient')) return 'patient';
+  return undefined;
+}
+
+function resolveColloquiumDetailTab(tabKey: string): 'colloquium' | 'protocol' | undefined {
+  if (!tabKey) return undefined;
+  if (tabKey.includes('protocol')) return 'protocol';
+  if (tabKey.includes('colloq')) return 'colloquium';
+  if (tabKey.includes('agenda')) return 'colloquium';
+  if (tabKey.includes('summary')) return 'colloquium';
+  return undefined;
+}
+
+function resolveCoordinationDetailTab(tabKey: string): 'coordination' | 'protocol' | 'time-log' | 'completion' | undefined {
+  if (!tabKey) return undefined;
+  if (tabKey.includes('protocol')) return 'protocol';
+  if (tabKey.includes('time')) return 'time-log';
+  if (tabKey.includes('clock')) return 'time-log';
+  if (tabKey.includes('completion')) return 'completion';
+  if (tabKey.includes('coordination')) return 'coordination';
+  return undefined;
+}
+
 function App() {
   const { t, setLocale, setRuntimeTranslations } = useI18n();
   const protocolParam = new URLSearchParams(window.location.search).get('protocol');
@@ -276,6 +314,10 @@ function App() {
       const hasCoordinationKey = Object.keys(numericContext.keyedIds).some((key) => key.includes('coordination'));
       const hasColloquiumKey = Object.keys(numericContext.keyedIds).some((key) => key.includes('colloq') || key.includes('colloquium'));
       const inferredFromErrorPath = inferTargetFromErrorPath(String(captureState.latest_error_path ?? ''));
+      const capturedTabKey = resolveCapturedTab(captureState);
+      const patientDetailTab = resolvePatientDetailTab(capturedTabKey);
+      const colloquiumDetailTab = resolveColloquiumDetailTab(capturedTabKey);
+      const coordinationDetailTab = resolveCoordinationDetailTab(capturedTabKey);
       const target = resolveContextTarget(candidates)
         || inferredFromErrorPath
         || (hasCoordinationKey ? 'coordinations' : hasColloquiumKey ? 'colloquiums' : hasPatientKey ? 'patients' : '');
@@ -287,7 +329,7 @@ function App() {
         setSelectedPatientId(null);
         setPatientInitialTab(undefined);
         setPatientInitialEpisodeId(null);
-        setSelectedCoordinationTab(undefined);
+        setSelectedCoordinationTab(coordinationDetailTab);
         const coordinationId = pickId(numericContext, ['coordination']);
         if (coordinationId !== null) setSelectedCoordinationId(coordinationId);
         return;
@@ -299,7 +341,7 @@ function App() {
         setSelectedPatientId(null);
         setPatientInitialTab(undefined);
         setPatientInitialEpisodeId(null);
-        setSelectedColloqiumTab(undefined);
+        setSelectedColloqiumTab(colloquiumDetailTab);
         const colloquiumId = pickId(numericContext, ['colloq', 'colloquium', 'protocol']);
         if (colloquiumId !== null) setSelectedColloqiumId(colloquiumId);
         return;
@@ -310,6 +352,8 @@ function App() {
         setSelectedColloqiumTab(undefined);
         setSelectedCoordinationId(null);
         setSelectedCoordinationTab(undefined);
+        setPatientInitialTab(target === 'patients' ? patientDetailTab : undefined);
+        setPatientInitialEpisodeId(null);
         const patientId = pickId(numericContext, ['patient']);
         if (patientId !== null) setSelectedPatientId(patientId);
         return;

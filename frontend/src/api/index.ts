@@ -40,7 +40,7 @@ export type {
   Diagnosis, DiagnosisCreate, DiagnosisUpdate,
   MedicalValue, MedicalValueCreate, MedicalValueUpdate,
   Episode, EpisodeCreate, EpisodeUpdate, EpisodeOrgan, EpisodeOrganCreate, EpisodeOrganUpdate,
-  Patient, PatientListItem, PatientCreate, PatientUpdate,
+  Patient, PatientListItem, PatientCreate, PatientUpdate, InterfacePatientData, InterfacePendingOperation,
 } from './patients';
 export { tasksApi } from './tasks';
 export type {

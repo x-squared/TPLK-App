@@ -21,6 +21,7 @@ interface Props {
   draftDate: string;
   draftParticipants: string;
   draftParticipantsPeople: Person[];
+  draftSignatoriesPeople: Person[];
   loadingAgendas: boolean;
   agendas: ColloqiumAgenda[];
   decisionOptions: Code[];
@@ -32,7 +33,7 @@ interface Props {
   agendaForm: {
     episode_id: number | null;
     episode_ids: number[];
-    presented_by: string;
+    presented_by_id: number | null;
     decision: string;
     decision_reason: string;
     comment: string;
@@ -46,12 +47,15 @@ interface Props {
   patientsById: Record<number, PatientListItem>;
   generalEditing: boolean;
   savingGeneral: boolean;
+  completingColloqium: boolean;
   isGeneralDirty: boolean;
   generalSaveError: string;
   setDraftName: (value: string) => void;
   setDraftDate: (value: string) => void;
   setDraftParticipantsPeople: (value: Person[]) => void;
+  setDraftSignatoriesPeople: (value: Person[]) => void;
   saveGeneralDetails: () => void;
+  completeColloqium: () => void;
   startGeneralEditing: () => void;
   cancelGeneralEditing: () => void;
   startAddAgenda: () => void;
@@ -65,7 +69,7 @@ interface Props {
   setAgendaForm: React.Dispatch<React.SetStateAction<{
     episode_id: number | null;
     episode_ids: number[];
-    presented_by: string;
+    presented_by_id: number | null;
     decision: string;
     decision_reason: string;
     comment: string;
@@ -86,6 +90,7 @@ export default function ColloquiumDetailTabs({
   draftDate,
   draftParticipants,
   draftParticipantsPeople,
+  draftSignatoriesPeople,
   loadingAgendas,
   agendas,
   decisionOptions,
@@ -104,12 +109,15 @@ export default function ColloquiumDetailTabs({
   patientsById,
   generalEditing,
   savingGeneral,
+  completingColloqium,
   isGeneralDirty,
   generalSaveError,
   setDraftName,
   setDraftDate,
   setDraftParticipantsPeople,
+  setDraftSignatoriesPeople,
   saveGeneralDetails,
+  completeColloqium,
   startGeneralEditing,
   cancelGeneralEditing,
   startAddAgenda,
@@ -221,16 +229,21 @@ export default function ColloquiumDetailTabs({
             draftDate={draftDate}
             draftParticipants={draftParticipants}
             draftParticipantsPeople={draftParticipantsPeople}
+            draftSignatoriesPeople={draftSignatoriesPeople}
             loadingAgendas={loadingAgendas}
             decisionOptions={decisionOptions}
             agendas={agendas}
             agendaDrafts={agendaDrafts}
             patientsById={patientsById}
+            isColloqiumCompleted={Boolean(colloqium?.completed)}
+            completingColloqium={completingColloqium}
+            onCompleteColloqium={completeColloqium}
+            onChangeDraftSignatoriesPeople={setDraftSignatoriesPeople}
             onChangeDraftParticipantsPeople={setDraftParticipantsPeople}
             onChangeAgendaDraft={(agendaId, patch) =>
               setAgendaDrafts((prev) => ({
                 ...prev,
-                [agendaId]: { ...(prev[agendaId] ?? { presented_by: '', decision: '', decision_reason: '', comment: '' }), ...patch },
+                [agendaId]: { ...(prev[agendaId] ?? { presented_by_id: null, decision: '', decision_reason: '', comment: '' }), ...patch },
               }))
             }
           />

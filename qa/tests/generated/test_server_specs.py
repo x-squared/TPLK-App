@@ -8,7 +8,7 @@ import urllib.request
 
 
 BASE_URL = os.getenv("TPL_TEST_BACKEND_URL", "http://localhost:8000").rstrip("/")
-CASES = [{'id': 'server-health-ok', 'name': 'Health endpoint returns OK status', 'method': 'GET', 'path': '/api/health', 'expect_status': 200, 'expect_json_subset': {'status': 'ok'}, 'expect_body_contains': [], 'source_file': '/Users/stephan/Workspace/TPL-App/spec/testing/server/health.md'}]
+CASES = [{'id': 'server-health-ok', 'name': 'Health endpoint returns OK status', 'method': 'GET', 'path': '/api/health', 'expect_status': 200, 'expect_json_subset': {'status': 'ok'}, 'expect_body_contains': [], 'source_file': '/Users/stephan/Workspace/AppSpace/TPLK-App/spec/testing/server/health.md'}]
 
 
 def _request_json(method: str, url: str):

@@ -20,7 +20,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
   const [agendaForm, setAgendaForm] = useState<AgendaEditForm>({
     episode_id: null,
     episode_ids: [],
-    presented_by: '',
+    presented_by_id: null,
     decision: '',
     decision_reason: '',
     comment: '',
@@ -87,7 +87,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
     const next: Record<number, AgendaDraft> = {};
     agendas.forEach((agenda) => {
       next[agenda.id] = {
-        presented_by: agenda.presented_by ?? '',
+        presented_by_id: agenda.presented_by_id ?? null,
         decision: agenda.decision ?? '',
         decision_reason: agenda.decision_reason ?? '',
         comment: agenda.comment ?? '',
@@ -106,7 +106,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
           const isDecisionReasonInvalid = Boolean(draft.decision?.trim()) && !draft.decision_reason?.trim();
           if (isDecisionReasonInvalid) continue;
           const payload: Partial<AgendaDraft> = {};
-          if (draft.presented_by !== (agenda.presented_by ?? '')) payload.presented_by = draft.presented_by;
+          if ((draft.presented_by_id ?? null) !== (agenda.presented_by_id ?? null)) payload.presented_by_id = draft.presented_by_id ?? null;
           if (draft.decision !== (agenda.decision ?? '')) payload.decision = draft.decision;
           if (draft.decision_reason !== (agenda.decision_reason ?? '')) payload.decision_reason = draft.decision_reason;
           if (draft.comment !== (agenda.comment ?? '')) payload.comment = draft.comment;
@@ -202,7 +202,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
   const startAddAgenda = () => {
     setAgendaSaveError('');
     setEditingAgendaId(0);
-    setAgendaForm({ episode_id: null, episode_ids: [], presented_by: '', decision: '', decision_reason: '', comment: '' });
+    setAgendaForm({ episode_id: null, episode_ids: [], presented_by_id: null, decision: '', decision_reason: '', comment: '' });
   };
 
   const startEditAgenda = (agenda: ColloqiumAgenda) => {
@@ -211,7 +211,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
     setAgendaForm({
       episode_id: agenda.episode_id,
       episode_ids: [agenda.episode_id],
-      presented_by: agenda.presented_by ?? '',
+      presented_by_id: agenda.presented_by_id ?? null,
       decision: agenda.decision ?? '',
       decision_reason: agenda.decision_reason ?? '',
       comment: agenda.comment ?? '',
@@ -221,7 +221,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
   const cancelEditAgenda = () => {
     setAgendaSaveError('');
     setEditingAgendaId(null);
-    setAgendaForm({ episode_id: null, episode_ids: [], presented_by: '', decision: '', decision_reason: '', comment: '' });
+    setAgendaForm({ episode_id: null, episode_ids: [], presented_by_id: null, decision: '', decision_reason: '', comment: '' });
     setPickerOpen(false);
   };
 
@@ -248,10 +248,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
           await api.createColloqiumAgenda({
             colloqium_id: colloqiumId,
             episode_id: episodeId,
-            presented_by: agendaForm.presented_by,
-            decision: agendaForm.decision,
-            decision_reason: agendaForm.decision_reason,
-            comment: agendaForm.comment,
+            presented_by_id: agendaForm.presented_by_id,
           });
         }
       } else {
@@ -264,7 +261,7 @@ export function useColloquiumAgendaManager(colloqiumId: number, organId: number 
         }
         await api.updateColloqiumAgenda(editingAgendaId, {
           episode_id: desiredEpisodeId,
-          presented_by: agendaForm.presented_by,
+          presented_by_id: agendaForm.presented_by_id,
           decision: agendaForm.decision,
           decision_reason: agendaForm.decision_reason,
           comment: agendaForm.comment,

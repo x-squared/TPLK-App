@@ -346,6 +346,10 @@
   grid-column: 1 / -1;
 }
 
+.colloquiums-protocol-reason-field {
+  grid-column: 1 / -1;
+}
+
 .colloquiums-protocol-decision-select {
   min-height: 3.1rem;
 }
@@ -360,5 +364,38 @@
 .colloquiums-protocol-tasks-placeholder span {
   font-size: 0.78rem;
   color: #707a8f;
+}
+
+.colloquiums-protocol-signatories {
+  margin-top: 1.2rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid #d9deea;
+}
+
+.colloquiums-protocol-signatories-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: #4b5365;
+}
+
+.colloquiums-protocol-signatories-field textarea {
+  border: 1px solid #c8cfde;
+  border-radius: 4px;
+  padding: 0.42rem 0.56rem;
+  background: #fcfdff;
+  color: #1f2430;
+  font-size: 0.86rem;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.colloquiums-protocol-signatories-actions {
+  margin-top: 0.6rem;
+  display: flex;
+  justify-content: flex-end;
 }
 

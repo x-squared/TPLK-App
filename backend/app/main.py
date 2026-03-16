@@ -52,6 +52,29 @@ def ensure_strong_enum_code_alignment() -> None:
                 )
 
 
+def ensure_required_contact_code_families() -> None:
+    with engine.begin() as conn:
+        code_table_exists = conn.execute(
+            text("SELECT name FROM sqlite_master WHERE type='table' AND name='CODE'")
+        ).scalar_one_or_none()
+        if not code_table_exists:
+            return
+        contact_count = conn.execute(
+            text('SELECT COUNT(*) FROM "CODE" WHERE "TYPE" = :code_type'),
+            {"code_type": "CONTACT"},
+        ).scalar_one()
+        contact_use_count = conn.execute(
+            text('SELECT COUNT(*) FROM "CODE" WHERE "TYPE" = :code_type'),
+            {"code_type": "CONTACT_USE"},
+        ).scalar_one()
+        if int(contact_count) > 0 and int(contact_use_count) == 0:
+            raise RuntimeError(
+                "Required reference codes are incomplete: CODE.CONTACT exists but CODE.CONTACT_USE is empty. "
+                "Run a full seed profile (for example `python -m app.db_admin --mode refresh --env DEV` "
+                "or `python -m app.db_data --mode seed --seed-profile CORE_SAMPLE --env DEV`)."
+            )
+
+
 def ensure_database_schema_compatible() -> None:
     drift = verify_schema_drift(SchemaRuntime(engine=engine, base=Base))
     if not drift.has_drift:
@@ -87,7 +110,8 @@ async def lifespan(app: FastAPI):
     register_audit_hooks()
     ensure_database_schema_compatible()
     ensure_strong_enum_code_alignment()
-    logger.info("Startup checks passed: schema compatibility and enum/code alignment verified.")
+    ensure_required_contact_code_families()
+    logger.info("Startup checks passed: schema compatibility and code alignment verified.")
     await scheduler_runtime.start()
     yield
     await scheduler_runtime.stop()

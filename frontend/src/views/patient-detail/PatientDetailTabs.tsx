@@ -74,6 +74,7 @@ export interface PatientContactsModel {
   setConfirmDeleteId: React.Dispatch<React.SetStateAction<number | null>>;
   handleDeleteContact: (contactId: number) => Promise<void>;
   contactTypes: Code[];
+  contactUseTypes: Code[];
   ciForm: ContactInfoCreate;
   setCiForm: React.Dispatch<React.SetStateAction<ContactInfoCreate>>;
   handleAddContact: () => Promise<void>;

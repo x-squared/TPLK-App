@@ -7,6 +7,12 @@
   gap: 0.75rem;
 }
 
+.patients-header-actions {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
 .patients-add-btn {
   background: transparent;
   border: 1px solid #7c8aff;
@@ -80,6 +86,78 @@
   color: #e55;
   font-size: 0.8rem;
   flex-basis: 100%;
+}
+
+.patients-import-dialog {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: rgba(124, 138, 255, 0.05);
+}
+
+.patients-import-header h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.patients-import-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.patients-import-row label {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.patients-import-row input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #f5f5fa;
+  color: #222;
+  font-size: 0.85rem;
+  min-width: 12rem;
+}
+
+.patients-import-preview {
+  margin-top: 0.65rem;
+  border: 1px solid #c7cfed;
+  border-radius: 4px;
+  padding: 0.6rem;
+  background: #f8f9ff;
+}
+
+.patients-import-preview h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.86rem;
+}
+
+.patients-import-grid {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.25rem 0.6rem;
+  font-size: 0.82rem;
+}
+
+.patients-import-preview pre {
+  margin: 0.4rem 0 0;
+  max-height: 14rem;
+  overflow: auto;
+  background: #eef1fb;
+  border: 1px solid #d9def3;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.72rem;
+}
+
+.patients-import-actions {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
 }
 
 .filter-bar {

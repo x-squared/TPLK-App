@@ -3,7 +3,7 @@ import type { Code, ColloqiumAgenda, PatientListItem, Task } from '../../../../a
 import { translateCodeLabel } from '../../../../i18n/codeTranslations';
 
 export interface ProtocolAgendaDraft {
-  presented_by: string;
+  presented_by_id: number | null;
   decision: string;
   decision_reason: string;
   comment: string;
@@ -13,6 +13,9 @@ interface ExportProtocolPdfInput {
   draftName: string;
   draftDate: string;
   draftParticipants: string;
+  isColloqiumCompleted: boolean;
+  signatoriesLine: string;
+  presenterPeopleById: Record<number, string>;
   agendas: ColloqiumAgenda[];
   agendaDrafts: Record<number, ProtocolAgendaDraft>;
   patientsById: Record<number, PatientListItem>;
@@ -40,6 +43,9 @@ export function exportProtocolPdf({
   draftName,
   draftDate,
   draftParticipants,
+  isColloqiumCompleted,
+  signatoriesLine,
+  presenterPeopleById,
   agendas,
   agendaDrafts,
   patientsById,
@@ -55,6 +61,8 @@ export function exportProtocolPdf({
   const sectionGap = 4;
   const generatedOn = formatDate(new Date().toISOString().slice(0, 10));
   const safeValue = (value: string | null | undefined) => (value && value.trim() ? value.trim() : '–');
+  const documentTitle = isColloqiumCompleted ? 'Colloquium Protocol' : 'Colloquium Agenda';
+  const filePrefix = isColloqiumCompleted ? 'colloquium-protocol' : 'colloquium-agenda';
   const translateCodeForPdf = (
     code: {
       type?: string | null;
@@ -110,7 +118,7 @@ export function exportProtocolPdf({
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(16);
-  pdf.text('Colloquium Protocol', margin, y);
+  pdf.text(documentTitle, margin, y);
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
   pdf.text(`Report date: ${generatedOn}`, pageWidth - margin, y, { align: 'right' });
@@ -123,6 +131,10 @@ export function exportProtocolPdf({
   writeWrapped(`Name: ${safeValue(draftName)}`, { size: 11 });
   writeWrapped(`Colloquium date: ${draftDate ? formatDate(draftDate) : '–'}`, { size: 11 });
   writeWrapped(`Participants: ${safeValue(draftParticipants)}`, { size: 11, spacingAfter: 2 });
+  if (isColloqiumCompleted) {
+    writeWrapped('Protocol Sign-Off', { size: 12, style: 'bold', spacingAfter: 1 });
+    writeWrapped(`Signatories: ${safeValue(signatoriesLine)}`, { size: 11, spacingAfter: 2 });
+  }
 
   pdf.setDrawColor(212, 217, 230);
   pdf.line(margin, y, pageWidth - margin, y);
@@ -133,7 +145,7 @@ export function exportProtocolPdf({
   } else {
     writeWrapped('Agenda Items', { size: 12, style: 'bold', spacingAfter: 2 });
     agendas.forEach((agenda, index) => {
-      const draft = agendaDrafts[agenda.id] ?? { presented_by: '', decision: '', decision_reason: '', comment: '' };
+      const draft = agendaDrafts[agenda.id] ?? { presented_by_id: null, decision: '', decision_reason: '', comment: '' };
       const patient = agenda.episode ? patientsById[agenda.episode.patient_id] : undefined;
       const phase = resolvePhase(agenda);
       const patientLabel = patient
@@ -143,12 +155,23 @@ export function exportProtocolPdf({
       const statusLabel = translateCodeForPdf(agenda.episode?.status);
       const phaseLabel = `${phase.label} (${formatDate(phase.from)} – ${formatDate(phase.to)})`;
 
+      const presenterLabel = draft.presented_by_id != null
+        ? (
+          presenterPeopleById[draft.presented_by_id]
+            ?? (
+              agenda.presented_by_person && agenda.presented_by_person.id === draft.presented_by_id
+                ? `${agenda.presented_by_person.first_name} ${agenda.presented_by_person.surname}`.trim()
+                : 'Person'
+            )
+        )
+        : '–';
+
       const sectionEntries = [
         { text: `${index + 1}. ${patientLabel}` },
         { text: `Episode: ${episodeLabel}`, indent: 2 },
         { text: `Status: ${statusLabel}`, indent: 2 },
         { text: `Phase: ${phaseLabel}`, indent: 2, spacingAfter: 1 },
-        { text: `Presented by: ${safeValue(draft.presented_by)}`, spacingAfter: 1 },
+        { text: `Presented by: ${safeValue(presenterLabel)}`, spacingAfter: 1 },
         { text: `Decision: ${safeValue(draft.decision)}`, spacingAfter: 1 },
         { text: `Decision reason: ${safeValue(draft.decision_reason)}`, spacingAfter: 1 },
         { text: `Comment: ${safeValue(draft.comment)}`, spacingAfter: 1 },
@@ -182,7 +205,7 @@ export function exportProtocolPdf({
       writeWrapped(`Episode: ${episodeLabel}`, { size: 10, indent: 2 });
       writeWrapped(`Status: ${statusLabel}`, { size: 10, indent: 2 });
       writeWrapped(`Phase: ${phaseLabel}`, { size: 10, indent: 2, spacingAfter: 1 });
-      writeWrapped(`Presented by: ${safeValue(draft.presented_by)}`, { size: 11, spacingAfter: 1 });
+      writeWrapped(`Presented by: ${safeValue(presenterLabel)}`, { size: 11, spacingAfter: 1 });
       writeWrapped(`Decision: ${safeValue(draft.decision)}`, { size: 11, spacingAfter: 1 });
       writeWrapped(`Decision reason: ${safeValue(draft.decision_reason)}`, { size: 11, spacingAfter: 1 });
       writeWrapped(`Comment: ${safeValue(draft.comment)}`, { size: 11, spacingAfter: 1 });
@@ -217,5 +240,5 @@ export function exportProtocolPdf({
   }
 
   const datePart = draftDate || new Date().toISOString().slice(0, 10);
-  pdf.save(`colloquium-protocol-${datePart}.pdf`);
+  pdf.save(`${filePrefix}-${datePart}.pdf`);
 }

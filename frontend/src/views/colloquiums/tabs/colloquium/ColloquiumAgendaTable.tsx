@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Code, ColloqiumAgenda, PatientListItem } from '../../../../api';
+import type { Code, ColloqiumAgenda, PatientListItem, Person } from '../../../../api';
 import { translateCodeLabel } from '../../../../i18n/codeTranslations';
 import { useI18n } from '../../../../i18n/i18n';
 import { formatEpisodeDisplayName } from '../../../layout/episodeDisplay';
@@ -20,7 +20,7 @@ interface Props {
   editingForm: {
     episode_id: number | null;
     episode_ids: number[];
-    presented_by: string;
+    presented_by_id: number | null;
     decision: string;
     decision_reason: string;
     comment: string;
@@ -46,12 +46,15 @@ interface Props {
   onEditFormChange: (patch: Partial<{
     episode_id: number | null;
     episode_ids: number[];
-    presented_by: string;
+    presented_by_id: number | null;
     decision: string;
     decision_reason: string;
     comment: string;
   }>) => void;
   selectedEpisodeLabel: string;
+  showDecisionFields: boolean;
+  readOnly: boolean;
+  presenterOptions: Person[];
 }
 
 export default function ColloquiumAgendaTable({
@@ -71,16 +74,22 @@ export default function ColloquiumAgendaTable({
   onPickEpisode,
   onEditFormChange,
   selectedEpisodeLabel,
+  showDecisionFields,
+  readOnly,
+  presenterOptions,
 }: Props) {
   const { t } = useI18n();
   const [confirmDeleteAgendaId, setConfirmDeleteAgendaId] = useState<number | null>(null);
   const hasRows = agendas.length > 0;
+  const isAddingAgenda = editingAgendaId === 0;
   const hasEpisodeSelection = (editingForm.episode_ids?.length ?? 0) > 0 || Boolean(editingForm.episode_id);
   const hasValidDecisionReason = !editingForm.decision || editingForm.decision_reason.trim().length > 0;
   const selectedPreview = selectedEpisodePreviews.length === 1 ? selectedEpisodePreviews[0] : null;
   const decisionLabelByKey = new Map(decisionOptions.map((option) => [option.key, translateCodeLabel(t, option)]));
   const renderDecision = (decisionKey: string): string =>
     decisionLabelByKey.get(decisionKey) ?? decisionKey ?? '';
+  const tableColSpan = showDecisionFields ? 14 : 12;
+  const canEditRows = !readOnly;
   return (
     <div className="patients-table-wrap ui-table-wrap">
       <table className="data-table">
@@ -96,22 +105,22 @@ export default function ColloquiumAgendaTable({
             <th>{t('coordinations.table.start', 'Start')}</th>
             <th>{t('coordinations.table.end', 'End')}</th>
             <th>{t('colloquiums.protocol.presentedBy', 'Presented By')}</th>
-            <th>{t('colloquiums.protocol.decision', 'Decision')}</th>
-            <th>{t('colloquiums.protocol.decisionReason', 'Begründung')}</th>
+            {showDecisionFields ? <th>{t('colloquiums.protocol.decision', 'Decision')}</th> : null}
+            {showDecisionFields ? <th>{t('colloquiums.protocol.decisionReason', 'Reason')}</th> : null}
             <th>{t('taskBoard.columns.comment', 'Comment')}</th>
-            <th></th>
+            {canEditRows ? <th></th> : null}
           </tr>
         </thead>
         <tbody>
           {!hasRows && editingAgendaId === null && (
             <tr>
-              <td colSpan={14}>
+              <td colSpan={tableColSpan}>
                 <p className="contact-empty">{t('colloquiums.agenda.empty', 'No agenda entries.')}</p>
               </td>
             </tr>
           )}
           {agendas.map((agenda) => {
-            const isEditing = editingAgendaId === agenda.id;
+            const isEditing = canEditRows && editingAgendaId === agenda.id;
             const patient = agenda.episode ? patientsById[agenda.episode.patient_id] : undefined;
             const canOpenEpisode = !isEditing && Boolean(agenda.episode?.id && agenda.episode?.patient_id);
             return (
@@ -158,45 +167,59 @@ export default function ColloquiumAgendaTable({
                 <td>{isEditing ? formatDate(selectedPreview?.end ?? null) : formatDate(agenda.episode?.end ?? null)}</td>
                 <td>
                   {isEditing ? (
-                    <input
-                      className="ci-inline-input"
-                      value={editingForm.presented_by}
-                      onChange={(e) => onEditFormChange({ presented_by: e.target.value })}
-                    />
-                  ) : (
-                    agenda.presented_by || t('common.emptySymbol', '–')
-                  )}
-                </td>
-                <td>
-                  {isEditing ? (
                     <select
                       className="ci-inline-input"
-                      value={editingForm.decision}
-                      onChange={(e) => onEditFormChange({ decision: e.target.value })}
+                      value={editingForm.presented_by_id ?? ''}
+                      onChange={(e) =>
+                        onEditFormChange({ presented_by_id: e.target.value ? Number(e.target.value) : null })}
                     >
-                      <option value="">{t('colloquiums.protocol.decisionPlaceholder', 'Select decision')}</option>
-                      {decisionOptions.map((option) => (
-                        <option key={option.id} value={option.key}>
-                          {translateCodeLabel(t, option)}
+                      <option value="">{t('colloquiums.protocol.presentedByPlaceholder', 'Select presenter')}</option>
+                      {presenterOptions.map((person) => (
+                        <option key={person.id} value={person.id}>
+                          {`${person.first_name} ${person.surname}`.trim()}
                         </option>
                       ))}
                     </select>
                   ) : (
-                    renderDecision(agenda.decision) || t('common.emptySymbol', '–')
+                    agenda.presented_by_person
+                      ? `${agenda.presented_by_person.first_name} ${agenda.presented_by_person.surname}`.trim()
+                      : t('common.emptySymbol', '–')
                   )}
                 </td>
-                <td>
-                  {isEditing ? (
-                    <input
-                      className="ci-inline-input"
-                      maxLength={128}
-                      value={editingForm.decision_reason}
-                      onChange={(e) => onEditFormChange({ decision_reason: e.target.value })}
-                    />
-                  ) : (
-                    agenda.decision_reason || t('common.emptySymbol', '–')
-                  )}
-                </td>
+                {showDecisionFields ? (
+                  <td>
+                    {isEditing ? (
+                      <select
+                        className="ci-inline-input"
+                        value={editingForm.decision}
+                        onChange={(e) => onEditFormChange({ decision: e.target.value })}
+                      >
+                        <option value="">{t('colloquiums.protocol.decisionPlaceholder', 'Select decision')}</option>
+                        {decisionOptions.map((option) => (
+                          <option key={option.id} value={option.key}>
+                            {translateCodeLabel(t, option)}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      renderDecision(agenda.decision) || t('common.emptySymbol', '–')
+                    )}
+                  </td>
+                ) : null}
+                {showDecisionFields ? (
+                  <td>
+                    {isEditing ? (
+                      <input
+                        className="ci-inline-input"
+                        maxLength={128}
+                        value={editingForm.decision_reason}
+                        onChange={(e) => onEditFormChange({ decision_reason: e.target.value })}
+                      />
+                    ) : (
+                      agenda.decision_reason || t('common.emptySymbol', '–')
+                    )}
+                  </td>
+                ) : null}
                 <td>
                   {isEditing ? (
                     <input
@@ -208,30 +231,32 @@ export default function ColloquiumAgendaTable({
                     agenda.comment || t('common.emptySymbol', '–')
                   )}
                 </td>
-                <td className="detail-ci-actions">
-                  {!isEditing ? (
-                    <InlineDeleteActions
-                      confirming={confirmDeleteAgendaId === agenda.id}
-                      onEdit={() => onStartEdit(agenda)}
-                      onRequestDelete={() => setConfirmDeleteAgendaId(agenda.id)}
-                      onConfirmDelete={() => {
-                        onDelete(agenda.id);
-                        setConfirmDeleteAgendaId(null);
-                      }}
-                      onCancelDelete={() => setConfirmDeleteAgendaId(null)}
-                      deleting={deletingAgendaId === agenda.id}
-                    />
-                  ) : (
-                    <>
-                      <button className="ci-save-inline" onClick={onSave} disabled={savingAgenda || !hasEpisodeSelection || !hasValidDecisionReason} title={t('actions.save', 'Save')} aria-label={t('actions.save', 'Save')}>✓</button>
-                      <button className="ci-cancel-inline" onClick={onCancelEdit} disabled={savingAgenda} title={t('actions.cancel', 'Cancel')} aria-label={t('actions.cancel', 'Cancel')}>✕</button>
-                    </>
-                  )}
-                </td>
+                {canEditRows ? (
+                  <td className="detail-ci-actions">
+                    {!isEditing ? (
+                      <InlineDeleteActions
+                        confirming={confirmDeleteAgendaId === agenda.id}
+                        onEdit={() => onStartEdit(agenda)}
+                        onRequestDelete={() => setConfirmDeleteAgendaId(agenda.id)}
+                        onConfirmDelete={() => {
+                          onDelete(agenda.id);
+                          setConfirmDeleteAgendaId(null);
+                        }}
+                        onCancelDelete={() => setConfirmDeleteAgendaId(null)}
+                        deleting={deletingAgendaId === agenda.id}
+                      />
+                    ) : (
+                      <>
+                        <button className="ci-save-inline" onClick={onSave} disabled={savingAgenda || !hasEpisodeSelection || (showDecisionFields && !hasValidDecisionReason)} title={t('actions.save', 'Save')} aria-label={t('actions.save', 'Save')}>✓</button>
+                        <button className="ci-cancel-inline" onClick={onCancelEdit} disabled={savingAgenda} title={t('actions.cancel', 'Cancel')} aria-label={t('actions.cancel', 'Cancel')}>✕</button>
+                      </>
+                    )}
+                  </td>
+                ) : null}
               </tr>
             );
           })}
-          {editingAgendaId === 0 && (
+          {editingAgendaId === 0 && canEditRows && (
             <tr className="ci-editing-row">
               <td className="open-col">
                 <button className="open-btn" disabled title={t('colloquiums.actions.openEpisode', 'Open episode')}>
@@ -251,34 +276,30 @@ export default function ColloquiumAgendaTable({
               <td>{formatDate(selectedPreview?.start ?? null)}</td>
               <td>{formatDate(selectedPreview?.end ?? null)}</td>
               <td>
-                <input
-                  className="ci-inline-input"
-                  value={editingForm.presented_by}
-                  onChange={(e) => onEditFormChange({ presented_by: e.target.value })}
-                />
-              </td>
-              <td>
                 <select
                   className="ci-inline-input"
-                  value={editingForm.decision}
-                  onChange={(e) => onEditFormChange({ decision: e.target.value })}
+                  value={editingForm.presented_by_id ?? ''}
+                  onChange={(e) =>
+                    onEditFormChange({ presented_by_id: e.target.value ? Number(e.target.value) : null })}
                 >
-                  <option value="">{t('colloquiums.protocol.decisionPlaceholder', 'Select decision')}</option>
-                  {decisionOptions.map((option) => (
-                    <option key={option.id} value={option.key}>
-                      {translateCodeLabel(t, option)}
+                  <option value="">{t('colloquiums.protocol.presentedByPlaceholder', 'Select presenter')}</option>
+                  {presenterOptions.map((person) => (
+                    <option key={person.id} value={person.id}>
+                      {`${person.first_name} ${person.surname}`.trim()}
                     </option>
                   ))}
                 </select>
               </td>
-              <td>
-                <input
-                  className="ci-inline-input"
-                  maxLength={128}
-                  value={editingForm.decision_reason}
-                  onChange={(e) => onEditFormChange({ decision_reason: e.target.value })}
-                />
-              </td>
+              {showDecisionFields ? (
+                <td>
+                  {t('common.emptySymbol', '–')}
+                </td>
+              ) : null}
+              {showDecisionFields ? (
+                <td>
+                  {t('common.emptySymbol', '–')}
+                </td>
+              ) : null}
               <td>
                 <input
                   className="ci-inline-input"
@@ -286,15 +307,17 @@ export default function ColloquiumAgendaTable({
                   onChange={(e) => onEditFormChange({ comment: e.target.value })}
                 />
               </td>
-              <td className="detail-ci-actions">
-                <button className="ci-save-inline" onClick={onSave} disabled={savingAgenda || !hasEpisodeSelection || !hasValidDecisionReason} title={t('actions.save', 'Save')} aria-label={t('actions.save', 'Save')}>✓</button>
-                <button className="ci-cancel-inline" onClick={onCancelEdit} disabled={savingAgenda} title={t('actions.cancel', 'Cancel')} aria-label={t('actions.cancel', 'Cancel')}>✕</button>
-              </td>
+              {canEditRows ? (
+                <td className="detail-ci-actions">
+                  <button className="ci-save-inline" onClick={onSave} disabled={savingAgenda || !hasEpisodeSelection || (showDecisionFields && !isAddingAgenda && !hasValidDecisionReason)} title={t('actions.save', 'Save')} aria-label={t('actions.save', 'Save')}>✓</button>
+                  <button className="ci-cancel-inline" onClick={onCancelEdit} disabled={savingAgenda} title={t('actions.cancel', 'Cancel')} aria-label={t('actions.cancel', 'Cancel')}>✕</button>
+                </td>
+              ) : null}
             </tr>
           )}
-          {editingAgendaId === 0 && selectedEpisodePreviews.length > 1 && (
+          {editingAgendaId === 0 && canEditRows && selectedEpisodePreviews.length > 1 && (
             <tr className="contact-row">
-              <td colSpan={14}>
+              <td colSpan={tableColSpan}>
                 <div className="contact-section">
                   <p className="contact-empty">
                     {t('colloquiums.protocol.selectedEpisodes', 'Selected episodes:')}{' '}

@@ -58,7 +58,7 @@ Create a new Markdown file under:
 
 Specification format details live in `doc/specification-manual.qmd`.
 
-### B) Add/extend executable scenario logic (only for partner scenarios)
+### B) Add/extend executable scenario logic
 
 For browser-driven flows, add or update a Playwright test in:
 
@@ -67,6 +67,8 @@ For browser-driven flows, add or update a Playwright test in:
 Current example:
 
 - `frontend/test/create-patient-from-recipients.spec.ts`
+
+Client-server spec cases can include optional `ui_flow` and `verify` objects to trigger this browser flow from the standard `client_server` pipeline (not only via partner-only runs).
 
 ## 5) How To Run Tests
 

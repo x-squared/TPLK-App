@@ -10,17 +10,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Vulnerability scan
-        run: echo "TODO: add scanner (npm/pip/audit)"
+        run: 'echo "TODO: add scanner (npm/pip/audit)"'
       - name: Outdated report
-        run: echo "TODO: add outdated dependency report"
+        run: 'echo "TODO: add outdated dependency report"'
       - name: Lockfile consistency
-        run: echo "TODO: validate lockfiles"
+        run: 'echo "TODO: validate lockfiles"'
   dependency-graph-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Graph rule check
         run: ./scripts/check_dependency_graph.sh
+  schema-seed-consistency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+      - name: Schema and seed consistency check
+        run: ./scripts/check_schema_and_seed_consistency.sh
+  report-source-contract-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dev dependencies
+        run: pip install -r backend/requirements-dev.txt
+      - name: Report source contract test
+        run: pytest backend/tests/test_report_source_contract.py
   translation-ownership-check:
     runs-on: ubuntu-latest
     steps:
@@ -32,4 +56,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build/Test placeholder
-        run: echo "TODO: wire repo-specific build/test commands"
+        run: 'echo "TODO: wire repo-specific build/test commands"'

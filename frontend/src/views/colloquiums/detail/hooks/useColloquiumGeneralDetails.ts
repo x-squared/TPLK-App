@@ -20,8 +20,10 @@ export function useColloquiumGeneralDetails(
   const [draftDate, setDraftDate] = useState('');
   const [draftParticipants, setDraftParticipants] = useState('');
   const [draftParticipantsPeople, setDraftParticipantsPeople] = useState<Person[]>([]);
+  const [draftSignatoriesPeople, setDraftSignatoriesPeople] = useState<Person[]>([]);
   const [generalEditing, setGeneralEditing] = useState(false);
   const [savingGeneral, setSavingGeneral] = useState(false);
+  const [completingColloqium, setCompletingColloqium] = useState(false);
   const [generalSaveError, setGeneralSaveError] = useState('');
 
   useEffect(() => {
@@ -36,6 +38,7 @@ export function useColloquiumGeneralDetails(
         setDraftDate(selected?.date ?? '');
         setDraftParticipants(selected?.participants ?? formatParticipants(selectedPeople));
         setDraftParticipantsPeople(selectedPeople);
+        setDraftSignatoriesPeople(selected?.signatories_people ?? []);
         setGeneralEditing(false);
       } finally {
         setLoading(false);
@@ -53,6 +56,7 @@ export function useColloquiumGeneralDetails(
       && (
         draftName !== (colloqium.colloqium_type?.name ?? '')
         || JSON.stringify(draftParticipantsPeople.map((person) => person.id)) !== JSON.stringify((colloqium.participant_ids ?? []))
+        || JSON.stringify(draftSignatoriesPeople.map((person) => person.id)) !== JSON.stringify((colloqium.signatory_ids ?? []))
         || (draftDate || '') !== (colloqium.date ?? '')
       ),
   );
@@ -70,9 +74,12 @@ export function useColloquiumGeneralDetails(
           colloqium_type: { ...(nextColloqium.colloqium_type ?? updatedType), ...updatedType },
         };
       }
-      const colloqiumPayload: { date?: string; participant_ids?: number[] } = {};
+      const colloqiumPayload: { date?: string; participant_ids?: number[]; signatory_ids?: number[] } = {};
       if (JSON.stringify(draftParticipantsPeople.map((person) => person.id)) !== JSON.stringify((colloqium.participant_ids ?? []))) {
         colloqiumPayload.participant_ids = draftParticipantsPeople.map((person) => person.id);
+      }
+      if (JSON.stringify(draftSignatoriesPeople.map((person) => person.id)) !== JSON.stringify((colloqium.signatory_ids ?? []))) {
+        colloqiumPayload.signatory_ids = draftSignatoriesPeople.map((person) => person.id);
       }
       if ((draftDate || '') !== (colloqium.date ?? '')) {
         colloqiumPayload.date = draftDate;
@@ -89,11 +96,30 @@ export function useColloquiumGeneralDetails(
       const refreshedPeople = nextColloqium.participants_people ?? [];
       setDraftParticipants(nextColloqium.participants ?? formatParticipants(refreshedPeople));
       setDraftParticipantsPeople(refreshedPeople);
+      setDraftSignatoriesPeople(nextColloqium.signatories_people ?? []);
       setGeneralEditing(false);
     } catch (error) {
       setGeneralSaveError(toUserErrorMessage(error, 'Could not save colloquium details.'));
     } finally {
       setSavingGeneral(false);
+    }
+  };
+
+  const completeColloqium = async () => {
+    if (!colloqium || colloqium.completed || completingColloqium) return;
+    setCompletingColloqium(true);
+    setGeneralSaveError('');
+    try {
+      const updated = await api.updateColloqium(colloqium.id, {
+        completed: true,
+        signatory_ids: draftSignatoriesPeople.map((person) => person.id),
+      });
+      setColloqium((prev) => (prev ? { ...prev, ...updated } : updated));
+      setTab('colloquium');
+    } catch (error) {
+      setGeneralSaveError(toUserErrorMessage(error, 'Could not complete colloquium.'));
+    } finally {
+      setCompletingColloqium(false);
     }
   };
 
@@ -109,6 +135,7 @@ export function useColloquiumGeneralDetails(
     const colloqiumPeople = colloqium.participants_people ?? [];
     setDraftParticipants(colloqium.participants ?? formatParticipants(colloqiumPeople));
     setDraftParticipantsPeople(colloqiumPeople);
+    setDraftSignatoriesPeople(colloqium.signatories_people ?? []);
     setGeneralSaveError('');
     setGeneralEditing(false);
   };
@@ -137,11 +164,15 @@ export function useColloquiumGeneralDetails(
     setDraftParticipants,
     draftParticipantsPeople,
     setDraftParticipantsPeople,
+    draftSignatoriesPeople,
+    setDraftSignatoriesPeople,
     generalEditing,
     savingGeneral,
+    completingColloqium,
     generalSaveError,
     isGeneralDirty,
     saveGeneralDetails,
+    completeColloqium,
     startGeneralEditing,
     cancelGeneralEditing,
     syncDraftFromPayload,

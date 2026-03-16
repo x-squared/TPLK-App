@@ -47,8 +47,12 @@ package "TPLK Domain" {
 package "KOLL Domain" {
   class ColloqiumType
   class Colloqium
+  class ColloqiumSignatory
   class ColloqiumAgenda
 }
+
+Colloqium : signatories (string)
+Colloqium : completed (bool, one-way false -> true)
 
 package "CROSS Domain" {
   class TaskGroupTemplate
@@ -93,8 +97,11 @@ Task "1" <-- "0..*" CoordinationProtocolEventLog : optional task reference
 ColloqiumType "1" -- "0..*" Colloqium
 ColloqiumType "*" -- "*" Person : default participants
 Colloqium "*" -- "*" Person : participants
+Colloqium "1" -- "0..*" ColloqiumSignatory
+Person "1" <-- "0..*" ColloqiumSignatory : signatories
 Colloqium "1" -- "0..*" ColloqiumAgenda
 Episode "1" <-- "0..*" ColloqiumAgenda : references >
+Person "1" <-- "0..*" ColloqiumAgenda : presented by >
 
 ' Tasking + communication
 TaskGroupTemplate "1" -- "0..*" TaskTemplate

@@ -1,10 +1,13 @@
-import { api, type ColloqiumAgenda, type PatientListItem, type Task } from '../../../../api';
+import { api, type ColloqiumAgenda, type PatientListItem, type Person, type Task } from '../../../../api';
 import { exportProtocolPdf, type ProtocolAgendaDraft } from './exportProtocolPdf';
 
 interface ExportColloquiumProtocolInput {
   draftName: string;
   draftDate: string;
   draftParticipants: string;
+  signatoriesPeople: Person[];
+  isColloqiumCompleted: boolean;
+  presenterPeople: Person[];
   agendas: ColloqiumAgenda[];
   agendaDrafts: Record<number, ProtocolAgendaDraft>;
   patientsById: Record<number, PatientListItem>;
@@ -15,6 +18,9 @@ export async function exportColloquiumProtocolPdf(input: ExportColloquiumProtoco
     draftName,
     draftDate,
     draftParticipants,
+    signatoriesPeople,
+    isColloqiumCompleted,
+    presenterPeople,
     agendas,
     agendaDrafts,
     patientsById,
@@ -43,6 +49,13 @@ export async function exportColloquiumProtocolPdf(input: ExportColloquiumProtoco
     draftName,
     draftDate,
     draftParticipants,
+    isColloqiumCompleted,
+    signatoriesLine: signatoriesPeople.length > 0
+      ? signatoriesPeople.map((person) => `${person.first_name} ${person.surname}`.trim()).join(', ')
+      : '',
+    presenterPeopleById: Object.fromEntries(
+      presenterPeople.map((person) => [person.id, `${person.first_name} ${person.surname}`.trim()]),
+    ),
     agendas,
     agendaDrafts,
     patientsById,

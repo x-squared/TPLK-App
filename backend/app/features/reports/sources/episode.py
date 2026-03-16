@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session, joinedload, selectinload
 
-from ....models import Episode, Patient
+from ....models import Episode, Patient, User
 from ..engine import join_unique_text
 from ..types import FieldDef, JoinDef, SourceDef
 
@@ -72,6 +72,37 @@ def build_episode_source() -> SourceDef:
                 ),
             ),
         ),
+        JoinDef(
+            key="PATIENT_RESP_COORD",
+            label="Patient Responsible Coordinator",
+            fields=(
+                FieldDef(
+                    "patient_resp_coord_name",
+                    "Patient Resp. Coord. Name",
+                    "string",
+                    ("eq", "contains"),
+                    lambda row: row.patient.resp_coord.name if row.patient and row.patient.resp_coord else "",
+                ),
+                FieldDef(
+                    "patient_resp_coord_ext_id",
+                    "Patient Resp. Coord. Ext ID",
+                    "string",
+                    ("eq", "contains"),
+                    lambda row: row.patient.resp_coord.ext_id if row.patient and row.patient.resp_coord else "",
+                ),
+                FieldDef(
+                    "patient_resp_coord_role",
+                    "Patient Resp. Coord. Role",
+                    "string",
+                    ("eq", "contains"),
+                    lambda row: (
+                        row.patient.resp_coord.role.name_default
+                        if row.patient and row.patient.resp_coord and row.patient.resp_coord.role
+                        else ""
+                    ),
+                ),
+            ),
+        ),
     )
 
     def query(db: Session) -> list[Episode]:
@@ -79,6 +110,7 @@ def build_episode_source() -> SourceDef:
             db.query(Episode)
             .options(
                 joinedload(Episode.patient).joinedload(Patient.sex),
+                joinedload(Episode.patient).joinedload(Patient.resp_coord).joinedload(User.role),
                 joinedload(Episode.organ),
                 selectinload(Episode.organs),
                 joinedload(Episode.status),

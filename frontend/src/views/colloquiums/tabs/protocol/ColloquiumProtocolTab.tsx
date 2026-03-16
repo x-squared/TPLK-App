@@ -11,17 +11,22 @@ interface Props {
   draftDate: string;
   draftParticipants: string;
   draftParticipantsPeople: Person[];
+  draftSignatoriesPeople: Person[];
   agendas: ColloqiumAgenda[];
   agendaDrafts: Record<number, AgendaDraft>;
   loadingAgendas: boolean;
   decisionOptions: Code[];
   patientsById: Record<number, PatientListItem>;
+  isColloqiumCompleted: boolean;
+  completingColloqium: boolean;
+  onCompleteColloqium: () => void;
   onChangeAgendaDraft: (agendaId: number, patch: Partial<AgendaDraft>) => void;
+  onChangeDraftSignatoriesPeople: (next: Person[]) => void;
   onChangeDraftParticipantsPeople: (next: Person[]) => void;
 }
 
 export interface AgendaDraft {
-  presented_by: string;
+  presented_by_id: number | null;
   decision: string;
   decision_reason: string;
   comment: string;
@@ -38,12 +43,17 @@ export default function ColloquiumProtocolTab({
   draftDate,
   draftParticipants,
   draftParticipantsPeople,
+  draftSignatoriesPeople,
   agendas,
   agendaDrafts,
   loadingAgendas,
   decisionOptions,
   patientsById,
+  isColloqiumCompleted,
+  completingColloqium,
+  onCompleteColloqium,
   onChangeAgendaDraft,
+  onChangeDraftSignatoriesPeople,
   onChangeDraftParticipantsPeople,
 }: Props) {
   const { t } = useI18n();
@@ -74,6 +84,9 @@ export default function ColloquiumProtocolTab({
         draftName,
         draftDate,
         draftParticipants,
+        signatoriesPeople: draftSignatoriesPeople,
+        isColloqiumCompleted,
+        presenterPeople: draftParticipantsPeople,
         agendas: sortedAgendas,
         agendaDrafts,
         patientsById,
@@ -130,7 +143,7 @@ export default function ColloquiumProtocolTab({
         ) : (
           <div className="colloquiums-protocol-agenda">
             {sortedAgendas.map((agenda, idx) => {
-              const draft = agendaDrafts[agenda.id] ?? { presented_by: '', decision: '', decision_reason: '', comment: '' };
+              const draft = agendaDrafts[agenda.id] ?? { presented_by_id: null, decision: '', decision_reason: '', comment: '' };
               const patient = agenda.episode ? patientsById[agenda.episode.patient_id] : undefined;
               const phase = resolvePhase(agenda);
               const tasksVisible = visibleTaskListsByAgendaId[agenda.id] ?? false;
@@ -158,11 +171,18 @@ export default function ColloquiumProtocolTab({
                   <div className="colloquiums-protocol-episode-fields">
                     <label>
                       {t('colloquiums.protocol.presentedBy', 'Presented By')}
-                      <input
-                        type="text"
-                        value={draft.presented_by}
-                        onChange={(e) => onChangeAgendaDraft(agenda.id, { presented_by: e.target.value })}
-                      />
+                      <select
+                        value={draft.presented_by_id ?? ''}
+                        onChange={(e) =>
+                          onChangeAgendaDraft(agenda.id, { presented_by_id: e.target.value ? Number(e.target.value) : null })}
+                      >
+                        <option value="">{t('colloquiums.protocol.presentedByPlaceholder', 'Select presenter')}</option>
+                        {draftParticipantsPeople.map((person) => (
+                          <option key={person.id} value={person.id}>
+                            {`${person.first_name} ${person.surname}`.trim()}
+                          </option>
+                        ))}
+                      </select>
                     </label>
                     <label className="colloquiums-protocol-decision-field">
                       {t('colloquiums.protocol.decision', 'Decision')}
@@ -179,8 +199,8 @@ export default function ColloquiumProtocolTab({
                         ))}
                       </select>
                     </label>
-                    <label>
-                      {t('colloquiums.protocol.decisionReason', 'Begründung')}
+                    <label className="colloquiums-protocol-reason-field">
+                      {t('colloquiums.protocol.decisionReason', 'Reason')}
                       <input
                         type="text"
                         maxLength={128}
@@ -264,6 +284,32 @@ export default function ColloquiumProtocolTab({
             })}
           </div>
         )}
+
+        <section className="colloquiums-protocol-signatories detail-section">
+          <div className="detail-section-heading">
+            <h3>{t('colloquiums.protocol.signatories.title', 'Signatories')}</h3>
+          </div>
+          <div className="colloquiums-protocol-signatories-field">
+            <span>{t('colloquiums.protocol.signatories.field', 'Signatories')}</span>
+            <PersonMultiSelect
+              selectedPeople={draftSignatoriesPeople}
+              onChange={onChangeDraftSignatoriesPeople}
+            />
+          </div>
+          <div className="colloquiums-protocol-signatories-actions">
+            <button
+              className="patients-save-btn"
+              onClick={onCompleteColloqium}
+              disabled={isColloqiumCompleted || completingColloqium}
+            >
+              {isColloqiumCompleted
+                ? t('colloquiums.protocol.completed', 'Colloquium completed')
+                : (completingColloqium
+                    ? t('colloquiums.actions.completing', 'Completing...')
+                    : t('colloquiums.actions.complete', 'Colloquium complete'))}
+            </button>
+          </div>
+        </section>
       </div>
     </section>
   );

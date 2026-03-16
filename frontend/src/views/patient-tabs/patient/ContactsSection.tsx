@@ -25,6 +25,7 @@ export default function ContactsSection({
   setConfirmDeleteId,
   handleDeleteContact,
   contactTypes,
+  contactUseTypes,
   ciForm,
   setCiForm,
   handleAddContact,
@@ -63,6 +64,16 @@ export default function ContactsSection({
                         <option key={c.id} value={c.id}>{translateCodeLabel(t, c)}</option>
                       ))}
                     </select>
+                    <select
+                      className="detail-input ci-inline-input"
+                      value={ciEditForm.use_id ?? ''}
+                      onChange={(e) => setCiEditForm((f) => ({ ...f, use_id: e.target.value === '' ? null : Number(e.target.value) }))}
+                    >
+                      <option value="">{t('patient.contacts.use.empty', 'No use')}</option>
+                      {contactUseTypes.map((c: any) => (
+                        <option key={c.id} value={c.id}>{translateCodeLabel(t, c)}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className="detail-ci-data">
                     <input
@@ -98,7 +109,9 @@ export default function ContactsSection({
                   <td className="detail-ci-main">
                     {ci.main && <span className="main-badge">{t('patients.contact.main', 'Main')}</span>}
                   </td>
-                  <td className="detail-ci-type">{translateCodeLabel(t, ci.type)}</td>
+                  <td className="detail-ci-type">
+                    {ci.use ? `${translateCodeLabel(t, ci.type)} (${translateCodeLabel(t, ci.use)})` : translateCodeLabel(t, ci.type)}
+                  </td>
                   <td className="detail-ci-data">{ci.data}</td>
                   <td className="detail-ci-comment">{ci.comment || ''}</td>
                   <td className="detail-ci-actions">
@@ -127,6 +140,16 @@ export default function ContactsSection({
             onChange={(e) => setCiForm((f) => ({ ...f, type_id: Number(e.target.value) }))}
           >
             {contactTypes.map((c: any) => (
+              <option key={c.id} value={c.id}>{translateCodeLabel(t, c)}</option>
+            ))}
+          </select>
+          <select
+            className="detail-input"
+            value={ciForm.use_id ?? ''}
+            onChange={(e) => setCiForm((f) => ({ ...f, use_id: e.target.value === '' ? null : Number(e.target.value) }))}
+          >
+            <option value="">{t('patient.contacts.use.empty', 'No use')}</option>
+            {contactUseTypes.map((c: any) => (
               <option key={c.id} value={c.id}>{translateCodeLabel(t, c)}</option>
             ))}
           </select>

@@ -45,6 +45,7 @@ export default function PatientTab(props: PatientTabProps) {
         setConfirmDeleteId={contacts.setConfirmDeleteId}
         handleDeleteContact={contacts.handleDeleteContact}
         contactTypes={contacts.contactTypes}
+        contactUseTypes={contacts.contactUseTypes}
         ciForm={contacts.ciForm}
         setCiForm={contacts.setCiForm}
         handleAddContact={contacts.handleAddContact}

@@ -44,6 +44,16 @@ Expect fields:
 - `json_subset` (object, optional)
 - `body_contains` (list of strings, optional)
 
+Optional scenario extensions for browser + DB flows in `client_server` specs:
+
+- `ui_flow` (object, optional), currently supports:
+  - `login_ext_id` (string)
+  - `open_recipients_view` (boolean)
+  - `create_patient` object with `pid_prefix`, `first_name`, `name`, `date_of_birth`
+- `verify` (object, optional), currently supports:
+  - `ui_contains_created_pid` (boolean)
+  - `database_contains_created_patient` (boolean)
+
 ## Commands
 
 From repository root:

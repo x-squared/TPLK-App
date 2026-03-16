@@ -16,7 +16,7 @@ export interface ProtocolDraftPayload {
 export interface AgendaEditForm {
   episode_id: number | null;
   episode_ids: number[];
-  presented_by: string;
+  presented_by_id: number | null;
   decision: string;
   decision_reason: string;
   comment: string;

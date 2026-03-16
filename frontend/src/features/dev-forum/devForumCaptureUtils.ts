@@ -12,6 +12,32 @@ export function parseCaptureState(raw: string): Record<string, unknown> {
   return {};
 }
 
+function detectActiveTabContext(): { key: string; label: string; selector: string } | null {
+  if (typeof document === 'undefined') return null;
+  const activeTab = document.querySelector(
+    [
+      '[role="tab"][aria-selected="true"]',
+      '.detail-tab.active',
+      '.episode-process-tab.active',
+    ].join(', '),
+  );
+  if (!(activeTab instanceof HTMLElement)) return null;
+  const rawLabel = (activeTab.textContent || '').trim();
+  const rawKey = (
+    activeTab.getAttribute('data-tab-key')
+    || activeTab.getAttribute('data-tab')
+    || activeTab.id
+    || rawLabel
+  ).trim();
+  const selector = activeTab.id ? `#${CSS.escape(activeTab.id)}` : activeTab.tagName.toLowerCase();
+  if (!rawLabel && !rawKey) return null;
+  return {
+    key: rawKey || rawLabel,
+    label: rawLabel || rawKey,
+    selector,
+  };
+}
+
 export function getCurrentCaptureContext() {
   const path = window.location.pathname;
   const query = window.location.search;
@@ -29,6 +55,7 @@ export function getCurrentCaptureContext() {
     ...pathIds.map((value) => ({ key: 'path_id', value })),
   ];
   const guiPart = currentPage || path.split('/').filter(Boolean)[0] || 'app';
+  const activeTab = detectActiveTabContext();
   return {
     capture_url: `${path}${query}${hash}`,
     capture_gui_part: guiPart,
@@ -38,6 +65,7 @@ export function getCurrentCaptureContext() {
       query,
       hash,
       gui_part: guiPart,
+      active_tab: activeTab,
       ids,
       captured_at: new Date().toISOString(),
     }),

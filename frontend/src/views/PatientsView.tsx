@@ -2,6 +2,7 @@ import TaskBoard from './tasks/TaskBoard';
 import { useI18n } from '../i18n/i18n';
 import PatientsAddForm from './patients/PatientsAddForm';
 import PatientsFilters from './patients/PatientsFilters';
+import PatientsImportDialog from './patients/PatientsImportDialog';
 import PatientsTable from './patients/PatientsTable';
 import { usePatientsViewModel } from './patients/usePatientsViewModel';
 import './layout/PanelLayout.css';
@@ -40,6 +41,19 @@ export default function PatientsView({ onSelectPatient }: Props) {
     creatingPatient,
     createPatientError,
     setCreatePatientError,
+    importDialogOpen,
+    setImportDialogOpen,
+    importPid,
+    setImportPid,
+    importStage,
+    importOperationId,
+    importError,
+    importWarning,
+    importedPatientData,
+    closeImportDialog,
+    runPatientImport,
+    interruptPatientImport,
+    confirmImportedPatientCreate,
     selectedTaskPatientId,
     setSelectedTaskPatientId,
     newPatient,
@@ -55,12 +69,32 @@ export default function PatientsView({ onSelectPatient }: Props) {
     <>
       <header className="patients-header">
         <h1>{t('patients.title', 'Patients')}</h1>
-        {!addingPatient && (
-          <button className="patients-add-btn" onClick={() => setAddingPatient(true)}>
-            {t('patients.actions.addPatient', '+ Add Patient')}
+        <div className="patients-header-actions">
+          {!addingPatient && (
+            <button className="patients-add-btn" onClick={() => setAddingPatient(true)}>
+              {t('patients.actions.addPatient', '+ Add Patient')}
+            </button>
+          )}
+          <button className="patients-add-btn" onClick={() => setImportDialogOpen(true)}>
+            {t('patients.actions.importPatient', 'Import Patient')}
           </button>
-        )}
+        </div>
       </header>
+
+      <PatientsImportDialog
+        open={importDialogOpen}
+        pid={importPid}
+        setPid={setImportPid}
+        stage={importStage}
+        operationId={importOperationId}
+        error={importError}
+        warning={importWarning}
+        importedPatientData={importedPatientData}
+        onStart={runPatientImport}
+        onInterrupt={interruptPatientImport}
+        onConfirmCreate={confirmImportedPatientCreate}
+        onClose={closeImportDialog}
+      />
 
       {addingPatient && (
         <PatientsAddForm

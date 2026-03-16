@@ -213,7 +213,7 @@ def main() -> int:
         "--mode",
         choices=("recreate", "migrate", "verify"),
         default="migrate",
-        help="recreate=drop/create, migrate=create missing, verify=drift check only",
+        help="recreate=drop/create, migrate=create missing tables only (no ALTER), verify=drift check only",
     )
     parser.add_argument(
         "--check-level",
@@ -243,7 +243,10 @@ def main() -> int:
                 f"(check-level={args.check_level})."
             )
             _print_drift(drift)
-            print("Hint: run with --mode recreate for a full rebuild.")
+            print(
+                "Reason: `migrate` uses SQLAlchemy create_all(), which does not alter existing tables/columns. "
+                "Hint: run with --mode recreate for a full rebuild."
+            )
             return 2
         print("Schema migrated successfully.")
         return 0

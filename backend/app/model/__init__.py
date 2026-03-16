@@ -1,5 +1,12 @@
 from .dev_forum import DevRequest
-from .colloqium import Colloqium, ColloqiumAgenda, ColloqiumParticipant, ColloqiumType, ColloqiumTypeParticipant
+from .colloqium import (
+    Colloqium,
+    ColloqiumAgenda,
+    ColloqiumParticipant,
+    ColloqiumSignatory,
+    ColloqiumType,
+    ColloqiumTypeParticipant,
+)
 from .coordination import Coordination, CoordinationProtocolEventLog
 from .coordination_donor import CoordinationDonor
 from .coordination_episode import CoordinationEpisode
@@ -71,6 +78,7 @@ __all__ = [
     "ColloqiumAgenda",
     "ColloqiumTypeParticipant",
     "ColloqiumParticipant",
+    "ColloqiumSignatory",
     "Coordination",
     "CoordinationProtocolEventLog",
     "CoordinationDonor",

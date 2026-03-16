@@ -19,6 +19,8 @@ class SpecCase:
     expect_status: int
     expect_json_subset: dict | None
     expect_body_contains: list[str]
+    ui_flow: dict | None
+    verify: dict | None
     source_file: str
 
 
@@ -34,6 +36,8 @@ def _normalize_case(payload: dict, source_file: str) -> SpecCase:
         expect_status=int(expect.get("status", 200)),
         expect_json_subset=expect.get("json_subset"),
         expect_body_contains=[str(item) for item in expect.get("body_contains", [])],
+        ui_flow=payload.get("ui_flow") if isinstance(payload.get("ui_flow"), dict) else None,
+        verify=payload.get("verify") if isinstance(payload.get("verify"), dict) else None,
         source_file=source_file,
     )
 

@@ -57,7 +57,7 @@ interface Props {
   editingAgendaForm: {
     episode_id: number | null;
     episode_ids: number[];
-    presented_by: string;
+    presented_by_id: number | null;
     decision: string;
     decision_reason: string;
     comment: string;
@@ -81,7 +81,7 @@ interface Props {
   onAgendaFormChange: (patch: Partial<{
     episode_id: number | null;
     episode_ids: number[];
-    presented_by: string;
+    presented_by_id: number | null;
     decision: string;
     decision_reason: string;
     comment: string;
@@ -202,8 +202,8 @@ export default function ColloquiumDetailSection({
       <ErrorBanner message={generalSaveError} />
       <div className="colloquiums-agenda-section">
         <div className="detail-section-heading">
-          <h3>{t('colloquiums.table.agenda', 'Agenda')}</h3>
-          {editingAgendaId === null && (
+          <h3>{colloqium.completed ? t('colloquiums.table.summary', 'Summary') : t('colloquiums.table.agenda', 'Agenda')}</h3>
+          {editingAgendaId === null && !colloqium.completed && (
             <button className="ci-add-btn" onClick={onStartAddAgenda}>{t('colloquiums.actions.add', '+ Add')}</button>
           )}
         </div>
@@ -228,6 +228,9 @@ export default function ColloquiumDetailSection({
             onPickEpisode={onPickEpisode}
             onEditFormChange={onAgendaFormChange}
             selectedEpisodeLabel={selectedEpisodeLabel}
+            showDecisionFields={colloqium.completed}
+            readOnly={colloqium.completed}
+            presenterOptions={draftParticipantsPeople}
           />
         )}
       </div>

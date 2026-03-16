@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -123,6 +123,22 @@ class Colloqium(Base):
         comment="Participant list for this colloquium instance.",
         info={"label": "Participants"},
     )
+    signatories = Column(
+        "SIGNATORIES",
+        String(1024),
+        default="",
+        comment="Legacy free-text signatories; replaced by signatory person links.",
+        info={"label": "Signatories"},
+    )
+    completed = Column(
+        "COMPLETED",
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="0",
+        comment="Marks whether the colloquium has been completed and switched to summary mode.",
+        info={"label": "Completed"},
+    )
     changed_by_id = Column(
         "CHANGED_BY",
         Integer,
@@ -164,6 +180,12 @@ class Colloqium(Base):
         cascade="all, delete-orphan",
         order_by="ColloqiumParticipant.pos.asc()",
     )
+    signatory_links = relationship(
+        "ColloqiumSignatory",
+        back_populates="colloqium",
+        cascade="all, delete-orphan",
+        order_by="ColloqiumSignatory.pos.asc()",
+    )
 
     @property
     def participant_ids(self) -> list[int]:
@@ -172,6 +194,14 @@ class Colloqium(Base):
     @property
     def participants_people(self) -> list["Person"]:
         return [link.person for link in (self.participant_links or []) if link.person is not None]
+
+    @property
+    def signatory_ids(self) -> list[int]:
+        return [link.person_id for link in (self.signatory_links or []) if link.person_id is not None]
+
+    @property
+    def signatories_people(self) -> list["Person"]:
+        return [link.person for link in (self.signatory_links or []) if link.person is not None]
 
 
 class ColloqiumAgenda(Base):
@@ -201,11 +231,12 @@ class ColloqiumAgenda(Base):
         comment="Episode reference discussed in this agenda entry.",
         info={"label": "Episode"},
     )
-    presented_by = Column(
-        "PRESENTED_BY",
-        String(64),
-        default="",
-        comment="Name/identifier of the person presenting this agenda item.",
+    presented_by_id = Column(
+        "PRESENTED_BY_ID",
+        Integer,
+        ForeignKey("PERSON.ID"),
+        nullable=True,
+        comment="Person reference for who presented this agenda item.",
         info={"label": "Presented By"},
     )
     decision = Column(
@@ -262,6 +293,7 @@ class ColloqiumAgenda(Base):
 
     colloqium = relationship("Colloqium", back_populates="agendas")
     episode = relationship("Episode")
+    presented_by_person = relationship("Person", foreign_keys=[presented_by_id])
     changed_by_user = relationship("User", foreign_keys=[changed_by_id])
     created_by_user = relationship("User", foreign_keys=[created_by_id])
 
@@ -345,4 +377,45 @@ class ColloqiumParticipant(Base):
     )
 
     colloqium = relationship("Colloqium", back_populates="participant_links")
+    person = relationship("Person")
+
+
+class ColloqiumSignatory(Base):
+    __tablename__ = "COLLOQIUM_SIGNATORY"
+    __table_args__ = (UniqueConstraint("COLLOQIUM_ID", "PERSON_ID"),)
+
+    id = Column(
+        "ID",
+        Integer,
+        primary_key=True,
+        index=True,
+        comment="Technical primary key of the colloquium signatory link.",
+        info={"label": "ID"},
+    )
+    colloqium_id = Column(
+        "COLLOQIUM_ID",
+        Integer,
+        ForeignKey("COLLOQIUM.ID"),
+        nullable=False,
+        comment="Owning colloquium instance.",
+        info={"label": "Colloquium"},
+    )
+    person_id = Column(
+        "PERSON_ID",
+        Integer,
+        ForeignKey("PERSON.ID"),
+        nullable=False,
+        comment="Linked signatory person.",
+        info={"label": "Person"},
+    )
+    pos = Column(
+        "POS",
+        Integer,
+        nullable=False,
+        default=1,
+        comment="Sort position among signatories.",
+        info={"label": "Position"},
+    )
+
+    colloqium = relationship("Colloqium", back_populates="signatory_links")
     person = relationship("Person")

@@ -136,10 +136,15 @@ def main() -> int:
     cmd = [sys.executable, "-m", "unittest", "qa.tests.generated.test_client_server_specs", "-v"]
     proc = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True)
     output = (proc.stdout or "") + "\n" + (proc.stderr or "")
-    _write_report(proc.returncode, output, generated_summary, case_results)
+    case_failure_count = len([result for result in case_results if result.status.upper() != "PASS"])
+    final_exit_code = proc.returncode
+    if final_exit_code == 0 and case_failure_count > 0:
+        final_exit_code = 1
+        output += f"\n[qa.spec_tools] client_server case result failures: {case_failure_count}\n"
+    _write_report(final_exit_code, output, generated_summary, case_results)
     print(f"Report written: {LATEST_REPORT}")
     print(output)
-    return proc.returncode
+    return final_exit_code
 
 
 if __name__ == "__main__":

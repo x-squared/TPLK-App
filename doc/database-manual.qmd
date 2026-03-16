@@ -51,7 +51,7 @@ python -m app.db_schema --mode <recreate|migrate|verify> --env <DEV|TEST|PROD> [
 ```
 
 - `recreate`: drops all tables and creates schema from current model metadata.
-- `migrate`: creates missing schema objects from model metadata.
+- `migrate`: creates missing tables from model metadata and verifies drift; it does **not** apply ALTER statements for existing tables.
 - `verify`: reports schema drift (tables/columns/types/nullability/indexes/unique constraints/foreign keys), no writes.
 - `--check-level basic`: checks table/column presence only.
 - `--check-level strict` (default): includes type/nullability/index/index-unique/unique/FK checks.
@@ -152,7 +152,7 @@ python -m app.db_admin --mode <recreate|migrate|refresh|clean|migrate-audit-fiel
 Mode behavior:
 
 - `recreate` = `db_data export-dev-forum` + `db_schema recreate` + `db_data seed` + `db_data import-dev-forum` (best effort)
-- `migrate` = `db_schema migrate`
+- `migrate` = `db_schema migrate` (create-missing-tables + drift verification only, no ALTER)
 - `refresh` = `db_data export-dev-forum` + `db_schema migrate` + `db_data refresh` + `db_data import-dev-forum` (best effort, default)
 - `clean` = `db_data clean`
 - `migrate-audit-fields` = `db_data migrate-audit-fields`
@@ -163,6 +163,7 @@ Mode behavior:
 - `normalize-legacy-dev-forum-capture-label` = `db_data normalize-legacy-dev-forum-capture-label`
 
 For `refresh`, if `migrate` cannot reconcile schema drift, the wrapper automatically falls back to `db_schema recreate` before data refresh.
+This is expected for additive model changes on already existing tables, because `migrate` does not ALTER table definitions.
 
 If Dev-Forum import cannot be applied after rebuild (for example schema/user-reference incompatibility), the wrapper prints a warning/hint and keeps the export files in `.../dev_forum_exports/...` for manual inspection/retry.
 

@@ -8,7 +8,7 @@ import urllib.request
 
 
 BASE_URL = os.getenv("TPL_TEST_FRONTEND_URL", "http://localhost:5173").rstrip("/")
-CASES = [{'id': 'client-app-shell-renders', 'name': 'Frontend root serves app shell HTML', 'method': 'GET', 'path': '/', 'expect_status': 200, 'expect_json_subset': None, 'expect_body_contains': ['<!doctype html'], 'source_file': '/Users/stephan/Workspace/TPL-App/spec/testing/client-server/app-shell.md'}]
+CASES = [{'id': 'client-app-shell-renders', 'name': 'Frontend root serves app shell HTML', 'method': 'GET', 'path': '/', 'expect_status': 200, 'expect_json_subset': None, 'expect_body_contains': ['<!doctype html'], 'source_file': '/Users/stephan/Workspace/AppSpace/TPLK-App/spec/testing/client-server/app-shell.md'}, {'id': 'partner-create-patient-ui-db', 'name': 'Create patient via Recipients view and verify DB persistence', 'method': 'GET', 'path': '/patients', 'expect_status': 200, 'expect_json_subset': None, 'expect_body_contains': ['<!doctype html'], 'source_file': '/Users/stephan/Workspace/AppSpace/TPLK-App/spec/testing/client-server/create-patient-from-recipients.md'}]
 
 
 def _request_json(method: str, url: str):

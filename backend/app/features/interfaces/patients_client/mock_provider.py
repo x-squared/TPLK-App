@@ -189,6 +189,11 @@ class MockFormProviderClient(ProviderClient):
         operation = self._store.get(operation_id=operation_id)
         if not operation:
             return None
+        operation_type = str(operation.get("operation_type") or "")
+        if operation_type in {"patient", "conditions"}:
+            # Rehydrate schema hints for legacy pending operations so enum fields
+            # render as dropdowns in the mock portal form.
+            operation["schema"] = self._schema_for_operation(operation_type)
         if not operation.get("form_url"):
             operation["form_url"] = f"{self._ui_base_url}/{operation_id}/form"
         return operation

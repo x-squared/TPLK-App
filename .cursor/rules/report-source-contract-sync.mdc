@@ -1,0 +1,16 @@
+---
+description: Keep report source keys synchronized across registry and API contracts
+alwaysApply: true
+---
+
+# Report Source Contract Sync
+
+When adding, removing, or renaming report sources under `backend/app/features/reports/sources/**`:
+
+1. Keep source keys synchronized across:
+   - backend `ReportSourceKey` (`backend/app/schema/report.py`)
+   - frontend `ReportSourceKey` (`frontend/src/api/reports.ts`)
+   - report source registry (`build_sources`)
+2. Validate metadata generation succeeds for all registered sources.
+3. Add or update a backend contract test that fails on registry/literal drift.
+4. Include the contract test in CI and keep it green in the same change set.

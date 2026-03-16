@@ -9,11 +9,21 @@ This scenario verifies a real user flow:
 5. Verify the patient appears in UI
 6. Verify the patient exists in the database
 
-```partner-case
+```spec-case
 {
   "id": "partner-create-patient-ui-db",
-  "scope": "client_server_partner",
+  "scope": "client_server",
   "name": "Create patient via Recipients view and verify DB persistence",
+  "request": {
+    "method": "GET",
+    "path": "/patients"
+  },
+  "expect": {
+    "status": 200,
+    "body_contains": [
+      "<!doctype html"
+    ]
+  },
   "ui_flow": {
     "login_ext_id": "TKOORD",
     "open_recipients_view": true,

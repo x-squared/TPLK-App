@@ -13,6 +13,12 @@ interface CapturedComponentState {
 
 let initialized = false;
 let lastCapturedComponent: CapturedComponentState | null = null;
+const CAPTURE_EXCLUDE_SELECTORS = [
+  '.ui-error-banner',
+  '.dev-forum-surface',
+  '.dev-forum-readonly-dialog-backdrop',
+  '.dev-forum-readonly-dialog',
+].join(', ');
 
 function buildSelector(element: HTMLElement): string {
   if (element.id) return `#${CSS.escape(element.id)}`;
@@ -50,6 +56,7 @@ function captureComponent(element: HTMLElement): void {
 function maybeCaptureTarget(target: EventTarget | null): void {
   if (!(target instanceof HTMLElement)) return;
   if (!target.isConnected) return;
+  if (target.closest(CAPTURE_EXCLUDE_SELECTORS)) return;
   captureComponent(target);
 }
 

@@ -13,8 +13,12 @@ class ColloqiumType
 class ColloqiumTypeParticipant
 class Colloqium
 class ColloqiumParticipant
+class ColloqiumSignatory
 class ColloqiumAgenda
 class TaskGroup
+
+Colloqium : signatories (string)
+Colloqium : completed (bool, one-way false -> true)
 
 ColloqiumType "1" -- "0..*" ColloqiumTypeParticipant
 Person "1" <-- "0..*" ColloqiumTypeParticipant : default participants
@@ -22,9 +26,12 @@ Person "1" <-- "0..*" ColloqiumTypeParticipant : default participants
 ColloqiumType "1" -- "0..*" Colloqium
 Colloqium "1" -- "0..*" ColloqiumParticipant
 Person "1" <-- "0..*" ColloqiumParticipant : participants
+Colloqium "1" -- "0..*" ColloqiumSignatory
+Person "1" <-- "0..*" ColloqiumSignatory : signatories
 
 Colloqium "1" -- "0..*" ColloqiumAgenda
 Episode "1" <-- "0..*" ColloqiumAgenda : references >
+Person "1" <-- "0..*" ColloqiumAgenda : presented by >
 TaskGroup "1" <-- "0..*" ColloqiumAgenda : optional task context
 
 @enduml

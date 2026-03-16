@@ -20,8 +20,11 @@ export interface Colloqium {
   colloqium_type: ColloqiumType | null;
   date: string;
   participants: string;
+  completed: boolean;
   participant_ids: number[];
+  signatory_ids: number[];
   participants_people: Person[];
+  signatories_people: Person[];
   changed_by_id: number | null;
   changed_by_user: AppUser | null;
   created_at: string;
@@ -32,14 +35,18 @@ export interface ColloqiumCreate {
   colloqium_type_id: number;
   date: string;
   participants?: string;
+  completed?: boolean;
   participant_ids?: number[];
+  signatory_ids?: number[];
 }
 
 export interface ColloqiumUpdate {
   colloqium_type_id?: number;
   date?: string;
   participants?: string;
+  completed?: boolean;
   participant_ids?: number[];
+  signatory_ids?: number[];
 }
 
 export interface ColloqiumTypeUpdate {
@@ -54,7 +61,8 @@ export interface ColloqiumAgenda {
   colloqium_id: number;
   colloqium: Colloqium | null;
   episode_id: number;
-  presented_by: string;
+  presented_by_id: number | null;
+  presented_by_person: Person | null;
   decision: string;
   decision_reason: string;
   comment: string;
@@ -84,7 +92,7 @@ export interface ColloqiumAgenda {
 export interface ColloqiumAgendaCreate {
   colloqium_id: number;
   episode_id: number;
-  presented_by?: string;
+  presented_by_id?: number | null;
   decision?: string;
   decision_reason?: string;
   comment?: string;
@@ -93,7 +101,7 @@ export interface ColloqiumAgendaCreate {
 export interface ColloqiumAgendaUpdate {
   colloqium_id?: number;
   episode_id?: number;
-  presented_by?: string;
+  presented_by_id?: number | null;
   decision?: string;
   decision_reason?: string;
   comment?: string;

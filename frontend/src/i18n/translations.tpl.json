@@ -1817,6 +1817,26 @@
           "en": "+ Add"
         }
       },
+      "complete": {
+        "label": {
+          "de": "Kolloquien Aktion: Kolloquium abschließen",
+          "en": "Colloquiums action: complete colloquium"
+        },
+        "text": {
+          "de": "Kolloquium abschließen",
+          "en": "Colloquium complete"
+        }
+      },
+      "completing": {
+        "label": {
+          "de": "Kolloquien Aktion: Kolloquium wird abgeschlossen",
+          "en": "Colloquiums action: completing colloquium"
+        },
+        "text": {
+          "de": "Wird abgeschlossen...",
+          "en": "Completing..."
+        }
+      },
       "open": {
         "label": {
           "de": "Kolloquien Aktion: Kolloquium öffnen",
@@ -2005,6 +2025,16 @@
           "en": "Creating PDF..."
         }
       },
+      "completed": {
+        "label": {
+          "de": "Kolloquium Protokoll Abschlussstatus",
+          "en": "Colloquium protocol completed status"
+        },
+        "text": {
+          "de": "Kolloquium abgeschlossen",
+          "en": "Colloquium completed"
+        }
+      },
       "decision": {
         "label": {
           "de": "Kolloquium Protokoll Entscheid Label",
@@ -2032,7 +2062,7 @@
         },
         "text": {
           "de": "Begründung",
-          "en": "Begründung"
+          "en": "Reason"
         }
       },
       "hideTasks": {
@@ -2147,6 +2177,16 @@
           "en": "Presented By"
         }
       },
+      "presentedByPlaceholder": {
+        "label": {
+          "de": "Kolloquium Protokoll Vorgestellt von Platzhalter",
+          "en": "Colloquium protocol presented by placeholder"
+        },
+        "text": {
+          "de": "Vorstellende Person auswählen",
+          "en": "Select presenter"
+        }
+      },
       "selectedEpisodes": {
         "label": {
           "de": "Kolloquium Protokoll Ausgewählte Episoden Label",
@@ -2155,6 +2195,28 @@
         "text": {
           "de": "Ausgewählte Episoden:",
           "en": "Selected episodes:"
+        }
+      },
+      "signatories": {
+        "field": {
+          "label": {
+            "de": "Kolloquium Protokoll Unterzeichnende Feld Label",
+            "en": "Colloquium protocol signatories field label"
+          },
+          "text": {
+            "de": "Unterzeichnende",
+            "en": "Signatories"
+          }
+        },
+        "title": {
+          "label": {
+            "de": "Kolloquium Protokoll Unterzeichnende Abschnittstitel",
+            "en": "Colloquium protocol signatories section title"
+          },
+          "text": {
+            "de": "Unterzeichnende",
+            "en": "Signatories"
+          }
         }
       },
       "showTasks": {
@@ -2197,6 +2259,16 @@
         "text": {
           "de": "Agenda",
           "en": "Agenda"
+        }
+      },
+      "summary": {
+        "label": {
+          "de": "Kolloquien Tabelle Zusammenfassung Kopf",
+          "en": "Colloquiums table summary header"
+        },
+        "text": {
+          "de": "Zusammenfassung",
+          "en": "Summary"
         }
       },
       "date": {
@@ -4327,8 +4399,8 @@
         "en": "Donors view title"
       },
       "text": {
-        "de": "Spender!",
-        "en": "Donors!"
+        "de": "Spender!!!",
+        "en": "Donors!!!"
       }
     }
   },
@@ -5978,6 +6050,18 @@
         "text": {
           "de": "Daten",
           "en": "Data"
+        }
+      },
+      "use": {
+        "empty": {
+          "label": {
+            "de": "Patient Kontakt Use Auswahl leerer Wert",
+            "en": "Patient contact use select empty value"
+          },
+          "text": {
+            "de": "Kein Use",
+            "en": "No use"
+          }
         }
       },
       "title": {

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import sqlite3
+import subprocess
+import tempfile
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -11,6 +14,8 @@ from .generate_tests import PROJECT_ROOT, SPEC_ROOT
 from .spec_parser import SpecCase, parse_all_specs
 
 REPORT_DIR = PROJECT_ROOT / "qa" / "reports"
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
+DEFAULT_DB_FILE = PROJECT_ROOT / "database" / "tpl_app.db"
 
 
 @dataclass(frozen=True)
@@ -27,6 +32,74 @@ def _request(method: str, full_url: str) -> tuple[int, str]:
     with urllib.request.urlopen(req, timeout=8) as response:
         body = response.read().decode("utf-8")
         return response.status, body
+
+
+def _verify_patient_in_db(pid: str) -> bool:
+    db_file = Path(os.getenv("TPL_TEST_DB_FILE", str(DEFAULT_DB_FILE)))
+    if not db_file.exists():
+        return False
+    conn = sqlite3.connect(db_file)
+    try:
+        cursor = conn.execute('SELECT COUNT(1) FROM "PATIENT" WHERE "PID" = ?', (pid,))
+        row = cursor.fetchone()
+        return bool(row and row[0] > 0)
+    finally:
+        conn.close()
+
+
+def _run_ui_flow_case(case: SpecCase, base_url: str) -> tuple[bool, str]:
+    if not isinstance(case.ui_flow, dict):
+        return True, ""
+    create_patient = case.ui_flow.get("create_patient")
+    if not isinstance(create_patient, dict):
+        return False, "ui_flow must contain a create_patient object."
+
+    output_file = Path(tempfile.gettempdir()) / f"tpl-created-patient-{case.id}.json"
+    if output_file.exists():
+        output_file.unlink()
+
+    env = {
+        **dict(os.environ),
+        "TPL_CREATED_PATIENT_FILE": str(output_file),
+        "TPL_TEST_FRONTEND_URL": base_url.rstrip("/"),
+        "TPL_SPEC_LOGIN_EXT_ID": str(case.ui_flow.get("login_ext_id") or "TKOORD"),
+        "TPL_SPEC_OPEN_RECIPIENTS_VIEW": "1" if case.ui_flow.get("open_recipients_view", True) else "0",
+        "TPL_SPEC_PID_PREFIX": str(create_patient.get("pid_prefix") or "AUTO"),
+        "TPL_SPEC_FIRST_NAME": str(create_patient.get("first_name") or "Spec"),
+        "TPL_SPEC_NAME": str(create_patient.get("name") or "Patient"),
+        "TPL_SPEC_DATE_OF_BIRTH": str(create_patient.get("date_of_birth") or "1990-01-01"),
+    }
+    proc = subprocess.run(
+        ["npm", "run", "test:spec-e2e"],
+        cwd=FRONTEND_DIR,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    output = (proc.stdout or "") + ("\n" + proc.stderr if proc.stderr else "")
+    if proc.returncode != 0:
+        excerpt = output[-500:] if len(output) > 500 else output
+        return False, f"ui_flow playwright execution failed. {excerpt.strip()}"
+
+    verify = case.verify if isinstance(case.verify, dict) else {}
+    created_payload: dict | None = None
+    if output_file.exists():
+        try:
+            created_payload = json.loads(output_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return False, "ui_flow output artifact is not valid JSON."
+
+    if bool(verify.get("database_contains_created_patient")):
+        pid = str((created_payload or {}).get("pid") or "").strip()
+        if not pid:
+            return False, "ui_flow did not emit a created patient PID for DB verification."
+        if not _verify_patient_in_db(pid):
+            return False, f"ui_flow created patient PID '{pid}' was not found in database."
+
+    if bool(verify.get("ui_contains_created_pid")) and not output_file.exists():
+        return False, "ui_flow expected UI-created PID evidence, but no created-patient artifact was written."
+
+    return True, ""
 
 
 def _evaluate_case(case: SpecCase, base_url: str) -> CaseResult:
@@ -85,6 +158,16 @@ def _evaluate_case(case: SpecCase, base_url: str) -> CaseResult:
                         message=f"Unexpected JSON value for '{key}'.",
                         source_file=case.source_file,
                     )
+
+        ui_flow_ok, ui_flow_message = _run_ui_flow_case(case, base_url)
+        if not ui_flow_ok:
+            return CaseResult(
+                case_id=case.id,
+                name=case.name,
+                status="FAIL",
+                message=ui_flow_message,
+                source_file=case.source_file,
+            )
 
         return CaseResult(
             case_id=case.id,

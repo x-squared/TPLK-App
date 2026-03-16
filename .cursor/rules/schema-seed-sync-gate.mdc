@@ -1,0 +1,17 @@
+---
+description: Enforce schema/seed sync checks for model changes
+alwaysApply: true
+---
+
+# Schema and Seed Sync Gate
+
+When SQLAlchemy model metadata changes (entities, columns, nullability, indexes, FKs):
+
+- Treat schema compatibility and seed compatibility as required in the same change set.
+- Do not assume `db_schema --mode migrate` applies ALTER statements; it creates missing tables and then verifies drift.
+- Run an explicit strict drift check in a clean database path before finishing:
+  - `python -m app.db_schema --mode recreate --env TEST --db-url <temp sqlite url>`
+  - `python -m app.db_data --mode seed --env TEST --seed-profile CORE_SAMPLE --db-url <temp sqlite url>`
+  - `python -m app.db_schema --mode verify --check-level strict --env TEST --db-url <temp sqlite url>`
+- Add/adjust startup and CI checks when a new required reference-code family is introduced.
+- If strict drift remains after `migrate`, document why and use `recreate` for local rebuild workflows.

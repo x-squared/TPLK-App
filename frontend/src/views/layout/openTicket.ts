@@ -100,6 +100,32 @@ function deriveGuiPartFromPath(pathname: string): string {
   return bySegment[segment] ?? (segment ? `/${segment}` : 'Unknown');
 }
 
+function detectActiveTabContext(): { key: string; label: string; selector: string } | null {
+  if (typeof document === 'undefined') return null;
+  const activeTab = document.querySelector(
+    [
+      '[role="tab"][aria-selected="true"]',
+      '.detail-tab.active',
+      '.episode-process-tab.active',
+    ].join(', '),
+  );
+  if (!(activeTab instanceof HTMLElement)) return null;
+  const rawLabel = (activeTab.textContent || '').trim();
+  const rawKey = (
+    activeTab.getAttribute('data-tab-key')
+    || activeTab.getAttribute('data-tab')
+    || activeTab.id
+    || rawLabel
+  ).trim();
+  const selector = activeTab.id ? `#${CSS.escape(activeTab.id)}` : activeTab.tagName.toLowerCase();
+  if (!rawLabel && !rawKey) return null;
+  return {
+    key: rawKey || rawLabel,
+    label: rawLabel || rawKey,
+    selector,
+  };
+}
+
 function collectCurrentContext(recent: ClientErrorLogEntry[]) {
   const ids = new Map<string, string>();
   const hasWindow = typeof window !== 'undefined' && !!window.location;
@@ -161,6 +187,7 @@ function collectCurrentContext(recent: ClientErrorLogEntry[]) {
     .find((entry) => entry.source === 'http' && Boolean(entry.path && entry.path.trim()));
   const latestErrorPath = latestHttpWithPath?.path || latestWithPath?.path || '';
   const selectedComponent = getLastCapturedComponent();
+  const activeTab = detectActiveTabContext();
   return {
     href,
     page: currentPage,
@@ -169,6 +196,7 @@ function collectCurrentContext(recent: ClientErrorLogEntry[]) {
     latestError: latest?.message ?? '',
     latestErrorPath,
     selectedComponent,
+    activeTab,
   };
 }
 
@@ -202,6 +230,7 @@ function buildDevForumCapturePayload(bannerMessage: string, recent: ClientErrorL
     ids: context.ids.map(([key, value]) => ({ key, value })),
     latest_error: context.latestError,
     latest_error_path: context.latestErrorPath,
+    active_tab: context.activeTab,
     selected_component: context.selectedComponent?.component ?? null,
     component_captured_at: context.selectedComponent?.captured_at ?? null,
     captured_at: new Date().toISOString(),
@@ -215,6 +244,9 @@ function buildDevForumCapturePayload(bannerMessage: string, recent: ClientErrorL
     context.selectedComponent?.component.selector
       ? `Component selector: ${context.selectedComponent.component.selector}`
       : `Component selector: (not available)`,
+    context.activeTab?.key
+      ? `Active tab: ${context.activeTab.key}${context.activeTab.label ? ` (${context.activeTab.label})` : ''}`
+      : `Active tab: (not available)`,
     `Latest API path: ${context.latestErrorPath || '(not available)'}`,
   ];
   const requestTextHtml = requestTextLines.map((line) => escapeHtml(line)).join('<br/>');
@@ -238,6 +270,7 @@ const buildFriendlyBody = (bannerMessage: string, recent: ClientErrorLogEntry[])
     '',
     `Current error message: ${bannerMessage}`,
     `Relevant GUI part: ${context.guiPart}`,
+    `Active tab: ${context.activeTab?.key || '(not available)'}`,
     `Relevant data context link: ${context.href || '(unavailable)'}`,
     '',
     'Relevant context IDs:',

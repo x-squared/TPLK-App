@@ -28,6 +28,7 @@
     "ColloqiumType",
     "Colloqium",
     "ColloqiumAgenda",
+    "ColloqiumSignatory",
     "Coordination",
     "CoordinationDonor",
     "CoordinationEpisode",
