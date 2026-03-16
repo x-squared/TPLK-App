@@ -114,8 +114,8 @@ def _build_mock_operation_form_html(operation: dict) -> str:
     </div>
     <div class="row">
       <input id="triggerConditionsPatientId" placeholder="patient_id (e.g. pat_1)" />
-      <input id="triggerDateFrom" placeholder="date_from (YYYY-MM-DD, optional)" />
-      <input id="triggerDateTo" placeholder="date_to (YYYY-MM-DD, optional)" />
+      <input id="triggerDateFrom" placeholder="date_from (DD.MM.YYYY, optional)" />
+      <input id="triggerDateTo" placeholder="date_to (DD.MM.YYYY, optional)" />
       <button onclick="triggerConditions()">Trigger conditions call</button>
     </div>
     <h3>Expected schema (information only)</h3>
@@ -149,6 +149,26 @@ def _build_mock_operation_form_html(operation: dict) -> str:
 
       function setResult(text) {{
         document.getElementById('result').textContent = text;
+      }}
+      function formatDateEuropean(raw) {{
+        const value = String(raw ?? '').trim();
+        if (!value) return '';
+        const dateOnly = value.match(/^(\\d{{4}})-(\\d{{2}})-(\\d{{2}})$/);
+        if (dateOnly) {{
+          return `${{dateOnly[3]}}.${{dateOnly[2]}}.${{dateOnly[1]}}`;
+        }}
+        const dt = new Date(value);
+        if (Number.isNaN(dt.getTime())) return value;
+        return `${{String(dt.getDate()).padStart(2, '0')}}.${{String(dt.getMonth() + 1).padStart(2, '0')}}.${{dt.getFullYear()}}`;
+      }}
+      function toIsoDateFromEuropean(raw) {{
+        const value = String(raw ?? '').trim();
+        if (!value) return value;
+        const european = value.match(/^(\\d{{2}})\\.(\\d{{2}})\\.(\\d{{4}})$/);
+        if (european) {{
+          return `${{european[3]}}-${{european[2]}}-${{european[1]}}`;
+        }}
+        return value;
       }}
       function goToDashboard() {{
         window.location.assign('/api/interfaces/patients/mock/dashboard');
@@ -269,9 +289,15 @@ def _build_mock_operation_form_html(operation: dict) -> str:
               }}
             }}
           }} else {{
-            input.value = existing ?? '';
-            input.addEventListener('input', () => setValue(path, typedValue(input.value, fieldSchema.type)));
-            setValue(path, typedValue(input.value, fieldSchema.type));
+            const isDateLikeField = (fieldSchema.type === 'string') && /date|_at$|_time$/i.test(String(key || ''));
+            input.value = isDateLikeField ? formatDateEuropean(existing ?? '') : (existing ?? '');
+            input.addEventListener('input', () => {{
+              const rawValue = input.value;
+              const normalizedValue = isDateLikeField ? toIsoDateFromEuropean(rawValue) : rawValue;
+              setValue(path, typedValue(normalizedValue, fieldSchema.type));
+            }});
+            const initialNormalized = isDateLikeField ? toIsoDateFromEuropean(input.value) : input.value;
+            setValue(path, typedValue(initialNormalized, fieldSchema.type));
           }}
         }}
 
@@ -463,8 +489,8 @@ def _build_mock_operation_form_html(operation: dict) -> str:
           setResult('trigger conditions: patient_id is required');
           return;
         }}
-        const dateFrom = document.getElementById('triggerDateFrom').value.trim();
-        const dateTo = document.getElementById('triggerDateTo').value.trim();
+        const dateFrom = toIsoDateFromEuropean(document.getElementById('triggerDateFrom').value.trim());
+        const dateTo = toIsoDateFromEuropean(document.getElementById('triggerDateTo').value.trim());
         const res = await fetch('/api/interfaces/patients/mock/operations/trigger/conditions', {{
           method: 'POST',
           headers: {{ 'Content-Type': 'application/json' }},
@@ -529,8 +555,8 @@ def _build_mock_dashboard_html() -> str:
       <h3>Trigger Conditions Operation</h3>
       <div class="row">
         <input id="conditionsPatientId" placeholder="patient_id (e.g. pat_1)" />
-        <input id="dateFrom" placeholder="date_from (YYYY-MM-DD, optional)" />
-        <input id="dateTo" placeholder="date_to (YYYY-MM-DD, optional)" />
+        <input id="dateFrom" placeholder="date_from (DD.MM.YYYY, optional)" />
+        <input id="dateTo" placeholder="date_to (DD.MM.YYYY, optional)" />
         <button type="button" onclick="triggerConditions()">Trigger conditions</button>
       </div>
     </div>
@@ -593,6 +619,33 @@ def _build_mock_dashboard_html() -> str:
       function esc(value) {
         return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
       }
+      function formatDateEuropean(raw) {
+        const value = String(raw ?? '').trim();
+        if (!value) return '';
+        const dateOnly = value.match(/^(\\d{4})-(\\d{2})-(\\d{2})$/);
+        if (dateOnly) {
+          return `${dateOnly[3]}.${dateOnly[2]}.${dateOnly[1]}`;
+        }
+        const dt = new Date(value);
+        if (Number.isNaN(dt.getTime())) return value;
+        return `${String(dt.getDate()).padStart(2, '0')}.${String(dt.getMonth() + 1).padStart(2, '0')}.${dt.getFullYear()}`;
+      }
+      function formatDateTimeEuropean(raw) {
+        const value = String(raw ?? '').trim();
+        if (!value) return '';
+        const dt = new Date(value);
+        if (Number.isNaN(dt.getTime())) return formatDateEuropean(value);
+        return `${String(dt.getDate()).padStart(2, '0')}.${String(dt.getMonth() + 1).padStart(2, '0')}.${dt.getFullYear()} ${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
+      }
+      function toIsoDateFromEuropean(raw) {
+        const value = String(raw ?? '').trim();
+        if (!value) return value;
+        const european = value.match(/^(\\d{2})\\.(\\d{2})\\.(\\d{4})$/);
+        if (european) {
+          return `${european[3]}-${european[2]}-${european[1]}`;
+        }
+        return value;
+      }
 
       async function refreshOps() {
         const body = document.getElementById('opsBody');
@@ -625,7 +678,7 @@ def _build_mock_dashboard_html() -> str:
             : `<button type="button" onclick="removeOperation('${esc(op.operation_id)}')">Remove</button>`;
           const detailUrl = operationId ? `/api/interfaces/patients/mock/operations/${operationId}` : '';
           const replyCell = op.has_payload
-            ? `received${op.updated_at ? ` (${esc(op.updated_at)})` : ''}${detailUrl ? ` <a href="${esc(detailUrl)}">details</a>` : ''}`
+            ? `received${op.updated_at ? ` (${esc(formatDateTimeEuropean(op.updated_at))})` : ''}${detailUrl ? ` <a href="${esc(detailUrl)}">details</a>` : ''}`
             : '<span class="muted">pending</span>';
           const opIdCell = formUrl
             ? `<a href="${esc(formUrl)}"><code>${esc(operationId)}</code></a>`
@@ -673,8 +726,8 @@ def _build_mock_dashboard_html() -> str:
           setResult('patient_id is required');
           return;
         }
-        const dateFrom = document.getElementById('dateFrom').value.trim();
-        const dateTo = document.getElementById('dateTo').value.trim();
+        const dateFrom = toIsoDateFromEuropean(document.getElementById('dateFrom').value.trim());
+        const dateTo = toIsoDateFromEuropean(document.getElementById('dateTo').value.trim());
         const result = await postJson('/api/interfaces/patients/mock/operations/trigger/conditions', {
           patient_id: patientId,
           date_from: dateFrom || null,

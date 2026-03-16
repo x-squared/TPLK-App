@@ -7,6 +7,7 @@ import {
   type PatientListItem,
 } from '../../api';
 import { toUserErrorMessage } from '../../api/error';
+import { runPollingStateMachine } from '@appstack/pollingStateMachine';
 
 export type ImportStage = 'idle' | 'running' | 'ready' | 'creating';
 
@@ -19,12 +20,6 @@ function isPendingInterfaceOperation(
   response: InterfacePatientData | InterfacePendingOperation,
 ): response is InterfacePendingOperation {
   return (response as InterfacePendingOperation).status === 'pending';
-}
-
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
 }
 
 function normalizeBirthDate(raw: string | null | undefined): string | null {
@@ -95,20 +90,28 @@ export function usePatientImportFlow({ patients, refreshPatients }: UsePatientIm
     abortControllerRef.current = controller;
     setStage('running');
     try {
-      while (true) {
-        const response = await api.getInterfacePatient(normalizedPid, controller.signal);
-        if (isPendingInterfaceOperation(response)) {
-          setOperationId(response.operation_id);
-          const retrySeconds = Math.max(1, response.retry_after_seconds || 3);
-          await wait(retrySeconds * 1000);
-          continue;
-        }
-        setOperationId(null);
-        setImportedPatientData(response);
-        setStage('ready');
-        abortControllerRef.current = null;
-        return;
-      }
+      const importedData = await runPollingStateMachine<InterfacePatientData>({
+        signal: controller.signal,
+        requestStep: async (signal) => {
+          const response = await api.getInterfacePatient(normalizedPid, signal);
+          if (isPendingInterfaceOperation(response)) {
+            return {
+              kind: 'pending',
+              operationId: response.operation_id,
+              retryAfterMs: Math.max(1, response.retry_after_seconds || 3) * 1000,
+            };
+          }
+          return { kind: 'ready', data: response };
+        },
+        onPending: (step) => {
+          setOperationId(step.operationId ?? null);
+        },
+        defaultRetryMs: 3000,
+      });
+      setOperationId(null);
+      setImportedPatientData(importedData);
+      setStage('ready');
+      abortControllerRef.current = null;
     } catch (err) {
       abortControllerRef.current = null;
       const message = err instanceof Error && err.name === 'AbortError'

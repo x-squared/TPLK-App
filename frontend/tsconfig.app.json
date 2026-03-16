@@ -15,6 +15,10 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@appstack/pollingStateMachine": ["../../AppStack/frontend/src/views/layout/pollingStateMachine.ts"]
+    },
 
     /* Linting */
     "strict": true,
