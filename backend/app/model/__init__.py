@@ -30,6 +30,7 @@ from .coordination_origin import CoordinationOrigin
 from .episode import Episode, EpisodeOrgan
 from .favorite import Favorite
 from .information import Information, InformationContext, InformationUser
+from .living_donation import LivingDonationDonor, LivingDonationEpisode, LivingDonationEpisodeOrgan
 from .datatypes import DatatypeDefinition
 from .medical import (
     MedicalValue,
@@ -72,6 +73,9 @@ __all__ = [
     "Information",
     "InformationContext",
     "InformationUser",
+    "LivingDonationEpisode",
+    "LivingDonationEpisodeOrgan",
+    "LivingDonationDonor",
     "DevRequest",
     "ColloqiumType",
     "Colloqium",

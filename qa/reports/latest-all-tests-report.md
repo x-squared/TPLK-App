@@ -1,8 +1,8 @@
 # All Tests Report
 
-- Started: `2026-03-16T15:58:56.128602+00:00`
-- Finished: `2026-03-16T15:58:57.351924+00:00`
-- Duration seconds: `1.223`
+- Started: `2026-03-17T10:20:15.889639+00:00`
+- Finished: `2026-03-17T10:20:22.362255+00:00`
+- Duration seconds: `6.473`
 - Success: `True`
 
 ## Pipelines
@@ -34,7 +34,7 @@ Report written: /Users/stephan/Workspace/AppSpace/TPLK-App/qa/reports/latest-cli
 test_cases (qa.tests.generated.test_client_server_specs.GeneratedSpecTests.test_cases) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.015s
+Ran 1 test in 0.017s
 
 OK
 ```

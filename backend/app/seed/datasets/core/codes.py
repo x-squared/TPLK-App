@@ -120,6 +120,65 @@ ORGAN = [
 
 RECORDS = RECORDS + ORGAN
 
+# --- LTPL_DONOR_RELATION ---
+LTPL_DONOR_RELATION = [
+    {
+        "type": "LTPL_DONOR_RELATION",
+        "key": "FIRST_DEGREE_GENETIC_RELATIVE",
+        "pos": 1,
+        "ext_sys": "",
+        "ext_key": "",
+        "name_default": "1st Degree Genetic Relative",
+    },
+    {
+        "type": "LTPL_DONOR_RELATION",
+        "key": "SECOND_DEGREE_GENETIC_RELATIVE",
+        "pos": 2,
+        "ext_sys": "",
+        "ext_key": "",
+        "name_default": "2nd Degree Genetic Relative",
+    },
+    {
+        "type": "LTPL_DONOR_RELATION",
+        "key": "OTHER_GENETIC_RELATIVE",
+        "pos": 3,
+        "ext_sys": "",
+        "ext_key": "",
+        "name_default": "Other Genetic Relative",
+    },
+    {
+        "type": "LTPL_DONOR_RELATION",
+        "key": "EMOTIONALLY_RELATED",
+        "pos": 4,
+        "ext_sys": "",
+        "ext_key": "",
+        "name_default": "Emotionally Related",
+    },
+    {
+        "type": "LTPL_DONOR_RELATION",
+        "key": "NO_RELATION",
+        "pos": 5,
+        "ext_sys": "",
+        "ext_key": "",
+        "name_default": "No Relation",
+    },
+]
+
+RECORDS = RECORDS + LTPL_DONOR_RELATION
+
+# --- LTPL_DONOR_STATUS ---
+LTPL_DONOR_STATUS = [
+    {"type": "LTPL_DONOR_STATUS", "key": "REGISTERED", "pos": 1, "ext_sys": "", "ext_key": "", "name_default": "Registered"},
+    {"type": "LTPL_DONOR_STATUS", "key": "IN_EVALUATION", "pos": 2, "ext_sys": "", "ext_key": "", "name_default": "In Evaluation"},
+    {"type": "LTPL_DONOR_STATUS", "key": "ACTIVE", "pos": 3, "ext_sys": "", "ext_key": "", "name_default": "Active"},
+    {"type": "LTPL_DONOR_STATUS", "key": "DEFERRED", "pos": 4, "ext_sys": "", "ext_key": "", "name_default": "Deferred"},
+    {"type": "LTPL_DONOR_STATUS", "key": "TRANSPLANTED", "pos": 5, "ext_sys": "", "ext_key": "", "name_default": "Transplanted"},
+    {"type": "LTPL_DONOR_STATUS", "key": "REJECTED", "pos": 6, "ext_sys": "", "ext_key": "", "name_default": "Rejected"},
+    {"type": "LTPL_DONOR_STATUS", "key": "CLOSED", "pos": 7, "ext_sys": "", "ext_key": "", "name_default": "Closed"},
+]
+
+RECORDS = RECORDS + LTPL_DONOR_STATUS
+
 # --- TPL_PHASE ----
 TPL_PHASE = [
     {"type": "TPL_PHASE", "key": "EVALUATION", "pos": 1, "ext_sys": "", "ext_key": "", "name_default": "Evaluation"},

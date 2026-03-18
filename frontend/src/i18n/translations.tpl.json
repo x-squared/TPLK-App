@@ -4383,24 +4383,378 @@
     }
   },
   "donors": {
-    "notImplemented": {
-      "label": {
-        "de": "Spenderansicht nicht implementiert Text",
-        "en": "Donors view not implemented text"
-      },
-      "text": {
-        "de": "Diese Ansicht ist noch nicht implementiert.",
-        "en": "This view is not implemented yet."
-      }
-    },
     "title": {
       "label": {
         "de": "Spenderansicht Titel",
         "en": "Donors view title"
       },
       "text": {
-        "de": "Spender!!!",
-        "en": "Donors!!!"
+        "de": "Spender???",
+        "en": "Donors???"
+      }
+    },
+    "actions": {
+      "addProcess": {
+        "label": {
+          "de": "Spendenprozess hinzufügen Aktion",
+          "en": "Add process action"
+        },
+        "text": {
+          "de": "+ Prozess hinzufügen",
+          "en": "+ Add process"
+        }
+      },
+      "closeProcess": {
+        "label": {
+          "de": "Spendenprozess abschliessen Aktion",
+          "en": "Close process action"
+        },
+        "text": {
+          "de": "Prozess abschliessen",
+          "en": "Close process"
+        }
+      },
+      "addDonor": {
+        "label": {
+          "de": "Spender hinzufügen Aktion",
+          "en": "Add donor action"
+        },
+        "text": {
+          "de": "Spender hinzufügen",
+          "en": "Add donor"
+        }
+      },
+      "selectDonorPatient": {
+        "label": {
+          "de": "Spenderpatient auswählen Platzhalter",
+          "en": "Select donor patient placeholder"
+        },
+        "text": {
+          "de": "Spenderpatient wählen",
+          "en": "Select donor patient"
+        }
+      },
+      "defaultRegistered": {
+        "label": {
+          "de": "Standardstatus angemeldet Hinweis",
+          "en": "Default registered status hint"
+        },
+        "text": {
+          "de": "Standard: Angemeldet",
+          "en": "Default: Registered"
+        }
+      }
+    },
+    "filters": {
+      "search": {
+        "label": {
+          "de": "Spenderansicht Suchfeld Platzhalter",
+          "en": "Donors view search placeholder"
+        },
+        "text": {
+          "de": "Suche nach Empfänger, Spender, Organ, Status",
+          "en": "Search by recipient, donor, organ, status"
+        }
+      }
+    },
+    "fields": {
+      "recipientEpisode": {
+        "label": {
+          "de": "Empfängerepisode Feld",
+          "en": "Recipient episode field"
+        },
+        "text": {
+          "de": "Empfängerepisode",
+          "en": "Recipient episode"
+        }
+      },
+      "startDate": {
+        "label": {
+          "de": "Startdatum Feld",
+          "en": "Start date field"
+        },
+        "text": {
+          "de": "Startdatum",
+          "en": "Start date"
+        }
+      },
+      "endDate": {
+        "label": {
+          "de": "Enddatum Feld",
+          "en": "End date field"
+        },
+        "text": {
+          "de": "Enddatum",
+          "en": "End date"
+        }
+      },
+      "closeDate": {
+        "label": {
+          "de": "Abschlussdatum Feld",
+          "en": "Close date field"
+        },
+        "text": {
+          "de": "Abschlussdatum",
+          "en": "Close date"
+        }
+      },
+      "organs": {
+        "label": {
+          "de": "Spendeorgane Feld",
+          "en": "Donation organs field"
+        },
+        "text": {
+          "de": "Spendeorgane",
+          "en": "Donation organs"
+        }
+      },
+      "donorPatient": {
+        "label": {
+          "de": "Spenderpatient Feld",
+          "en": "Donor patient field"
+        },
+        "text": {
+          "de": "Spenderpatient",
+          "en": "Donor patient"
+        }
+      },
+      "comment": {
+        "label": {
+          "de": "Kommentar Feld",
+          "en": "Comment field"
+        },
+        "text": {
+          "de": "Kommentar",
+          "en": "Comment"
+        }
+      }
+    },
+    "table": {
+      "recipient": {
+        "label": {
+          "de": "Tabelle Empfänger Spalte",
+          "en": "Table recipient column"
+        },
+        "text": {
+          "de": "Empfänger",
+          "en": "Recipient"
+        }
+      },
+      "organs": {
+        "label": {
+          "de": "Tabelle Organe Spalte",
+          "en": "Table organs column"
+        },
+        "text": {
+          "de": "Organe",
+          "en": "Organs"
+        }
+      },
+      "donors": {
+        "label": {
+          "de": "Tabelle Spender Spalte",
+          "en": "Table donors column"
+        },
+        "text": {
+          "de": "Spender",
+          "en": "Donors"
+        }
+      },
+      "donor": {
+        "label": {
+          "de": "Tabelle Spender Eintrag",
+          "en": "Table donor entry"
+        },
+        "text": {
+          "de": "Spender",
+          "en": "Donor"
+        }
+      },
+      "relation": {
+        "label": {
+          "de": "Tabelle Beziehung Spalte",
+          "en": "Table relation column"
+        },
+        "text": {
+          "de": "Beziehung",
+          "en": "Relation"
+        }
+      },
+      "status": {
+        "label": {
+          "de": "Tabelle Status Spalte",
+          "en": "Table status column"
+        },
+        "text": {
+          "de": "Status",
+          "en": "Status"
+        }
+      },
+      "comment": {
+        "label": {
+          "de": "Tabelle Kommentar Spalte",
+          "en": "Table comment column"
+        },
+        "text": {
+          "de": "Kommentar",
+          "en": "Comment"
+        }
+      },
+      "start": {
+        "label": {
+          "de": "Tabelle Start Spalte",
+          "en": "Table start column"
+        },
+        "text": {
+          "de": "Start",
+          "en": "Start"
+        }
+      },
+      "end": {
+        "label": {
+          "de": "Tabelle Ende Spalte",
+          "en": "Table end column"
+        },
+        "text": {
+          "de": "Ende",
+          "en": "End"
+        }
+      },
+      "noRecipient": {
+        "label": {
+          "de": "Tabelle kein Empfänger Text",
+          "en": "Table no recipient text"
+        },
+        "text": {
+          "de": "Keine Empfängerepisode",
+          "en": "No recipient episode"
+        }
+      },
+      "donorCount": {
+        "label": {
+          "de": "Tabelle Spenderanzahl Text",
+          "en": "Table donor count text"
+        },
+        "text": {
+          "de": "{{count}} Spender",
+          "en": "{{count}} donor(s)"
+        }
+      }
+    },
+    "detail": {
+      "title": {
+        "label": {
+          "de": "Detailtitel Lebendspendeprozess",
+          "en": "Living donation process detail title"
+        },
+        "text": {
+          "de": "Details zum Lebendspendeprozess",
+          "en": "Living donation process details"
+        }
+      },
+      "donors": {
+        "label": {
+          "de": "Detailabschnitt Spender Titel",
+          "en": "Donors detail section title"
+        },
+        "text": {
+          "de": "Spender",
+          "en": "Donors"
+        }
+      },
+      "noDonors": {
+        "label": {
+          "de": "Keine Spender Hinweis",
+          "en": "No donors hint"
+        },
+        "text": {
+          "de": "Noch keine Spender zugeordnet.",
+          "en": "No donors linked yet."
+        }
+      }
+    },
+    "relation": {
+      "none": {
+        "label": {
+          "de": "Beziehung keine Option",
+          "en": "No relation option"
+        },
+        "text": {
+          "de": "Keine Beziehung",
+          "en": "No relation"
+        }
+      }
+    },
+    "empty": {
+      "label": {
+        "de": "Leere Lebendspendeprozessliste Hinweis",
+        "en": "Empty living donation process list hint"
+      },
+      "text": {
+        "de": "Keine Lebendspendeprozesse gefunden.",
+        "en": "No living donation processes found."
+      }
+    },
+    "errors": {
+      "load": {
+        "label": {
+          "de": "Fehler beim Laden Lebendspende",
+          "en": "Living donation load error"
+        },
+        "text": {
+          "de": "Lebendspendedaten konnten nicht geladen werden.",
+          "en": "Could not load living donation data."
+        }
+      },
+      "createProcess": {
+        "label": {
+          "de": "Fehler beim Anlegen Lebendspendeprozess",
+          "en": "Create living donation process error"
+        },
+        "text": {
+          "de": "Der Lebendspendeprozess konnte nicht erstellt werden.",
+          "en": "Could not create living donation process."
+        }
+      },
+      "saveOverview": {
+        "label": {
+          "de": "Fehler beim Speichern Übersicht",
+          "en": "Save overview error"
+        },
+        "text": {
+          "de": "Die Übersicht konnte nicht gespeichert werden.",
+          "en": "Could not save living donation overview."
+        }
+      },
+      "closeProcess": {
+        "label": {
+          "de": "Fehler beim Abschliessen Prozess",
+          "en": "Close process error"
+        },
+        "text": {
+          "de": "Der Prozess konnte nicht abgeschlossen werden.",
+          "en": "Could not close living donation process."
+        }
+      },
+      "addDonor": {
+        "label": {
+          "de": "Fehler beim Hinzufügen Spender",
+          "en": "Add donor error"
+        },
+        "text": {
+          "de": "Der Spender konnte nicht hinzugefügt werden.",
+          "en": "Could not add donor to process."
+        }
+      },
+      "saveDonor": {
+        "label": {
+          "de": "Fehler beim Speichern Spender",
+          "en": "Save donor error"
+        },
+        "text": {
+          "de": "Der Spender konnte nicht aktualisiert werden.",
+          "en": "Could not update donor in process."
+        }
       }
     }
   },

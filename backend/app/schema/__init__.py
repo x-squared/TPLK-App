@@ -133,6 +133,19 @@ from .dev_forum import (
     DevRequestReviewRejectCreate,
 )
 from .information import InformationBase, InformationCreate, InformationResponse, InformationUpdate
+from .living_donation import (
+    LivingDonationDonorBase,
+    LivingDonationDonorCreate,
+    LivingDonationDonorResponse,
+    LivingDonationDonorUpdate,
+    LivingDonationEpisodeBase,
+    LivingDonationEpisodeCloseRequest,
+    LivingDonationEpisodeCreate,
+    LivingDonationEpisodeResponse,
+    LivingDonationEpisodeUpdate,
+    LivingDonationPatientRefResponse,
+    LivingDonationRecipientEpisodeRefResponse,
+)
 from .e2e_tests import (
     E2ETestCaseResultResponse,
     E2ETestMetadataResponse,

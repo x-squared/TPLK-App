@@ -244,6 +244,7 @@ class Episode(Base):
     created_by_user = relationship("User", foreign_keys=[created_by_id])
     coordination_episodes = relationship("CoordinationEpisode", back_populates="episode")
     task_groups = relationship("TaskGroup", back_populates="episode")
+    living_donation_recipient_links = relationship("LivingDonationEpisode", back_populates="recipient_episode")
     organ_links = relationship("EpisodeOrgan", back_populates="episode", cascade="all, delete-orphan")
     organs = relationship(
         "Code",

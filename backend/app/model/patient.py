@@ -132,6 +132,7 @@ class Patient(Base):
     diagnoses = relationship("Diagnosis", back_populates="patient", cascade="all, delete-orphan")
     medical_values = relationship("MedicalValue", back_populates="patient", cascade="all, delete-orphan")
     episodes = relationship("Episode", back_populates="patient", cascade="all, delete-orphan")
+    living_donation_donor_links = relationship("LivingDonationDonor", back_populates="donor_patient")
     task_groups = relationship("TaskGroup", back_populates="patient", cascade="all, delete-orphan")
 
 

@@ -44,6 +44,12 @@ package "TPLK Domain" {
   class CoordinationProtocolEventLog
 }
 
+package "LTPL Domain" {
+  class LivingDonationEpisode
+  class LivingDonationEpisodeOrgan
+  class LivingDonationDonor
+}
+
 package "KOLL Domain" {
   class ColloqiumType
   class Colloqium
@@ -92,6 +98,12 @@ Episode "1" <-- "0..*" CoordinationEpisode : references >
 Coordination "1" -- "0..*" CoordinationTimeLog
 Coordination "1" -- "0..*" CoordinationProtocolEventLog
 Task "1" <-- "0..*" CoordinationProtocolEventLog : optional task reference
+
+' LTPL flow
+LivingDonationEpisode "1" -- "0..*" LivingDonationEpisodeOrgan
+LivingDonationEpisode "1" -- "0..*" LivingDonationDonor
+Episode "1" <-- "0..*" LivingDonationEpisode : recipient episode >
+Patient "1" <-- "0..*" LivingDonationDonor : donor patient >
 
 ' KOLL
 ColloqiumType "1" -- "0..*" Colloqium

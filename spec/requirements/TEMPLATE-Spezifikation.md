@@ -19,10 +19,12 @@ Beispiel: `TPLK-Episode-Spezifikation.md` mit Kopf `# Feature-of [TPLK]: Koordin
 Beispiel: `### Story: Koordinationsprotokoll [EN: Coordination Protocol] [Spec]`.
 
 #### Item: Überschriften dürfen optionale semantische Hinweislabels im Format `{name}` oder `{name1, name2, ...}` tragen (z. B. `{view}`, `{tab}`, `{panel}`, `{process}`, `{function}`, `{structure}`, `{design}`, `{architecture}`, `{data}`, `{quality}`, `{documentation}`, `{specification}`). [Spec]
-Beispiel: `### Story: Koordinationsprotokoll {process} [EN: Coordination Protocol] [Spec]`.
-Beispiel mit mehreren Hints: `### Story: Koordinationsprotokoll {design, function} [EN: Coordination Protocol] [Spec]`.
+Beispiel: `### Story: {process} Koordinationsprotokoll [EN: Coordination Protocol] [Spec]`.
+Beispiel mit mehreren Hints: `### Story: {design, function} Koordinationsprotokoll [EN: Coordination Protocol] [Spec]`.
 
 #### Item: Hinweislabels werden kurz interpretiert: `{view}` Seite/View, `{tab}` Tab, `{panel}` Panel/Section, `{process}` Ablauf, `{function}` Funktionalität, `{structure}` Struktur, `{design}` visuelle Gestaltung/UX, `{architecture}` Architekturbelange, `{data}` Datenhandling/Seed-Daten, `{quality}` Qualitätsziele/Testbarkeit/Verifikation, `{documentation}` Dokumentationsumfang/Manual-Pflege, `{specification}` Regeln der Spezifikationssystematik. [Spec]
+
+#### Item: Wenn ein Knoten als Story/Use-Case gemeint ist, wird er als echte Überschrift (`### Story ...` bzw. `## Use Case ...`) geschrieben und nicht nur als Bullet-Punkt mit Präfix `Story:`/`Use Case:`. [Spec]
 
 ## Use Case: Neue Funktion wird beschrieben [Spec]
 

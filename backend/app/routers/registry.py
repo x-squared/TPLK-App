@@ -31,6 +31,7 @@ from . import (
     episodes,
     favorites,
     information,
+    living_donations,
     medical_data,
     medical_value_groups,
     medical_values,
@@ -69,6 +70,7 @@ def register_routers(app: FastAPI) -> None:
     app.include_router(episodes.router, prefix="/api")
     app.include_router(favorites.router, prefix="/api")
     app.include_router(information.router, prefix="/api")
+    app.include_router(living_donations.router, prefix="/api")
     app.include_router(medical_data.router, prefix="/api")
     app.include_router(medical_value_groups.router, prefix="/api")
     app.include_router(medical_values.router, prefix="/api")

@@ -10,6 +10,8 @@ Dieses Dokument beschreibt das Spezifikationssystem und dessen Regeln im Projekt
 
 #### Item: Anforderungen werden in der Hierarchie `Feature -> Use Case -> Story -> Item` beschrieben. [Ready]
 
+#### Item: Ein als `Use Case` oder `Story` gemeinter Knoten muss als echte Überschrift (`## Use Case ...` / `### Story ...`) modelliert werden; Bullet-Referenzen mit Präfix `Use Case:` oder `Story:` ersetzen keine Hierarchieknoten. [Ready]
+
 #### Item: Statuslabels sind `[Spec]`, `[Ready]`, `[Impl]`, `[QA]` oder `[Done]`. [Ready]
 
 #### Item: Fehlt ein Statuslabel, wird standardmäßig `[Spec]` angenommen. [Ready]
@@ -112,7 +114,7 @@ Dieses Dokument beschreibt das Spezifikationssystem und dessen Regeln im Projekt
 
 #### Item: `{process}` deutet darauf hin, dass das Process-Framework in Betracht gezogen werden kann, aber nicht zwingend genutzt werden muss. [Ready]
 
-#### Item: Empfohlene Reihenfolge in Überschriften: `<Titel> {label} [<LANG>: <text>] [Status]`. [Ready]
+#### Item: Empfohlene Reihenfolge in Überschriften: `{label} <Titel> [<LANG>: <text>] [Status]`. [Ready]
 
 #### Item: Mehrere semantische Hints in einer Überschrift sind erlaubt, z. B. `{design, function}`. [Ready]
 

@@ -127,6 +127,17 @@ export type {
   E2ETestRunRequest,
   E2ETestRunResponse,
 } from './e2eTests';
+export { donorsApi } from './donors';
+export type {
+  LivingDonationDonor,
+  LivingDonationDonorCreate,
+  LivingDonationDonorUpdate,
+  LivingDonationEpisode,
+  LivingDonationEpisodeCreate,
+  LivingDonationEpisodeUpdate,
+  LivingDonationPatientRef,
+  LivingDonationRecipientEpisodeRef,
+} from './donors';
 
 import { authApi, codesApi, medicalValueTemplatesApi, medicalValueGroupsApi, usersApi, translationsApi, adminAccessApi, adminSchedulerApi, personsApi, adminPeopleApi, adminProcurementConfigApi, adminCatalogueApi, supportTicketApi, devForumApi } from './core';
 import { patientsApi } from './patients';
@@ -137,6 +148,7 @@ import { favoritesApi } from './favorites';
 import { informationApi } from './information';
 import { reportsApi } from './reports';
 import { e2eTestsApi } from './e2eTests';
+import { donorsApi } from './donors';
 
 export const api = {
   ...authApi,
@@ -161,4 +173,5 @@ export const api = {
   ...informationApi,
   ...reportsApi,
   ...e2eTestsApi,
+  ...donorsApi,
 };
