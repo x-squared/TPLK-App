@@ -301,8 +301,8 @@
         "en": "Application title"
       },
       "text": {
-        "de": "TPL App",
-        "en": "TPL App"
+        "de": "TPLK App",
+        "en": "TPLK App"
       }
     },
     "views": {
@@ -474,6 +474,190 @@
       }
     }
   },
+  "guiTemplate": {
+    "intro": {
+      "body": {
+        "label": {
+          "de": "GUI-Template Einleitungstext",
+          "en": "GUI template intro text"
+        },
+        "text": {
+          "de": "Nutze dieses Template als erste Referenz, bevor konkrete GUI-Features implementiert werden.",
+          "en": "Use this template as first reference before implementing concrete GUI features."
+        }
+      },
+      "heading": {
+        "label": {
+          "de": "GUI-Template Einleitungsueberschrift",
+          "en": "GUI template intro heading"
+        },
+        "text": {
+          "de": "Template-Nutzung",
+          "en": "Template Usage"
+        }
+      }
+    },
+    "sections": {
+      "body": {
+        "label": {
+          "de": "GUI-Template Sections Beschreibung",
+          "en": "GUI template sections description"
+        },
+        "text": {
+          "de": "Eine Section hat genau einen fachlichen Schwerpunkt; Verhalten bleibt im zugehoerigen ViewModel-Hook.",
+          "en": "A section should own one concern and keep behavior in the related view-model hook."
+        }
+      },
+      "example": {
+        "detail": {
+          "label": {
+            "de": "GUI-Template Sections Beispiel Detail",
+            "en": "GUI template sections detail example"
+          },
+          "text": {
+            "de": "Beispiel: Detail-Section",
+            "en": "Example: Detail section"
+          }
+        },
+        "filters": {
+          "label": {
+            "de": "GUI-Template Sections Beispiel Filter",
+            "en": "GUI template sections filter example"
+          },
+          "text": {
+            "de": "Beispiel: Filter-Section",
+            "en": "Example: Filter section"
+          }
+        },
+        "header": {
+          "label": {
+            "de": "GUI-Template Sections Beispiel Header",
+            "en": "GUI template sections header example"
+          },
+          "text": {
+            "de": "Beispiel: Header plus Aktionen",
+            "en": "Example: Header + Actions"
+          }
+        }
+      },
+      "heading": {
+        "label": {
+          "de": "GUI-Template Sections Ueberschrift",
+          "en": "GUI template sections heading"
+        },
+        "text": {
+          "de": "Wie Sections aufgebaut werden",
+          "en": "How Sections are built"
+        }
+      }
+    },
+    "tables": {
+      "body": {
+        "label": {
+          "de": "GUI-Template Tabellen Beschreibung",
+          "en": "GUI template tables description"
+        },
+        "text": {
+          "de": "Nutze stabile Spalten, explizite Leerzustandsdarstellung und eine dedizierte Aktionsspalte.",
+          "en": "Use stable columns, explicit empty states, and a dedicated action column."
+        }
+      },
+      "column": {
+        "action": {
+          "label": {
+            "de": "GUI-Template Tabellen Spalte Aktion",
+            "en": "GUI template tables action column"
+          },
+          "text": {
+            "de": "Aktion",
+            "en": "Action"
+          }
+        },
+        "bloodType": {
+          "label": {
+            "de": "GUI-Template Tabellen Spalte Blutgruppe",
+            "en": "GUI template tables blood type column"
+          },
+          "text": {
+            "de": "Blutgruppe",
+            "en": "Blood type"
+          }
+        },
+        "firstName": {
+          "label": {
+            "de": "GUI-Template Tabellen Spalte Vorname",
+            "en": "GUI template tables first name column"
+          },
+          "text": {
+            "de": "Vorname",
+            "en": "First name"
+          }
+        },
+        "lastName": {
+          "label": {
+            "de": "GUI-Template Tabellen Spalte Nachname",
+            "en": "GUI template tables last name column"
+          },
+          "text": {
+            "de": "Nachname",
+            "en": "Last name"
+          }
+        },
+        "status": {
+          "label": {
+            "de": "GUI-Template Tabellen Spalte Status",
+            "en": "GUI template tables status column"
+          },
+          "text": {
+            "de": "Status",
+            "en": "Status"
+          }
+        }
+      },
+      "heading": {
+        "label": {
+          "de": "GUI-Template Tabellen Ueberschrift",
+          "en": "GUI template tables heading"
+        },
+        "text": {
+          "de": "Wie Tabellen aufgebaut werden",
+          "en": "How Tables are built"
+        }
+      }
+    },
+    "tabs": {
+      "aria": {
+        "label": {
+          "de": "GUI-Template Tabs Aria",
+          "en": "GUI template tabs aria"
+        },
+        "text": {
+          "de": "Template-Tabs",
+          "en": "Template tabs"
+        }
+      },
+      "sections": {
+        "label": {
+          "de": "GUI-Template Tab Sections",
+          "en": "GUI template tab sections"
+        },
+        "text": {
+          "de": "Sections",
+          "en": "Sections"
+        }
+      },
+      "tables": {
+        "label": {
+          "de": "GUI-Template Tab Tabellen",
+          "en": "GUI template tab tables"
+        },
+        "text": {
+          "de": "Tabellen",
+          "en": "Tables"
+        }
+      }
+    }
+  },
   "navigation": {
     "dev": {
       "devForum": {
@@ -482,8 +666,8 @@
           "en": "Navigation item: Dev-Forum"
         },
         "text": {
-          "de": "Dev-Forum",
-          "en": "Dev-Forum"
+          "de": "Dev-Forum!",
+          "en": "Dev-Forum!"
         }
       },
       "e2eTests": {
@@ -494,6 +678,16 @@
         "text": {
           "de": "E2E-Tests",
           "en": "E2E Tests"
+        }
+      },
+      "guiTemplate": {
+        "label": {
+          "de": "Navigationseintrag: GUI-Template",
+          "en": "Navigation item: GUI template"
+        },
+        "text": {
+          "de": "GUI-Template",
+          "en": "GUI Template"
         }
       }
     }
@@ -628,6 +822,16 @@
         },
         "text": {
           "de": "Spender"
+        }
+      },
+      "stcsStudy": {
+        "label": {
+          "de": "Seitenleiste Navigation: STCS Studie",
+          "en": "Sidebar navigation item: STCS Study"
+        },
+        "text": {
+          "de": "STCS Studie",
+          "en": "STCS Study"
         }
       },
       "myWork": {

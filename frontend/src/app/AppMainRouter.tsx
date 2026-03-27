@@ -6,8 +6,10 @@ import ColloquiumsView from '../views/ColloquiumsView';
 import CoordinationDetailView from '../views/CoordinationDetailView';
 import CoordinationsView from '../views/CoordinationsView';
 import DonorsView from '../views/DonorsView';
+import STCSStudyView from '../views/STCSStudyView';
 import E2ETestsView from '../views/E2ETestsView';
 import DevForumView from '../views/DevForumView';
+import GuiTemplateView from '../views/GuiTemplateView';
 import MyWorkView from '../views/MyWorkView';
 import PatientDetailView from '../views/PatientDetailView';
 import PatientsView from '../views/PatientsView';
@@ -18,7 +20,7 @@ import type { ColloquiumDetailTab } from '../views/colloquiums/detail/colloquium
 import type { CoordinationDetailTab } from '../views/coordinations/detail/useCoordinationDetailViewModel';
 import type { PatientDetailTab } from '../views/patient-detail/PatientDetailTabs';
 
-type Page = 'my-work' | 'patients' | 'donors' | 'colloquiums' | 'coordinations' | 'reports' | 'admin' | 'e2e-tests' | 'dev-forum' | 'preferences';
+type Page = 'my-work' | 'patients' | 'donors' | 'stcs-study' | 'colloquiums' | 'coordinations' | 'reports' | 'admin' | 'e2e-tests' | 'dev-forum' | 'gui-template' | 'preferences';
 
 interface AppMainRouterProps {
   page: Page;
@@ -171,6 +173,7 @@ export default function AppMainRouter({
         />
       )}
       {page === 'donors' && canViewDonors && <DonorsView />}
+      {page === 'stcs-study' && canViewDonors && <STCSStudyView />}
       {page === 'colloquiums' && canViewColloquiums && selectedColloqiumId === null && (
         <ColloquiumsView onOpenColloqium={(id) => setSelectedColloqiumId(id)} />
       )}
@@ -244,6 +247,7 @@ export default function AppMainRouter({
         />
       )}
       {page === 'e2e-tests' && devToolsEnabled && <E2ETestsView />}
+      {page === 'gui-template' && devToolsEnabled && <GuiTemplateView />}
       {page === 'dev-forum' && devToolsEnabled && <DevForumView />}
     </main>
   );

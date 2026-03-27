@@ -152,7 +152,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const isLegacyEn = donorsTitleNormalized === 'donors' || donorsTitleNormalized === 'donors!';
       const isLegacyDe = donorsTitleNormalized === 'spender' || donorsTitleNormalized === 'spender!';
       if (isLegacyEn || isLegacyDe) {
-        normalized[donorsTitleKey] = locale === 'de' ? 'Spender???' : 'Donors???';
+        normalized[donorsTitleKey] = locale === 'de' ? 'Spender????' : 'Donors????';
       }
     }
     setRuntimeTranslationsState(normalized);

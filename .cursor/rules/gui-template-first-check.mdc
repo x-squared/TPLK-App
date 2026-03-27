@@ -1,0 +1,8 @@
+# GUI Template First Check
+
+Before implementing non-trivial frontend GUI changes, check the DEV GUI Template View first.
+
+- Open the GUI Template View in the DEV section and verify whether the required pattern already exists (view composition, sections, tables).
+- Follow the demonstrated structure before introducing new one-off GUI patterns.
+- If implementation must deviate from the template, document the reason briefly in final notes.
+- Keep templates dummy-data only; business/data logic remains in feature-specific view-model hooks.

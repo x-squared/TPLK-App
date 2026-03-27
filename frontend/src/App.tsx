@@ -430,7 +430,7 @@ function App() {
     return (
       <div className="login-page">
         <div className="login-card">
-          <h1>{t('app.title', 'TPL App')}</h1>
+          <h1>{t('app.title', 'TPLK App')}</h1>
           <p className="subtitle">{t('app.login.subtitle', 'Please log in to continue')}</p>
           <form className="login-form" onSubmit={handleLogin}>
             <input

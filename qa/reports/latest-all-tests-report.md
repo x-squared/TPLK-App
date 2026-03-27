@@ -1,8 +1,8 @@
 # All Tests Report
 
-- Started: `2026-03-17T10:20:15.889639+00:00`
-- Finished: `2026-03-17T10:20:22.362255+00:00`
-- Duration seconds: `6.473`
+- Started: `2026-03-26T11:53:12.110851+00:00`
+- Finished: `2026-03-26T11:53:18.574114+00:00`
+- Duration seconds: `6.463`
 - Success: `True`
 
 ## Pipelines
@@ -17,12 +17,12 @@
 
 ```text
 Architecture dependency check PASSED
-- Rules applied: 7; file-rule checks: 209
+- Rules applied: 7; file-rule checks: 216
 Domain spec sync check PASSED
-- Conceptual classes: 39
-- Conceptual relations checked: 43
-- Model classes discovered: 56
-- Model relations discovered: 144
+- Conceptual classes: 42
+- Conceptual relations checked: 47
+- Model classes discovered: 59
+- Model relations discovered: 153
 Report written: /Users/stephan/Workspace/AppSpace/TPLK-App/qa/reports/latest-conceptual-report.md
 ```
 
@@ -47,7 +47,7 @@ Report written: /Users/stephan/Workspace/AppSpace/TPLK-App/qa/reports/latest-ser
 test_cases (qa.tests.generated.test_server_specs.GeneratedSpecTests.test_cases) ... ok
 
 ----------------------------------------------------------------------
-Ran 1 test in 0.015s
+Ran 1 test in 0.014s
 
 OK
 ```

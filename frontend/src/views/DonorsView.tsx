@@ -44,7 +44,7 @@ export default function DonorsView() {
   return (
     <>
       <header className="patients-header">
-        <h1>{t('donors.title', 'Donors???')}</h1>
+        <h1>{t('donors.title', 'Donors????')}</h1>
         <button
           className="patients-add-btn"
           onClick={() => setAddingProcess((prev) => !prev)}

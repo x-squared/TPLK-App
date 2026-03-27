@@ -17,7 +17,9 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@appstack/pollingStateMachine": ["../../AppStack/frontend/src/views/layout/pollingStateMachine.ts"]
+      "@appstack/pollingStateMachine": ["../../AppStack/frontend/src/views/layout/pollingStateMachine.ts"],
+      "@appstack/guiTemplateGuidance": ["../../AppStack/frontend/src/features/gui-template/docs/templateGuidance.ts"],
+      "@appstack/guiTemplateData": ["../../AppStack/frontend/src/features/gui-template/model/templateDummyData.ts"]
     },
 
     /* Linting */

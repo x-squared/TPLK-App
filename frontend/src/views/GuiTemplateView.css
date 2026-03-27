@@ -1,0 +1,138 @@
+.gui-template-card {
+  border: 1px solid #d7e3f4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(12, 42, 90, 0.08);
+  padding: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.gui-template-card h2,
+.gui-template-card h3 {
+  margin-top: 0;
+}
+
+.gui-template-tabs {
+  display: flex;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.gui-template-tabs button {
+  border: 1px solid #c2d3e6;
+  border-radius: 8px;
+  background: #f7fbff;
+  color: #1d3d66;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+
+.gui-template-tabs button.active {
+  background: #0f5fa8;
+  border-color: #0f5fa8;
+  color: #ffffff;
+}
+
+.gui-template-example-strip {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-top: 0.55rem;
+}
+
+.gui-template-example-strip > div {
+  background: #edf5ff;
+  border: 1px solid #d0e0f2;
+  border-radius: 8px;
+  padding: 0.5rem;
+  color: #0d3c79;
+}
+
+.gui-template-table-wrap {
+  overflow-x: auto;
+}
+
+.gui-template-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gui-template-table th,
+.gui-template-table td {
+  border-bottom: 1px solid #e2ebf5;
+  padding: 0.52rem 0.45rem;
+  text-align: left;
+}
+
+.gui-template-table thead th {
+  background: #f4f8fd;
+}
+
+.gui-template-form-grid {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 0.45rem 0 0.6rem;
+}
+
+.gui-template-form-grid label {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.gui-template-form-grid input {
+  border: 1px solid #c7d6e8;
+  border-radius: 6px;
+  padding: 0.42rem 0.5rem;
+  background: #f7fbff;
+}
+
+.gui-template-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.gui-template-reference {
+  margin: 0.55rem 0 0;
+  color: #345375;
+}
+
+.gui-template-tab-preview {
+  margin-top: 0.55rem;
+  background: #edf5ff;
+  border: 1px solid #d0e0f2;
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+.gui-template-state-grid {
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.gui-template-state-grid > div {
+  border: 1px solid #d7e3f4;
+  border-radius: 8px;
+  padding: 0.55rem;
+  background: #f9fcff;
+}
+
+.gui-template-state-grid p {
+  margin: 0.3rem 0 0;
+}
+
+.gui-template-dialog-preview {
+  margin-top: 0.6rem;
+}
+
+.gui-template-code {
+  white-space: pre-wrap;
+  border: 1px solid #d6e1f1;
+  border-radius: 8px;
+  background: #f7fbff;
+  padding: 0.7rem;
+  margin: 0.5rem 0 0;
+}

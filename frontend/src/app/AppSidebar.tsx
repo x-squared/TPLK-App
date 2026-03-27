@@ -1,7 +1,7 @@
 import type { AppUser } from '../api';
 import { useI18n } from '../i18n/i18n';
 
-type Page = 'my-work' | 'patients' | 'donors' | 'colloquiums' | 'coordinations' | 'reports' | 'admin' | 'e2e-tests' | 'dev-forum' | 'preferences';
+type Page = 'my-work' | 'patients' | 'donors' | 'stcs-study' | 'colloquiums' | 'coordinations' | 'reports' | 'admin' | 'e2e-tests' | 'dev-forum' | 'gui-template' | 'preferences';
 
 interface AppSidebarProps {
   user: AppUser;
@@ -126,6 +126,19 @@ export default function AppSidebar({
             {sidebarOpen && <span className="nav-label">{t('sidebar.nav.donors', 'Donors')}</span>}
           </button>
         )}
+        {canViewDonors && (
+          <button
+            className={`nav-item ${page === 'stcs-study' ? 'active' : ''}`}
+            onClick={() => {
+              setPage('stcs-study');
+              onResetSelection();
+            }}
+            title={t('sidebar.nav.stcsStudy', 'STCS Study')}
+          >
+            <span className="nav-icon">{'\u263A'}</span>
+            {sidebarOpen && <span className="nav-label">{t('sidebar.nav.stcsStudy', 'STCS Study')}</span>}
+          </button>
+        )}
         {canViewColloquiums && (
           <button
             className={`nav-item ${page === 'colloquiums' ? 'active' : ''}`}
@@ -202,6 +215,17 @@ export default function AppSidebar({
             >
               <span className="nav-icon">{'\u2699'}</span>
               {sidebarOpen && <span className="nav-label">{t('navigation.dev.e2eTests', 'E2E Tests')}</span>}
+            </button>
+            <button
+              className={`nav-item ${page === 'gui-template' ? 'active' : ''}`}
+              onClick={() => {
+                setPage('gui-template');
+                onResetSelection();
+              }}
+              title={t('navigation.dev.guiTemplate', 'GUI Template')}
+            >
+              <span className="nav-icon">{'\u25A6'}</span>
+              {sidebarOpen && <span className="nav-label">{t('navigation.dev.guiTemplate', 'GUI Template')}</span>}
             </button>
             <div className={`nav-item-with-toggle ${page === 'dev-forum' ? 'active' : ''}`}>
               <button
