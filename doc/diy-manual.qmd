@@ -91,8 +91,11 @@ lsof -a -p "${PID}" -d cwd
 
 ```{bash}
 cd frontend
+export VITE_APPSPEC_API_BASE_URL=http://127.0.0.1:8010
 npm run dev
 ```
+
+When using the GUI Specs overlay from TPLK, this variable must point to the running AppSpec backend.
 
 
 #### Common full commands for database management

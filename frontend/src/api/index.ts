@@ -138,6 +138,23 @@ export type {
   LivingDonationPatientRef,
   LivingDonationRecipientEpisodeRef,
 } from './donors';
+export { guiSpecsApi } from './guiSpecs';
+export type {
+  GuiSpecImplLink,
+  GuiSpecImplLinkUpsert,
+  GuiSpecNote,
+  GuiSpecNoteUpdate,
+  GuiSpecRegion,
+  GuiSpecRegionCreate,
+  GuiSpecRegionGeometry,
+  GuiSpecRegionStatusKey,
+  GuiSpecRegionStatusUpdate,
+  GuiSpecRegionTypeKey,
+  GuiSpecView,
+  GuiSpecViewCreate,
+  GuiSpecViewListItem,
+  GuiSpecViewTypeKey,
+} from './guiSpecs';
 
 import { authApi, codesApi, medicalValueTemplatesApi, medicalValueGroupsApi, usersApi, translationsApi, adminAccessApi, adminSchedulerApi, personsApi, adminPeopleApi, adminProcurementConfigApi, adminCatalogueApi, supportTicketApi, devForumApi } from './core';
 import { patientsApi } from './patients';
@@ -149,6 +166,7 @@ import { informationApi } from './information';
 import { reportsApi } from './reports';
 import { e2eTestsApi } from './e2eTests';
 import { donorsApi } from './donors';
+import { guiSpecsApi } from './guiSpecs';
 
 export const api = {
   ...authApi,
@@ -174,4 +192,5 @@ export const api = {
   ...reportsApi,
   ...e2eTestsApi,
   ...donorsApi,
+  ...guiSpecsApi,
 };

@@ -3,6 +3,7 @@ import { api, type UserPreferences } from './api';
 import AppMainRouter from './app/AppMainRouter';
 import AppSidebar from './app/AppSidebar';
 import DevForumPanel from './app/DevForumPanel';
+import GuiSpecsPanel from './app/GuiSpecsPanel';
 import { useInformationUnreadCount } from './app/useInformationUnreadCount';
 import { useMyWorkOpenTaskCount } from './app/useMyWorkOpenTaskCount';
 import { useAppNavigation } from './app/useAppNavigation';
@@ -165,6 +166,7 @@ function App() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [coordinationQuickCreateToken, setCoordinationQuickCreateToken] = useState(0);
   const [devForumPanelOpen, setDevForumPanelOpen] = useState(false);
+  const [guiSpecsPanelOpen, setGuiSpecsPanelOpen] = useState(false);
   const [devForumPanelWidth, setDevForumPanelWidth] = useState(420);
   const {
     user,
@@ -416,6 +418,22 @@ function App() {
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const handleToggleDevForumPanel = () => {
+    setDevForumPanelOpen((prev) => {
+      const next = !prev;
+      if (next) setGuiSpecsPanelOpen(false);
+      return next;
+    });
+  };
+
+  const handleToggleGuiSpecsPanel = () => {
+    setGuiSpecsPanelOpen((prev) => {
+      const next = !prev;
+      if (next) setDevForumPanelOpen(false);
+      return next;
+    });
+  };
+
   /* ── Auth loading ── */
   if (authLoading) {
     return (
@@ -519,7 +537,9 @@ function App() {
         }}
         onLogout={handleLogout}
         devForumPanelOpen={devForumPanelOpen}
-        onToggleDevForumPanel={() => setDevForumPanelOpen((prev) => !prev)}
+        onToggleDevForumPanel={handleToggleDevForumPanel}
+        guiSpecsPanelOpen={guiSpecsPanelOpen}
+        onToggleGuiSpecsPanel={handleToggleGuiSpecsPanel}
       />
       <div className="app-main-stack">
         <AppMainRouter
@@ -571,6 +591,11 @@ function App() {
               <DevForumPanel hasDevRole={hasDevRole} />
             </aside>
           </>
+        ) : null}
+        {devToolsEnabled && guiSpecsPanelOpen ? (
+          <aside className="dev-forum-panel-shell" style={{ width: '420px' }}>
+            <GuiSpecsPanel hasDevRole={hasDevRole} />
+          </aside>
         ) : null}
       </div>
     </div>

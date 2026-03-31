@@ -32,6 +32,8 @@ interface AppSidebarProps {
   onLogout: () => void;
   devForumPanelOpen: boolean;
   onToggleDevForumPanel: () => void;
+  guiSpecsPanelOpen: boolean;
+  onToggleGuiSpecsPanel: () => void;
 }
 
 export default function AppSidebar({
@@ -63,6 +65,8 @@ export default function AppSidebar({
   onLogout,
   devForumPanelOpen,
   onToggleDevForumPanel,
+  guiSpecsPanelOpen,
+  onToggleGuiSpecsPanel,
 }: AppSidebarProps) {
   const { t } = useI18n();
 
@@ -226,6 +230,14 @@ export default function AppSidebar({
             >
               <span className="nav-icon">{'\u25A6'}</span>
               {sidebarOpen && <span className="nav-label">{t('navigation.dev.guiTemplate', 'GUI Template')}</span>}
+            </button>
+            <button
+              className={`nav-item ${guiSpecsPanelOpen ? 'active' : ''}`}
+              onClick={onToggleGuiSpecsPanel}
+              title={t('navigation.dev.guiSpecsBuilder', 'GUI Specs Builder')}
+            >
+              <span className="nav-icon">{'\u25A3'}</span>
+              {sidebarOpen && <span className="nav-label">{t('navigation.dev.guiSpecsBuilder', 'GUI Specs Builder')}</span>}
             </button>
             <div className={`nav-item-with-toggle ${page === 'dev-forum' ? 'active' : ''}`}>
               <button
