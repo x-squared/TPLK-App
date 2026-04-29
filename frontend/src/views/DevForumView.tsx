@@ -31,7 +31,7 @@ export default function DevForumView() {
   return (
     <>
       <header className="patients-header">
-        <h1>{t('navigation.dev.devForum', 'Dev-Forum!')}</h1>
+        <h1>{t('navigation.dev.devForum', 'Dev-Forum!!!')}</h1>
       </header>
       <DevForumSurface
         title={t('devForum.view.title', 'Dev-Forum')}
